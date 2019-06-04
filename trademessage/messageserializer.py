@@ -1,6 +1,6 @@
 import json
 
-def createJSONMessage(order, applicationKey, wattage, duration, starttime, totalenergy, biddingprice):
+def createJSONMessage(order, applicationKey, wattage, duration, starttime, totalenergy, orderprice):
     trademessage={}
     trademessage['order']=order
     trademessage['applicationKey']=applicationKey
@@ -9,12 +9,19 @@ def createJSONMessage(order, applicationKey, wattage, duration, starttime, total
     trademessage['wattage']=wattage
     trademessage['duration']=duration   
     trademessage['totalenergy']=totalenergy
-    trademessage['biddingprice']=biddingprice
+    if "ask" in order:
+        trademessage['askingprice']=orderprice
+    if "bid" in order:
+        trademessage['biddingprice']=orderprice
     return trademessage
 
-def createLineMessage(order, applicationKey, wattage, duration, starttime, totalenergy, biddingprice):
-    linebidmsg = "{0},applicationKey={1},version=0,starttime={2} wattage={3},duration={4},totalenergy={5},biddingprice={6}"
-    return linebidmsg.format(order, applicationKey, starttime, wattage, duration, totalenergy, biddingprice)
+def createLineMessage(order, applicationKey, wattage, duration, starttime, totalenergy, orderprice):
+    lineordermsg = ""
+    if "ask" in order:
+        lineordermsg = "{0},applicationKey={1},version=0,starttime={2} wattage={3},duration={4},totalenergy={5},askingprice={6}"
+    if "bid" in order:
+        lineordermsg = "{0},applicationKey={1},version=0,starttime={2} wattage={3},duration={4},totalenergy={5},biddingprice={6}"
+    return lineordermsg.format(order, applicationKey, starttime, wattage, duration, totalenergy, orderprice)
 
 def getAskMessageJSON(applicationKey, wattage, duration, starttime, totalenergy, askingprice):
     askmsg = createaskmessage("ask", applicationKey, wattage, duration, starttime, totalenergy, askingprice)

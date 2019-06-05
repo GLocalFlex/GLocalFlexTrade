@@ -1,5 +1,6 @@
 import pika
 import time
+import json
 
 #brokerip="localhost"
 #brokerip="130.188.93.229"
@@ -9,6 +10,7 @@ username="testuser"
 userpw="testuser"
 applicationkey="applicationtestkey"
 messengerkey="messengertestkey"
+tickeroutexname = "ticker-out"
 exchangename = "in"
 bidroutingkey = "bid"
 askroutingkey = "ask"
@@ -29,6 +31,7 @@ def connecttobroker():
     #Create callback queue
     result = __channel.queue_declare('', exclusive=True)
     __callback_queue = result.method.queue
+    __channel.queue_bind(__callback_queue, tickeroutexname)
     return __callback_queue
 
 def connecttobrokerwithparams(username, userpw, brokerip, brokerport):
@@ -40,6 +43,8 @@ def connecttobrokerwithparams(username, userpw, brokerip, brokerport):
     #Create callback queue
     result = __channel.queue_declare('', exclusive=True)
     __callback_queue = result.method.queue    
+    __channel.queue_bind(__callback_queue, tickeroutexname)    
+    return __callback_queue
     
 def setreceiver(callback):
     global __channel, __callback_queue

@@ -11,7 +11,7 @@ tickprice = 0
 
 def on_response(ch, method, props, body):
     global tickprice
-    #print("REPLY MESSAGE:", json.loads(body))
+    print("REPLY MESSAGE:", body)
     #Tick message ex. {'msgtype': 'tick', 'last_price_time': 1559732378418422410, 'last_price': 7.529581909307273}
     msgBody = json.loads(body)
     if 'msgtype' in msgBody.keys():
@@ -19,6 +19,7 @@ def on_response(ch, method, props, body):
             tickprice = msgBody['last_price']
 
 parser = argparse.ArgumentParser(description='Test client for running imaginary trading client')               
+parser.add_argument('--delay', type=int, dest="delaymultip", default=10, action='store', help='Random delay multiplier between messages')
 parser.add_argument('--bid', action='store_true', help='Switch for operating in bidding mode')
 parser.add_argument('--ask', action='store_true', help='Switch for operating in asking mode')
 args=parser.parse_args()
@@ -30,7 +31,7 @@ snd.setreceiver(on_response)
 print("Connection started")
 
 while True:
-    delay=random()*10
+    delay=random()*args.delaymultip
     print("-----------------------------------")    
     print("Current price is: ", tickprice)
     if tickprice != 0:

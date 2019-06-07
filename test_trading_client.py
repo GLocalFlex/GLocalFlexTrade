@@ -11,12 +11,15 @@ tickprice = 0
 
 def on_response(ch, method, props, body):
     global tickprice
-    print("REPLY MESSAGE:", body)
     #Tick message ex. {'msgtype': 'tick', 'last_price_time': 1559732378418422410, 'last_price': 7.529581909307273}
-    msgBody = json.loads(body)
-    if 'msgtype' in msgBody.keys():
-        if msgBody['msgtype'] == 'tick':
-            tickprice = msgBody['last_price']
+    try:
+        msgBody = json.loads(body)
+        if 'msgtype' in msgBody.keys():
+            if msgBody['msgtype'] == 'tick':
+                tickprice = msgBody['last_price']
+                print("--- Tick ",tickprice)
+    except ValueError:
+        print("RECEIVED A NON JSON MESSAGE:", body)
 
 parser = argparse.ArgumentParser(description='Test client for running imaginary trading client')               
 parser.add_argument('--delay', type=int, dest="delaymultip", default=10, action='store', help='Random delay multiplier between messages')

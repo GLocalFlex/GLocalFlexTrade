@@ -16,6 +16,7 @@ def createJSONMessage(order, applicationKey, wattage, duration, starttime, total
     return trademessage
 
 def createLineMessage(order, applicationKey, wattage, duration, starttime, totalenergy, orderprice):
+    starttime=str(int(starttime))
     lineordermsg = ""
     if "ask" in order:
         lineordermsg = "{0},applicationKey={1},version=0,starttime={2} wattage={3},duration={4},totalenergy={5},askingprice={6}"
@@ -24,11 +25,11 @@ def createLineMessage(order, applicationKey, wattage, duration, starttime, total
     return lineordermsg.format(order, applicationKey, starttime, wattage, duration, totalenergy, orderprice)
 
 def getAskMessageJSON(applicationKey, wattage, duration, starttime, totalenergy, askingprice):
-    askmsg = createaskmessage("ask", applicationKey, wattage, duration, starttime, totalenergy, askingprice)
+    askmsg = createJSONMessage("ask", applicationKey, wattage, duration, starttime, totalenergy, askingprice)
     return json.dumps(askmsg)
     
 def getBidMessageJSON(applicationKey, wattage, duration, starttime, totalenergy, biddingprice):
-    bidmsg = createbidmessage("bid", applicationKey, wattage, duration, starttime, totalenergy, biddingprice)
+    bidmsg = createJSONMessage("bid", applicationKey, wattage, duration, starttime, totalenergy, biddingprice)
     return json.dumps(bidmsg)
 
 def getLineAskMessage(applicationKey, wattage, duration, starttime, totalenergy, askingprice):

@@ -18,6 +18,10 @@ def on_response(ch, method, props, body):
             if msgBody['msgtype'] == 'tick':
                 tickprice = msgBody['last_price']
                 print("--- Tick ",tickprice)
+            if msgBody['msgtype'] == 'bid_closed_order':
+                print("--- Wohoo! My bit order deal went through for ", msgBody['closed_order']['price'])
+            if msgBody['msgtype'] == 'ask_closed_order':
+                print("--- Wohoo! My ask order deal went through for ", msgBody['closed_order']['price'])
     except ValueError:
         print("RECEIVED A NON JSON MESSAGE:", body)
 

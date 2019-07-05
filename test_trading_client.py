@@ -47,6 +47,7 @@ while True:
     else:
         askprice = random()*10
         bidprice = askprice + (random()*10)
+    '''
     askstarttime = int((time()*1000)+(1000*60*60*random()*10))
     bidstarttime = int(askstarttime + random()*1000)
     bidstarttime = int(askstarttime)
@@ -54,6 +55,13 @@ while True:
     bidwattage = random()*1000
     askduration=random()*100
     bidduration=random()*100
+    '''
+    askstarttime = int(((time()*1000)+(1000*60*60*random()*10)) / (1000*60*15)) * 1000*60*15
+    bidstarttime = int(askstarttime) + int(random()*2)*1000*60*15
+    askwattage = int(random()*2)*50
+    bidwattage = int(random()*2)*50
+    askduration = int(random()*4+1)*15
+    bidduration = int(random()*4+1)*15
     if args.bid:
         bidmsg = msg.getLineBidMessage(applicationKey, bidwattage, bidduration, bidstarttime, (bidwattage*bidduration), bidprice).strip('"')        
         snd.sendbidmsg(bidmsg)

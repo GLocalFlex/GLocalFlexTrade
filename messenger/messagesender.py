@@ -3,8 +3,8 @@ import time
 import json
 
 #brokerip="localhost"
-#brokerip="130.188.93.229"
-brokerip="wotan.ad.vtt.fi"
+brokerip="130.188.94.76"
+#brokerip="wotan.ad.vtt.fi"
 brokerport=5672
 username="testuser"
 userpw="testuser"
@@ -60,12 +60,12 @@ def closeconnection():
 
 def sendaskmsg(askmsg):
     global __channel, __connection
-    props = pika.BasicProperties(reply_to=__callback_queue, headers={'sendertimestamp_in_ms': getcurrenttimems()})
+    props = pika.BasicProperties(user_id=username, reply_to=__callback_queue, headers={'sendertimestamp_in_ms': getcurrenttimems()})
     __channel.basic_publish(exchange=exchangename, routing_key=askroutingkey, properties=props, body=askmsg)
 
 def sendbidmsg(bidmsg):
     global __channel, __connection
-    props = pika.BasicProperties(reply_to=__callback_queue, headers={'sendertimestamp_in_ms': getcurrenttimems()})    
+    props = pika.BasicProperties(user_id=username, reply_to=__callback_queue, headers={'sendertimestamp_in_ms': getcurrenttimems()})    
     __channel.basic_publish(exchange=exchangename, routing_key=bidroutingkey, properties=props, body=bidmsg)
 
 #Test

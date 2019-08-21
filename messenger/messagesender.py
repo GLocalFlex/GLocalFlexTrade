@@ -3,13 +3,16 @@ import time
 import json
 
 #brokerip="localhost"
-brokerip="130.188.94.76"
+#brokerip="130.188.94.76"
 #brokerip="wotan.ad.vtt.fi"
+brokerip="fasolt1.willab.fi"
 brokerport=5672
-username="testuser"
-userpw="testuser"
+username="telegrafuser"
+userpw="K0ukku55"
 applicationkey="applicationtestkey"
-messengerkey="messengertestkey"
+
+
+
 tickeroutexname = "ticker-out"
 exchangename = "in"
 bidroutingkey = "bid"

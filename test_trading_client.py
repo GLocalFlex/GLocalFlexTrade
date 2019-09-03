@@ -42,12 +42,12 @@ def start_client(args, procnum):
         else:
             askprice = random()*10
             bidprice = askprice + (random()*10)
-            
+
         askstarttime = int((time() + (60 * 60 * random() * 10)) / 60) * 60 * 1000
         bidstarttime = int(askstarttime / (60 * 1000) + random() * 20) * 60 * 1000
         askwattage = random() * 1000
         bidwattage = random() * 1000
-        askduration = round(random() * 2 * 60) / 60.0
+        askduration = (round(random()) * 14 + 1) / 60.0
         bidduration = round(random() * 0.25 * 60) / 60.0
         if args.bid:
             bidmsg = msg.getLineBidMessage(applicationKey, bidwattage, bidduration, bidstarttime, (bidwattage*bidduration), bidprice).strip('"')        

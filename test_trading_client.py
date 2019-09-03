@@ -45,7 +45,7 @@ def start_client(args, procnum):
 
         askstarttime = int((time() + (60 * 60 * random() * 10)) / 60) * 60 * 1000
         bidstarttime = int(askstarttime / (60 * 1000) + random() * 20) * 60 * 1000
-        askwattage = random() * 1000
+        askwattage = random() * 100
         bidwattage = random() * 1000
         askduration = (round(random()) * 14 + 1) / 60.0
         bidduration = round(random() * 0.25 * 60) / 60.0

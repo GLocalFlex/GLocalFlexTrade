@@ -50,11 +50,13 @@ def start_client(args, procnum):
         askduration = (round(random()) * 14 + 1) / 60.0
         bidduration = round(random() * 0.25 * 60) / 60.0
         if args.bid:
-            bidmsg = msg.getLineBidMessage(applicationKey, bidwattage, bidduration, bidstarttime, (bidwattage*bidduration), bidprice).strip('"')        
+            bidmsg = msg.getLineBidMessage(applicationKey, bidwattage, bidduration, bidstarttime,
+                                           (bidwattage*bidduration), bidprice, bidstarttime).strip('"')
             snd.sendbidmsg(bidmsg)
             print(procnum, bidmsg)
         if args.ask:
-            askmsg = msg.getLineAskMessage(applicationKey, askwattage, askduration, askstarttime, (askwattage*askduration), askprice).strip('"')      
+            askmsg = msg.getLineAskMessage(applicationKey, askwattage, askduration, askstarttime,
+                                           (askwattage*askduration), askprice, bidstarttime).strip('"')
             snd.sendaskmsg(askmsg)
             print(procnum, askmsg)
 

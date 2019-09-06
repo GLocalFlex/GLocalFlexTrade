@@ -15,14 +15,14 @@ def createJSONMessage(order, applicationKey, wattage, duration, starttime, total
         trademessage['biddingprice']=orderprice
     return trademessage
 
-def createLineMessage(order, applicationKey, wattage, duration, starttime, totalenergy, orderprice):
-    starttime=str(int(starttime))
+def createLineMessage(order, applicationKey, wattage, duration, starttime, totalenergy, orderprice, expirationtime):
+    starttime=int(starttime)
     lineordermsg = ""
     if "ask" in order:
-        lineordermsg = "{0},applicationKey={1},version=0,starttime={2} wattage={3},duration={4},totalenergy={5},askingprice={6}"
+        lineordermsg = "{0},applicationKey={1},version=1 starttime={2}i,wattage={3},runtime={4},totalenergy={5},askingprice={6},is_valid=true,expirationtime={7}i"
     if "bid" in order:
-        lineordermsg = "{0},applicationKey={1},version=0,starttime={2} wattage={3},duration={4},totalenergy={5},biddingprice={6}"
-    return lineordermsg.format(order, applicationKey, starttime, wattage, duration, totalenergy, orderprice)
+        lineordermsg = "{0},applicationKey={1},version=1 starttime={2}i,wattage={3},runtime={4},totalenergy={5},biddingprice={6},is_valid=true,expirationtime={7}i"
+    return lineordermsg.format(order, applicationKey, starttime, wattage, duration, totalenergy, orderprice, expirationtime)
 
 def getAskMessageJSON(applicationKey, wattage, duration, starttime, totalenergy, askingprice):
     askmsg = createJSONMessage("ask", applicationKey, wattage, duration, starttime, totalenergy, askingprice)
@@ -32,10 +32,10 @@ def getBidMessageJSON(applicationKey, wattage, duration, starttime, totalenergy,
     bidmsg = createJSONMessage("bid", applicationKey, wattage, duration, starttime, totalenergy, biddingprice)
     return json.dumps(bidmsg)
 
-def getLineAskMessage(applicationKey, wattage, duration, starttime, totalenergy, askingprice):
-    askmsg = createLineMessage("ask", applicationKey, wattage, duration, starttime, totalenergy, askingprice)
+def getLineAskMessage(applicationKey, wattage, duration, starttime, totalenergy, askingprice, expirationtime):
+    askmsg = createLineMessage("ask", applicationKey, wattage, duration, starttime, totalenergy, askingprice, expirationtime)
     return json.dumps(askmsg)
     
-def getLineBidMessage(applicationKey, wattage, duration, starttime, totalenergy, biddingprice):
-    bidmsg = createLineMessage("bid", applicationKey, wattage, duration, starttime, totalenergy, biddingprice)
+def getLineBidMessage(applicationKey, wattage, duration, starttime, totalenergy, biddingprice, expirationtime):
+    bidmsg = createLineMessage("bid", applicationKey, wattage, duration, starttime, totalenergy, biddingprice, expirationtime)
     return json.dumps(bidmsg)

@@ -5,10 +5,10 @@ import json
 #brokerip="localhost"
 #brokerip="130.188.94.76"
 #brokerip="wotan.ad.vtt.fi"
-brokerip="fasolt1.willab.fi"
+brokerip="wotan.ad.vtt.fi"
 brokerport=5672
-username="telegrafuser"
-userpw="K0ukku55"
+username="testuser"
+userpw="testuser"
 applicationkey="applicationtestkey"
 
 

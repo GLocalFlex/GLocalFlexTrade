@@ -28,16 +28,16 @@ def on_response(ch, method, props, body):
 
 def start_client(args, procnum):
     print(procnum, " Starting connection")
-    applicationKey = snd.connecttobroker()
+    applicationKey = snd.connecttobroker(procnum)
     snd.setreceiver(on_response)
     print(procnum, " Connection started")
 
     while True:
         delay=random()*args.delaymultip
-        print(procnum, "-----------------------------------")    
+        print(procnum, "-----------------------------------")
         print(procnum, "Current price is: ", tickprice)
         if tickprice != 0:
-            askprice = tickprice + random()       
+            askprice = tickprice + random()
             bidprice = askprice - random()
         else:
             askprice = random()*10
@@ -63,13 +63,13 @@ def start_client(args, procnum):
         #This will explicitly query for the replies which are then processed on the on_response callback function
         snd.checkreplies()
         print(procnum, "Delaying ", delay, " seconds")
-        sleep(delay)    
+        sleep(delay)
 
     snd.closeconnection()
     print(procnum, "Closed connection")
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Test client for running imaginary trading client')               
+    parser = argparse.ArgumentParser(description='Test client for running imaginary trading client')
     parser.add_argument('--proc', type=int, dest="procnum", default=1, action='store', help='Number of test client processes to start')
     parser.add_argument('--delay', type=int, dest="delaymultip", default=10, action='store', help='Random delay multiplier between messages')
     parser.add_argument('--bid', action='store_true', help='Switch for operating in bidding mode')
@@ -82,7 +82,3 @@ if __name__ == '__main__':
         jobs.append(p)
         p.start()
 
-
-
-
- 

@@ -9,6 +9,7 @@ authserver=brokerip+":3000"
 username="testuser@testdomain.com"
 userpw="testing"
 applicationkey=""
+userid=""
 
 tickeroutexname = "ticker-out"
 exchangename = "in"
@@ -19,9 +20,9 @@ __connection = None
 __callback_queue = None
 
 def authClient(username, password):
-    global applicationkey
     userauthurl = f'http://{authserver}/users/login'
     usertoken=""
+    appToken=""
     uid=""
     authdata = {'email': username, 'password': password}
     response = requests.post(userauthurl, data=authdata)
@@ -30,41 +31,57 @@ def authClient(username, password):
         print("User authentication success")
         usertoken = json_response['token']
         uid = json_response['userId']
-        appauthurl = f'http://{authserver}/locations/{uid}'
+        appauthurl = f'http://{authserver}/locations/owner/{uid}'
         appresponse = requests.get(appauthurl, headers={"Authorization": "Bearer "+usertoken})
         if appresponse.status_code == 200:
-            print(f'Location/device/application auth success with {uid}')
+            if 'count' in appresponse.json().keys():
+                if appresponse.json()['count'] > 0:
+                    print("Found "+str(appresponse.json()['count'])+" measuring points/locations")
+                    mpoint_json=appresponse.json()['locations'][0]
+                    print("Using "+mpoint_json['name']+" "+str(mpoint_json['_id']))
+                    applicationkey = mpoint_json['_id']
+                    appToken=mpoint_json['token']
+                    print(f'Location/device/application auth success with {applicationkey}')
+            print("------------------------")
         else:
             print(f'Location/device/application auth failed with response {appresponse.status_code}')
     else:
        print("User authentication failed")
-    return uid, usertoken
+    return uid, usertoken, applicationkey, appToken
 
 def getcurrenttimems():
     return  int(time.time()*1000)
 
-def connecttobroker():
-    global __channel, __connection, __callback_queue, applicationkey
-    applicationkey, usertoken = authClient(username, userpw)
-    credentials = pika.PlainCredentials(applicationkey, usertoken)
+def declareReplyToQueue(__channel, applicationkey):
+    try:
+        dec_res = __channel.queue_declare(applicationkey, exclusive=True)
+        return dec_res
+    except pika.exceptions.ChannelClosedByBroker:
+        print("ReplyTo queue creation failed "+applicationkey)
+
+def connecttobroker(procnum):
+    global __channel, __connection, __callback_queue, userid
+    userid, usertoken, applicationkey, apptoken = authClient(username, userpw)
+    applicationkey=applicationkey+"_"+str(procnum)
+    credentials = pika.PlainCredentials(userid, apptoken)
     parameters = pika.ConnectionParameters(brokerip, brokerport, "/", credentials)
     __connection = pika.BlockingConnection(parameters)
     __channel = __connection.channel()
-    #Create callback queue
-    result = __channel.queue_declare(applicationkey, exclusive=True)
+    #The we create a fake applicatinKey by adding process number
+    result = declareReplyToQueue(__channel, applicationkey)
     __callback_queue = result.method.queue
     __channel.queue_bind(__callback_queue, tickeroutexname)
     return __callback_queue
 
 def connecttobrokerwithparams(username, userpw, brokerip, brokerport):
-    global __channel, __connection, applicationkey
-    applicationkey, usertoken = authClient(username, userpw)
-    credentials = pika.PlainCredentials(applicationkey, usertoken)
+    global __channel, __connection, userid
+    userid, usertoken, applicationkey, apptoken = authClient(username, userpw)
+    applicationkey=applicationkey+"_"+str(procnum)
+    credentials = pika.PlainCredentials(userid, apptoken)
     parameters = pika.ConnectionParameters(brokerip, brokerport, "/", credentials)
     __connection = pika.BlockingConnection(parameters)
     __channel = __connection.channel()
-    #Create callback queue
-    result = __channel.queue_declare(applicationkey, exclusive=True)
+    result = declareReplyToQueue(__channel, applicationkey)
     __callback_queue = result.method.queue
     __channel.queue_bind(__callback_queue, tickeroutexname)
     return __callback_queue
@@ -82,13 +99,13 @@ def closeconnection():
     __connection.close()
 
 def sendaskmsg(askmsg):
-    global __channel, __connection, applicationkey
-    props = pika.BasicProperties(user_id=applicationkey, reply_to=__callback_queue, headers={'sendertimestamp_in_ms': getcurrenttimems()})
+    global __channel, __connection, userid
+    props = pika.BasicProperties(user_id=userid, reply_to=__callback_queue, headers={'sendertimestamp_in_ms': getcurrenttimems()})
     __channel.basic_publish(exchange=exchangename, routing_key=askroutingkey, properties=props, body=askmsg)
 
 def sendbidmsg(bidmsg):
     global __channel, __connection, applicationkey
-    props = pika.BasicProperties(user_id=applicationkey, reply_to=__callback_queue, headers={'sendertimestamp_in_ms': getcurrenttimems()})
+    props = pika.BasicProperties(user_id=userid, reply_to=__callback_queue, headers={'sendertimestamp_in_ms': getcurrenttimems()})
     __channel.basic_publish(exchange=exchangename, routing_key=bidroutingkey, properties=props, body=bidmsg)
 
 #Test

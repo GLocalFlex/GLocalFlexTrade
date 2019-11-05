@@ -3,11 +3,6 @@ import time
 import json
 import requests
 
-brokerip="wotan.ad.vtt.fi"
-brokerport=5672
-authserver=brokerip+":3000"
-username="testuser@testdomain.com"
-userpw="testing"
 applicationkey=""
 userid=""
 
@@ -15,23 +10,25 @@ tickeroutexname = "ticker-out"
 exchangename = "in"
 bidroutingkey = "bid"
 askroutingkey = "ask"
+
 __channel = None
 __connection = None
 __callback_queue = None
 
-def authClient(username, password):
-    userauthurl = f'http://{authserver}/users/login'
+def authClient(authServer, username, password):
+    userauthurl = f'http://{authServer}/users/login'
     usertoken=""
     appToken=""
     uid=""
     authdata = {'email': username, 'password': password}
+    print("AUTHDATA "+str(authdata))
     response = requests.post(userauthurl, data=authdata)
     if response.status_code == 200:
         json_response = response.json()
         print("User authentication success")
         usertoken = json_response['token']
         uid = json_response['userId']
-        appauthurl = f'http://{authserver}/locations/owner/{uid}'
+        appauthurl = f'http://{authServer}/locations/owner/{uid}'
         appresponse = requests.get(appauthurl, headers={"Authorization": "Bearer "+usertoken})
         if appresponse.status_code == 200:
             if 'count' in appresponse.json().keys():
@@ -59,24 +56,10 @@ def declareReplyToQueue(__channel, applicationkey):
     except pika.exceptions.ChannelClosedByBroker:
         print("ReplyTo queue creation failed "+applicationkey)
 
-def connecttobroker(procnum):
-    global __channel, __connection, __callback_queue, userid
-    userid, usertoken, applicationkey, apptoken = authClient(username, userpw)
-    applicationkey=applicationkey+"_"+str(procnum)
-    credentials = pika.PlainCredentials(userid, apptoken)
-    parameters = pika.ConnectionParameters(brokerip, brokerport, "/", credentials)
-    __connection = pika.BlockingConnection(parameters)
-    __channel = __connection.channel()
-    #The we create a fake applicatinKey by adding process number
-    result = declareReplyToQueue(__channel, applicationkey)
-    __callback_queue = result.method.queue
-    __channel.queue_bind(__callback_queue, tickeroutexname)
-    return __callback_queue
-
-def connecttobrokerwithparams(username, userpw, brokerip, brokerport):
-    global __channel, __connection, userid
-    userid, usertoken, applicationkey, apptoken = authClient(username, userpw)
-    applicationkey=applicationkey+"_"+str(procnum)
+def connecttobroker(username, userpw, brokerip, brokerport):
+    global __channel, __connection, userid, __callback_queue
+    authServer=brokerip+":3000"
+    userid, usertoken, applicationkey, apptoken = authClient(authServer, username, userpw)
     credentials = pika.PlainCredentials(userid, apptoken)
     parameters = pika.ConnectionParameters(brokerip, brokerport, "/", credentials)
     __connection = pika.BlockingConnection(parameters)

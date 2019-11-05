@@ -9,6 +9,10 @@ from time import sleep
 from time import time
 
 tickprice = 0
+brokerip="wotan.ad.vtt.fi"
+brokerport=5672
+username="testuser_{0}@testdomain.com"
+userpw="passu123"
 
 def on_response(ch, method, props, body):
     global tickprice
@@ -28,7 +32,8 @@ def on_response(ch, method, props, body):
 
 def start_client(args, procnum):
     print(procnum, " Starting connection")
-    applicationKey = snd.connecttobroker(procnum)
+    #Username is unique for each process number up to 20 
+    applicationKey = snd.connecttobroker(username.format(procnum), userpw, brokerip, brokerport)
     snd.setreceiver(on_response)
     print(procnum, " Connection started")
 
@@ -70,14 +75,14 @@ def start_client(args, procnum):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Test client for running imaginary trading client')
-    parser.add_argument('--proc', type=int, dest="procnum", default=1, action='store', help='Number of test client processes to start')
+    parser.add_argument('--proc', type=int, dest="procnum", default=1, choices=range(1,21), action='store', help='Number of test client processes to start, up to 20')
     parser.add_argument('--delay', type=int, dest="delaymultip", default=10, action='store', help='Random delay multiplier between messages')
     parser.add_argument('--bid', action='store_true', help='Switch for operating in bidding mode')
     parser.add_argument('--ask', action='store_true', help='Switch for operating in asking mode')
     args=parser.parse_args()
     print(args)
     jobs = []
-    for i in range(args.procnum):
+    for i in range(1, args.procnum+1):
         p = multiprocessing.Process(target=start_client, args=(args,i,))
         jobs.append(p)
         p.start()

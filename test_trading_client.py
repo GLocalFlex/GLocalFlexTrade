@@ -35,9 +35,13 @@ def on_response(ch, method, props, body):
 def start_client(args, procnum):
     print(procnum, " Starting connection")
     #Username is unique for each process number up to 20 - first available metering point selected
-    applicationKey = snd.connecttobrokerWithUsernameAndPW(brokerip, brokerport, username.format(procnum), userpw)
+    #applicationKey = snd.connecttobrokerWithUsernameAndPW(brokerip, brokerport, username.format(procnum), userpw)
     #This utilizes metering point token, unique for each metering point registed in the profile, as supplied by the portal - see your user profile at the portal
-    #applicationKey = snd.connecttobrokerWithAppToken(brokerip, brokerport, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZGJjMjAyMTRjMmM4YjY5MDlhZjU5ODkiLCJ1dWlkIjoiNjhmZThmNmQtYmQ0OC00YzNlLWEyZmEtNmQxNzI1YjY2NTM2IiwiaWF0IjoxNTcyNjEwMTA1LCJleHAiOjE2NjcyMTgxMDV9.Qdh46nS_rKxITgqK2bdfOwF7Fg-XZe1c4J4G2TAJALA')
+    applicationKey = snd.connecttobrokerWithAppToken(brokerip, brokerport, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZGJjMjAyMTRjMmM4YjY5MDlhZjU5ODkiLCJ1dWlkIjoiNjhmZThmNmQtYmQ0OC00YzNlLWEyZmEtNmQxNzI1YjY2NTM2IiwiaWF0IjoxNTcyNjEwMTA1LCJleHAiOjE2NjcyMTgxMDV9.Qdh46nS_rKxITgqK2bdfOwF7Fg-XZe1c4J4G2TAJALA')
+    #applicationKey = snd.connecttobrokerWithUsernameAndPWAndAppKey(brokerip, brokerport, username.format(procnum), userpw, "5dbc20394c2c8b6909af598b")
+    print(applicationKey)
+
+
     snd.setreceiver(on_response)
     print(procnum, " Connection started")
 

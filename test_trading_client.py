@@ -24,16 +24,24 @@ def on_response(ch, method, props, body):
                 tickprice = msgBody['last_price']
                 print("--- Tick ",tickprice)
             if msgBody['msgtype'] == 'bid_closed_order':
-                print("--- Wohoo! My bit order deal went through for ", msgBody['closed_order']['price'])
+                if "closed_order" in msgBody.keys():
+                    print("--- Wohoo! My bid order deal went through for ", msgBody['closed_order']['price'])
             if msgBody['msgtype'] == 'ask_closed_order':
-                print("--- Wohoo! My ask order deal went through for ", msgBody['closed_order']['price'])
+                if "closed_order" in msgBody.keys():
+                    print("--- Wohoo! My ask order deal went through for ", msgBody['closed_order']['price'])
     except ValueError:
         print("RECEIVED A NON JSON MESSAGE:", body)
 
 def start_client(args, procnum):
     print(procnum, " Starting connection")
-    #Username is unique for each process number up to 20 
-    applicationKey = snd.connecttobroker(username.format(procnum), userpw, brokerip, brokerport)
+    #Username is unique for each process number up to 20 - first available metering point selected
+    #applicationKey = snd.connecttobrokerWithUsernameAndPW(brokerip, brokerport, username.format(procnum), userpw)
+    #This utilizes metering point token, unique for each metering point registed in the profile, as supplied by the portal - see your user profile at the portal
+    applicationKey = snd.connecttobrokerWithAppToken(brokerip, brokerport, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZGJjMjAyMTRjMmM4YjY5MDlhZjU5ODkiLCJ1dWlkIjoiNjhmZThmNmQtYmQ0OC00YzNlLWEyZmEtNmQxNzI1YjY2NTM2IiwiaWF0IjoxNTcyNjEwMTA1LCJleHAiOjE2NjcyMTgxMDV9.Qdh46nS_rKxITgqK2bdfOwF7Fg-XZe1c4J4G2TAJALA')
+    #applicationKey = snd.connecttobrokerWithUsernameAndPWAndAppKey(brokerip, brokerport, username.format(procnum), userpw, "5dbc20394c2c8b6909af598b")
+    print(applicationKey)
+
+
     snd.setreceiver(on_response)
     print(procnum, " Connection started")
 
@@ -84,7 +92,8 @@ if __name__ == '__main__':
     args=parser.parse_args()
     print(args)
     jobs = []
-    for i in range(1, args.procnum+1):
+    #for i in range(1, args.procnum+1):
+    for i in range(16, args.procnum+16):
         p = multiprocessing.Process(target=start_client, args=(args,i,))
         jobs.append(p)
         p.start()

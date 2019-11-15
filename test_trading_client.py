@@ -51,17 +51,19 @@ def start_client(args, procnum):
         askstarttime = int((time() + (60 * 60 * random() * 10)) / 60) * 60 * 1000
         bidstarttime = int(askstarttime / (60 * 1000) + random() * 20) * 60 * 1000
         askwattage = random() * 100
-        bidwattage = random() * 1000
-        askduration = (round(random()) * 14 + 1) / 60.0
-        bidduration = round(random() * 0.25 * 60) / 60.0
+        bidwattage = random() * 300
+        askduration = int(((round(random()) * 14 + 1) / 60.0) * 60 * 60 * 1000)
+        bidduration = int((round(random() * 0.25 * 60) / 60.0) * 60 * 60 * 1000)
         if args.bid:
+            bidtotenergy = bidwattage * (bidduration / (60 * 60 *1000))
             bidmsg = msg.getLineBidMessage(applicationKey, bidwattage, bidduration, bidstarttime,
-                                           (bidwattage*bidduration), bidprice, bidstarttime).strip('"')
+                                           bidtotenergy, bidprice, bidstarttime).strip('"')
             snd.sendbidmsg(bidmsg)
             print(procnum, bidmsg)
         if args.ask:
+            asktotenergy = askwattage * (askduration / (60 * 60 *1000))
             askmsg = msg.getLineAskMessage(applicationKey, askwattage, askduration, askstarttime,
-                                           (askwattage*askduration), askprice, bidstarttime).strip('"')
+                                           asktotenergy, askprice, bidstarttime).strip('"')
             snd.sendaskmsg(askmsg)
             print(procnum, askmsg)
 

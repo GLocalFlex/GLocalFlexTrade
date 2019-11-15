@@ -19,9 +19,9 @@ def createLineMessage(order, applicationKey, wattage, duration, starttime, total
     starttime=int(starttime)
     lineordermsg = ""
     if "ask" in order:
-        lineordermsg = "{0},applicationKey={1},version=1 starttime={2}i,wattage={3},runtime={4},totalenergy={5},askingprice={6},expirationtime={7}i"
+        lineordermsg = "{0},applicationKey={1},version=1 starttime={2}i,wattage={3},runtime={4}i,totalenergy={5},askingprice={6},expirationtime={7}i"
     if "bid" in order:
-        lineordermsg = "{0},applicationKey={1},version=1 starttime={2}i,wattage={3},runtime={4},totalenergy={5},biddingprice={6},expirationtime={7}i"
+        lineordermsg = "{0},applicationKey={1},version=1 starttime={2}i,wattage={3},runtime={4}i,totalenergy={5},biddingprice={6},expirationtime={7}i"
     return lineordermsg.format(order, applicationKey, starttime, wattage, duration, totalenergy, orderprice, expirationtime)
 
 def getAskMessageJSON(applicationKey, wattage, duration, starttime, totalenergy, askingprice):

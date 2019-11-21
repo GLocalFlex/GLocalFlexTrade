@@ -24,41 +24,16 @@ def on_response(ch, method, props, body):
                 tickprice = msgBody['last_price']
                 print("--- Tick ",tickprice)
             if msgBody['msgtype'] == 'bid_closed_order':
-                if "closed_order" in msgBody.keys():
-                    print("--- Wohoo! My bid order deal went through for ", msgBody['closed_order']['price'])
+                print("--- Wohoo! My bit order deal went through for ", msgBody['closed_order']['price'])
             if msgBody['msgtype'] == 'ask_closed_order':
-                if "closed_order" in msgBody.keys():
-                    print("--- Wohoo! My ask order deal went through for ", msgBody['closed_order']['price'])
-            if msgBody['msgtype'] == 'cancel':
-                    print("--- Bohoo! My message got cancelled for ", msgBody['reason'])
-        else:
-            print("GOT SOMETHING ELSE: ", body)
+                print("--- Wohoo! My ask order deal went through for ", msgBody['closed_order']['price'])
     except ValueError:
         print("RECEIVED A NON JSON MESSAGE:", body)
 
 def start_client(args, procnum):
-    #If procunm 1 ~ testuser_1 start trading on both/all meteringpoints
-
-
     print(procnum, " Starting connection")
-    #Username is unique for each process number up to 20 - first available metering point selected
-    applicationKey = snd.connecttobrokerWithUsernameAndPW(brokerip, brokerport, username.format(procnum), userpw)
-    #This utilizes metering point token, unique for each metering point registed in the profile, as supplied by the portal - see your user profile at the portal
-<<<<<<< HEAD
-    
-    #Special user testuser_1 and 2 metering points
-    #1st metering point - Koti
-    #appkey 5dbc1d4e4c2c8b6909af595e
-    #token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZGJjMWNkNzRjMmM4YjY5MDlhZjU5NWMiLCJ1dWlkIjoiNTM5MDY5NzgtNmQ0OS00YmVjLTg0ZjktNzczMmYzZGRhOWFjIiwiaWF0IjoxNTcyNjA5MzU4LCJleHAiOjE2NjcyMTczNTh9.uzzrdDX5CQaDV__hNdVWwLKHa0IEBWIFrV91axHbqM4
-    #2nd metering point - Mökki
-    #appkey 5dd4fcfbfc999d456a93da14
-    #token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZGJjMWNkNzRjMmM4YjY5MDlhZjU5NWMiLCJ1dWlkIjoiM2Q2NGY1NTktOTA0NC00ODgyLTk5NDgtN2ExMGM1NTRiN2ExIiwiaWF0IjoxNTc0MjM5NDgzLCJleHAiOjE2Njg4NDc0ODN9.G77kHT4KzFNyI2AgOe4hJPjC6wweagoKafkHJxHYog8
-       
-       
-=======
->>>>>>> 912cef4378d0deb33d8aca917c301fc9694ead95
-    #applicationKey = snd.connecttobrokerWithAppToken(brokerip, brokerport, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZGJjMjAyMTRjMmM4YjY5MDlhZjU5ODkiLCJ1dWlkIjoiNjhmZThmNmQtYmQ0OC00YzNlLWEyZmEtNmQxNzI1YjY2NTM2IiwiaWF0IjoxNTcyNjEwMTA1LCJleHAiOjE2NjcyMTgxMDV9.Qdh46nS_rKxITgqK2bdfOwF7Fg-XZe1c4J4G2TAJALA')
-    #applicationKey = snd.connecttobrokerWithUsernameAndPWAndAppKey(brokerip, brokerport, username.format(procnum), userpw, "5dbc20394c2c8b6909af598b")
+    #Username is unique for each process number up to 20 
+    applicationKey = snd.connecttobroker(username.format(procnum), userpw, brokerip, brokerport)
     snd.setreceiver(on_response)
     print(procnum, " Connection started")
 
@@ -73,22 +48,20 @@ def start_client(args, procnum):
             askprice = random()*10
             bidprice = askprice + (random()*10)
 
-        askstarttime = int((time() + (60 * 60 * random() * 10)) / 60) * 60 * 1000
-        bidstarttime = int(askstarttime / (60 * 1000) + random() * 20) * 60 * 1000
-        askwattage = random() * 100
-        bidwattage = random() * 300
-        askduration = int(((round(random()) * 14 + 1) / 60.0) * 60 * 60 * 1000)
-        bidduration = int((round(random() * 0.25 * 60) / 60.0) * 60 * 60 * 1000)
+        askstarttime = int((time() + (60 * 60 * random() * 10)) / 60)
+        bidstarttime = int(askstarttime / (60 * 1000) + random() * 20)
+        askwattage = random() * 10
+        bidwattage = random() * 20
+        askduration = int(((round(random()) * 14 + 1) / 60.0)*60*60*1000)
+        bidduration = int((round(random() * 0.25 * 60) / 60.0)*60*60*1000)
         if args.bid:
-            bidtotenergy = bidwattage * (bidduration / (60 * 60 *1000))
             bidmsg = msg.getLineBidMessage(applicationKey, bidwattage, bidduration, bidstarttime,
-                                           bidtotenergy, bidprice, bidstarttime).strip('"')
+                                           (bidwattage*bidduration), bidprice, bidstarttime).strip('"')
             snd.sendbidmsg(bidmsg)
             print(procnum, bidmsg)
         if args.ask:
-            asktotenergy = askwattage * (askduration / (60 * 60 *1000))
             askmsg = msg.getLineAskMessage(applicationKey, askwattage, askduration, askstarttime,
-                                           asktotenergy, askprice, bidstarttime).strip('"')
+                                           (askwattage*askduration), askprice, bidstarttime).strip('"')
             snd.sendaskmsg(askmsg)
             print(procnum, askmsg)
 

@@ -39,6 +39,7 @@ def authClient(authServer, username, password, applicationKey):
     authdata = {'email': username, 'password': password}
     response = requests.post(userauthurl, data=authdata)
     if response.status_code == 200:
+        print("USER AUTH SUCCESFULL")
         json_response = response.json()
         userId = json_response['userId']
         if 'locations' in json_response:
@@ -117,12 +118,12 @@ def closeconnection():
 
 def sendaskmsg(askmsg):
     global __channel, __connection, userid
-    #props = pika.BasicProperties(user_id=userid, reply_to=__callback_queue, headers={'sendertimestamp_in_ms': getcurrenttimems()})
-    props = pika.BasicProperties(user_id=userid, headers={'sendertimestamp_in_ms': getcurrenttimems()})
+    props = pika.BasicProperties(user_id=userid, reply_to=__callback_queue, headers={'sendertimestamp_in_ms': getcurrenttimems()})
+    #props = pika.BasicProperties(user_id=userid, headers={'sendertimestamp_in_ms': getcurrenttimems()})
     __channel.basic_publish(exchange=exchangename, routing_key=askroutingkey, properties=props, body=askmsg)
 
 def sendbidmsg(bidmsg):
     global __channel, __connection
-    #props = pika.BasicProperties(user_id=userid, reply_to=__callback_queue, headers={'sendertimestamp_in_ms': getcurrenttimems()})
-    props = pika.BasicProperties(user_id=userid, headers={'sendertimestamp_in_ms': getcurrenttimems()})
+    props = pika.BasicProperties(user_id=userid, reply_to=__callback_queue, headers={'sendertimestamp_in_ms': getcurrenttimems()})
+    #props = pika.BasicProperties(user_id=userid, headers={'sendertimestamp_in_ms': getcurrenttimems()})
     __channel.basic_publish(exchange=exchangename, routing_key=bidroutingkey, properties=props, body=bidmsg)

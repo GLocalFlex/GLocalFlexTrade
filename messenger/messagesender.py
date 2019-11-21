@@ -117,20 +117,7 @@ def closeconnection():
     __connection.close()
 
 def sendaskmsg(askmsg):
-    global __channel, __connection, userid
-<<<<<<< HEAD
-    #props = pika.BasicProperties(user_id=userid, reply_to=__callback_queue, headers={'sendertimestamp_in_ms': getcurrenttimems()})
-    props = pika.BasicProperties(user_id=userid, headers={'sendertimestamp_in_ms': getcurrenttimems()})
-    ack = __channel.basic_publish(exchange=exchangename, routing_key=askroutingkey, properties=props, body=askmsg)
-    print(ack)
-
-def sendbidmsg(bidmsg):
     global __channel, __connection
-    #props = pika.BasicProperties(user_id=userid, reply_to=__callback_queue, headers={'sendertimestamp_in_ms': getcurrenttimems()})
-    props = pika.BasicProperties(user_id=userid, headers={'sendertimestamp_in_ms': getcurrenttimems()})
-    ack = __channel.basic_publish(exchange=exchangename, routing_key=bidroutingkey, properties=props, body=bidmsg)
-    print(ack)
-=======
     props = pika.BasicProperties(user_id=userid, reply_to=__callback_queue, headers={'sendertimestamp_in_ms': getcurrenttimems()})
     #props = pika.BasicProperties(user_id=userid, headers={'sendertimestamp_in_ms': getcurrenttimems()})
     __channel.basic_publish(exchange=exchangename, routing_key=askroutingkey, properties=props, body=askmsg)
@@ -140,4 +127,3 @@ def sendbidmsg(bidmsg):
     props = pika.BasicProperties(user_id=userid, reply_to=__callback_queue, headers={'sendertimestamp_in_ms': getcurrenttimems()})
     #props = pika.BasicProperties(user_id=userid, headers={'sendertimestamp_in_ms': getcurrenttimems()})
     __channel.basic_publish(exchange=exchangename, routing_key=bidroutingkey, properties=props, body=bidmsg)
->>>>>>> 912cef4378d0deb33d8aca917c301fc9694ead95

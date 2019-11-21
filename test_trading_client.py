@@ -37,26 +37,10 @@ def on_response(ch, method, props, body):
         print("RECEIVED A NON JSON MESSAGE:", body)
 
 def start_client(args, procnum):
-    #If procunm 1 ~ testuser_1 start trading on both/all meteringpoints
-
-
     print(procnum, " Starting connection")
     #Username is unique for each process number up to 20 - first available metering point selected
     applicationKey = snd.connecttobrokerWithUsernameAndPW(brokerip, brokerport, username.format(procnum), userpw)
     #This utilizes metering point token, unique for each metering point registed in the profile, as supplied by the portal - see your user profile at the portal
-<<<<<<< HEAD
-    
-    #Special user testuser_1 and 2 metering points
-    #1st metering point - Koti
-    #appkey 5dbc1d4e4c2c8b6909af595e
-    #token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZGJjMWNkNzRjMmM4YjY5MDlhZjU5NWMiLCJ1dWlkIjoiNTM5MDY5NzgtNmQ0OS00YmVjLTg0ZjktNzczMmYzZGRhOWFjIiwiaWF0IjoxNTcyNjA5MzU4LCJleHAiOjE2NjcyMTczNTh9.uzzrdDX5CQaDV__hNdVWwLKHa0IEBWIFrV91axHbqM4
-    #2nd metering point - Mökki
-    #appkey 5dd4fcfbfc999d456a93da14
-    #token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZGJjMWNkNzRjMmM4YjY5MDlhZjU5NWMiLCJ1dWlkIjoiM2Q2NGY1NTktOTA0NC00ODgyLTk5NDgtN2ExMGM1NTRiN2ExIiwiaWF0IjoxNTc0MjM5NDgzLCJleHAiOjE2Njg4NDc0ODN9.G77kHT4KzFNyI2AgOe4hJPjC6wweagoKafkHJxHYog8
-       
-       
-=======
->>>>>>> 912cef4378d0deb33d8aca917c301fc9694ead95
     #applicationKey = snd.connecttobrokerWithAppToken(brokerip, brokerport, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZGJjMjAyMTRjMmM4YjY5MDlhZjU5ODkiLCJ1dWlkIjoiNjhmZThmNmQtYmQ0OC00YzNlLWEyZmEtNmQxNzI1YjY2NTM2IiwiaWF0IjoxNTcyNjEwMTA1LCJleHAiOjE2NjcyMTgxMDV9.Qdh46nS_rKxITgqK2bdfOwF7Fg-XZe1c4J4G2TAJALA')
     #applicationKey = snd.connecttobrokerWithUsernameAndPWAndAppKey(brokerip, brokerport, username.format(procnum), userpw, "5dbc20394c2c8b6909af598b")
     snd.setreceiver(on_response)
@@ -109,7 +93,7 @@ if __name__ == '__main__':
     args=parser.parse_args()
     print(args)
     jobs = []
-    for i in range(1, args.procnum+1):
+    for i in range(2, args.procnum+1):
         p = multiprocessing.Process(target=start_client, args=(args,i,))
         jobs.append(p)
         p.start()

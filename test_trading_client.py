@@ -32,9 +32,9 @@ def on_response(ch, method, props, body):
             if msgBody['msgtype'] == 'cancel':
                     print("--- Bohoo! My message got cancelled for ", msgBody['reason'])
         else:
-            print("GOT SOMETHING ELSE: ", body)
+            print(procnum, "GOT SOMETHING ELSE: ", body)
     except ValueError:
-        print("RECEIVED A NON JSON MESSAGE:", body)
+        print(procnum, "RECEIVED A NON JSON MESSAGE:", body)
 
 def start_client(args, procnum):
     print(procnum, " Starting connection")

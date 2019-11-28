@@ -37,6 +37,8 @@ def authClient(authServer, username, password, applicationKey):
     appToken=""
     userId=""
     authdata = {'email': username, 'password': password}
+    print(authdata)
+    print(userauthurl)
     response = requests.post(userauthurl, data=authdata)
     if response.status_code == 200:
         print("USER AUTH SUCCESFULL")
@@ -97,6 +99,9 @@ def connecttobrokerWithUsernameAndPW(brokerip, brokerport, username, userpw):
     global __channel, __connection, userid, __callback_queue
     authServer=brokerip+":3000"
     userid, applicationKey, apptoken = authClient(authServer, username, userpw, "")
+    print(userid)
+    print(applicationKey)
+    print(apptoken)
     credentials = pika.PlainCredentials(userid, apptoken)
     parameters = pika.ConnectionParameters(brokerip, brokerport, "/", credentials)
     __connection = pika.BlockingConnection(parameters)

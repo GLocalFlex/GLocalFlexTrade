@@ -9,8 +9,8 @@ from time import sleep
 from time import time
 
 tickprice = 0
-brokerip="wotan.ad.vtt.fi"
-#brokerip="fasolt1.willab.fi"
+#brokerip="wotan.ad.vtt.fi"
+brokerip="fasolt1.willab.fi"
 #brokerip="193.166.161.170"
 brokerport=5672
 username="testuser_1@testdomain.com"
@@ -37,15 +37,15 @@ def on_response(ch, method, props, body):
 def start_client(args):
     if args.mpnum == 1:
         procnum=1
-        apptoken='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZGJjMWNkNzRjMmM4YjY5MDlhZjU5NWMiLCJ1dWlkIjoiNTM5MDY5NzgtNmQ0OS00YmVjLTg0ZjktNzczMmYzZGRhOWFjIiwiaWF0IjoxNTcyNjA5MzU4LCJleHAiOjE2NjcyMTczNTh9.uzzrdDX5CQaDV__hNdVWwLKHa0IEBWIFrV91axHbqM4'
-        known_appkey='5dbc1d4e4c2c8b6909af595e'
+        apptoken='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZGRmOGI3OWZmY2QyOTIwMjZhOGFiMzciLCJ1dWlkIjoiNDA2YWVmOGMtMzVmZC00NjY2LTgyOGEtNDYyMDRlNTZkZjI1IiwiaWF0IjoxNTc0OTMxMzkzLCJleHAiOjE2Njk1MzkzOTN9.qT_Q4lbW6uM94CuIEVssWrRu3uWXs0GJWq-gOFvWtTo'
+        known_appkey='5ddf8bc1ffcd292026a8ab39'
     if args.mpnum == 2:
         procnum=2
-        apptoken='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZGJjMWNkNzRjMmM4YjY5MDlhZjU5NWMiLCJ1dWlkIjoiM2Q2NGY1NTktOTA0NC00ODgyLTk5NDgtN2ExMGM1NTRiN2ExIiwiaWF0IjoxNTc0MjM5NDgzLCJleHAiOjE2Njg4NDc0ODN9.G77kHT4KzFNyI2AgOe4hJPjC6wweagoKafkHJxHYog8'
-        known_appkey='5dd4fcfbfc999d456a93da14'
+        apptoken='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZGRmOGI3OWZmY2QyOTIwMjZhOGFiMzciLCJ1dWlkIjoiNWU2NzYzOTEtMTkwOC00OTNjLTgzZjUtYzM2Zjc3YmVjMmQ3IiwiaWF0IjoxNTc0OTMxNzgxLCJleHAiOjE2Njk1Mzk3ODF9.9zYKWl1BooY4gooZuhuNht5ji78L1DcEjum1cjJ6Tyo'
+        known_appkey='5ddf8d45880dd622ccc735d1'
 
-    #appkey = snd.connecttobrokerWithAppToken(brokerip, brokerport, apptoken)
-    appkey = snd.connecttobrokerWithUsernameAndPW(brokerip, brokerport, username, userpw)
+    appkey = snd.connecttobrokerWithAppToken(brokerip, brokerport, apptoken)
+    #appkey = snd.connecttobrokerWithUsernameAndPW(brokerip, brokerport, username, userpw)
     if appkey==known_appkey:
         print("Appkeys match - starting")
         print(appkey)

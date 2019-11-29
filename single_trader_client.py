@@ -15,6 +15,7 @@ userpw="passu123"
 
 def on_response(ch, method, props, body):
     global tickprice
+    currTimeMs = int(time()*1000)
     #Tick message ex. {'msgtype': 'tick', 'last_price_time': 1559732378418422410, 'last_price': 7.529581909307273}
     try:
         msgBody = json.loads(body)
@@ -24,6 +25,8 @@ def on_response(ch, method, props, body):
             if msgBody['msgtype'] == 'tick':
                 tickprice = msgBody['last_price']
                 print("--- Tick ",tickprice)
+                if 'sendertimestamp_in_ms' in props.headers.keys():
+                    print(f"----- Tick was received in {currTimeMs - props.headers['sendertimestamp_in_ms']} ms")
             if msgBody['msgtype'] == 'bid_closed_order':
                 if "closed_order" in msgBody.keys():
                     print("--- Wohoo! My bid order deal went through for ", msgBody['closed_order']['price'])

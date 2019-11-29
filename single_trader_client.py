@@ -9,11 +9,8 @@ from time import sleep
 from time import time
 
 tickprice = 0
-brokerip="wotan.ad.vtt.fi"
-#brokerip="fasolt1.willab.fi"
-#brokerip="193.166.161.170"
 brokerport=5672
-username="testuser_1@testdomain.com"
+username="testuser_20@testdomain.com"
 userpw="passu123"
 
 def on_response(ch, method, props, body):
@@ -22,6 +19,8 @@ def on_response(ch, method, props, body):
     try:
         msgBody = json.loads(body)
         if 'msgtype' in msgBody.keys():
+            if msgBody['msgtype'] == 'cancel':
+                    print("--- Bohoo! My message got cancelled for ", msgBody['reason'])
             if msgBody['msgtype'] == 'tick':
                 tickprice = msgBody['last_price']
                 print("--- Tick ",tickprice)
@@ -35,35 +34,33 @@ def on_response(ch, method, props, body):
         print("RECEIVED A NON JSON MESSAGE:", body)
 
 def start_client(args):
-    if args.mpnum == 1:
-        procnum=1
-        apptoken='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZGJjMWNkNzRjMmM4YjY5MDlhZjU5NWMiLCJ1dWlkIjoiNTM5MDY5NzgtNmQ0OS00YmVjLTg0ZjktNzczMmYzZGRhOWFjIiwiaWF0IjoxNTcyNjA5MzU4LCJleHAiOjE2NjcyMTczNTh9.uzzrdDX5CQaDV__hNdVWwLKHa0IEBWIFrV91axHbqM4'
-        known_appkey='5dbc1d4e4c2c8b6909af595e'
-    if args.mpnum == 2:
-        procnum=2
-        apptoken='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZGJjMWNkNzRjMmM4YjY5MDlhZjU5NWMiLCJ1dWlkIjoiM2Q2NGY1NTktOTA0NC00ODgyLTk5NDgtN2ExMGM1NTRiN2ExIiwiaWF0IjoxNTc0MjM5NDgzLCJleHAiOjE2Njg4NDc0ODN9.G77kHT4KzFNyI2AgOe4hJPjC6wweagoKafkHJxHYog8'
-        known_appkey='5dd4fcfbfc999d456a93da14'
-
-    #appkey = snd.connecttobrokerWithAppToken(brokerip, brokerport, apptoken)
-    appkey = snd.connecttobrokerWithUsernameAndPW(brokerip, brokerport, username, userpw)
+    brokerip=args.markethost
+    
+    apptoken='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ZGJjMWNkNzRjMmM4YjY5MDlhZjU5NWMiLCJ1dWlkIjoiNTM5MDY5NzgtNmQ0OS00YmVjLTg0ZjktNzczMmYzZGRhOWFjIiwiaWF0IjoxNTcyNjA5MzU4LCJleHAiOjE2NjcyMTczNTh9.uzzrdDX5CQaDV__hNdVWwLKHa0IEBWIFrV91axHbqM4'
+    known_appkey='5dbc1d4e4c2c8b6909af595e'
+        
+    #See other methods for authentication from .messenger/messagesender.py including:
+    # - connecttobrokerWithAppToken(brokerip, brokerport, apptoken)
+    # - connecttobrokerWithUsernameAndPWAndAppKey(brokerip, brokerport, username, userpw, applicationKey)
+    # - connecttobrokerWithUsernameAndPW(brokerip, brokerport, username, userpw)
+    
+    appkey = snd.connecttobrokerWithAppToken(brokerip, brokerport, apptoken)
     if appkey==known_appkey:
         print("Appkeys match - starting")
-        print(appkey)
-
-    print(procnum, " Starting connection")
-
-
+       
+    print(f" Starting connection to {brokerip}")
     snd.setreceiver(on_response)
-    print(procnum, " Connection started")
+    print(f" Connection started to {brokerip}")
 
     while True:
         delay=random()*args.delaymultip
-        print(procnum, "-----------------------------------")
-        print(procnum, "Current price is: ", tickprice)
+        print("-----------------------------------")       
         if tickprice != 0:
+            print("Current price is: ", tickprice)
             askprice = tickprice + random()
             bidprice = askprice - random()
         else:
+            print("Current price is: NO tick messages yet")
             askprice = random()*10
             bidprice = askprice + (random()*10)
 
@@ -78,29 +75,30 @@ def start_client(args):
             bidmsg = msg.getLineBidMessage(appkey, bidwattage, bidduration, bidstarttime,
                                            bidtotenergy, bidprice, bidstarttime).strip('"')
             snd.sendbidmsg(bidmsg)
-            print(procnum, bidmsg)
+            print(bidmsg)
         if args.ask:
             asktotenergy = askwattage * (askduration / (60 * 60 *1000))
             askmsg = msg.getLineAskMessage(appkey, askwattage, askduration, askstarttime,
                                            asktotenergy, askprice, bidstarttime).strip('"')
             snd.sendaskmsg(askmsg)
-            print(procnum, askmsg)
+            print(askmsg)
 
         #This will explicitly query for the replies which are then processed on the on_response callback function
         snd.checkreplies()
-        print(procnum, "Delaying ", delay, " seconds")
+        print("Random sleep of ", delay, " seconds")
         sleep(delay)
 
     snd.closeconnection()
-    print(procnum, "Closed connection")
+    print("Closed connection")
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Test client for running imaginary trading client for testuser_1')
-    parser.add_argument('--mpnum', type=int, dest="mpnum", default=1, choices=range(1,3), action='store', help='Selection of which metering point should do trading, 1 or 2')
+    print("Single trader client. See options with -h switch, without options will connect to default market place and show only ticker.")
+    print("-------------------")
+    parser = argparse.ArgumentParser(description='A reference implementation and test client and for running imaginary trading agent')
+    parser.add_argument('--markethost', type=str, dest="markethost", default="wotan.ad.vtt.fi", action='store', help='IP or hostname for the market place to trade on')
     parser.add_argument('--delay', type=int, dest="delaymultip", default=10, action='store', help='Random delay multiplier between messages')
     parser.add_argument('--bid', action='store_true', help='Switch for operating in bidding mode')
     parser.add_argument('--ask', action='store_true', help='Switch for operating in asking mode')
     args=parser.parse_args()
-    print(args)
     start_client(args)
 

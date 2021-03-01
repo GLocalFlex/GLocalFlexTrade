@@ -8,7 +8,7 @@ from time import sleep
 from time import time
 
 tickprice = 0
-brokerport=5672
+brokerport=5671
 
 
 def on_response(ch, method, props, body):
@@ -36,31 +36,31 @@ def on_response(ch, method, props, body):
 
 def start_client(args):
     brokerip=args.markethost
-    
+
     username=''
     userpw=''
     apptoken=''
     known_appkey=''
-        
+
     if apptoken == '' or known_appkey == '' or username =='' or userpw == '':
         print("Please check correct values for the apptoken, appkey, usernam and/or userpassword")
-        
+
     #See other methods for authentication from .messenger/messagesender.py including:
     # - connecttobrokerWithAppToken(brokerip, brokerport, apptoken)
     # - connecttobrokerWithUsernameAndPWAndAppKey(brokerip, brokerport, username, userpw, applicationKey)
     # - connecttobrokerWithUsernameAndPW(brokerip, brokerport, username, userpw)
-    
+
     appkey = snd.connecttobrokerWithAppToken(brokerip, brokerport, apptoken)
     if appkey==known_appkey:
         print("Appkeys match - starting")
-       
+
     print(f" Starting connection to {brokerip}")
     snd.setreceiver(on_response)
     print(f" Connection started to {brokerip}")
 
     while True:
         delay=random()*args.delaymultip
-        print("-----------------------------------")       
+        print("-----------------------------------")
         if tickprice != 0:
             print("Current price is: ", tickprice)
             askprice = tickprice + random()

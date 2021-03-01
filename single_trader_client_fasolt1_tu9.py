@@ -9,10 +9,8 @@ from time import sleep
 from time import time
 
 tickprice = 0
-#brokerip="wotan.ad.vtt.fi"
-brokerip="fasolt1.willab.fi"
-#brokerip="193.166.161.170"
-brokerport=5672
+brokerip="fleximarex.com"
+brokerport=5671
 username="testuser_9@testdomain.com"
 userpw="passu123"
 

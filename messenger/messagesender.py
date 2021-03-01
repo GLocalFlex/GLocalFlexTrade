@@ -2,6 +2,7 @@ import pika
 import time
 import json
 import requests
+import ssl
 
 userid=""
 
@@ -10,12 +11,15 @@ exchangename = "in"
 bidroutingkey = "bid"
 askroutingkey = "ask"
 
+context = ssl.create_default_context()
+ssl_options = pika.SSLOptions(context)
+
 __channel = None
 __connection = None
 __callback_queue = None
 
 def validateApplicationToken(authServer, appToken):
-    appAuthUrl = f'http://{authServer}/users/mptoken/{appToken}'
+    appAuthUrl = f'https://{authServer}/users/mptoken/{appToken}'
     userId = ""
     applicationKey = ""
     response = requests.get(appAuthUrl)
@@ -32,7 +36,7 @@ def validateApplicationToken(authServer, appToken):
     return userId, applicationKey
 
 def authClient(authServer, username, password, applicationKey):
-    userauthurl = f'http://{authServer}/users/login'
+    userauthurl = f'https://{authServer}/users/login'
     usertoken=""
     appToken=""
     userId=""
@@ -75,10 +79,10 @@ def declareReplyToQueue(__channel, applicationKey):
 
 def connecttobrokerWithAppToken(brokerip, brokerport, apptoken):
     global __channel, __connection, __callback_queue, userid
-    authServer=brokerip+":3000"
+    authServer=brokerip
     userid, applicationKey = validateApplicationToken(authServer, apptoken)
     credentials = pika.PlainCredentials(userid, apptoken)
-    parameters = pika.ConnectionParameters(brokerip, brokerport, "/", credentials)
+    parameters = pika.ConnectionParameters(brokerip, brokerport, "/", credentials, ssl_options=ssl_options)
     __connection = pika.BlockingConnection(parameters)
     __channel = __connection.channel()
     __callback_queue = declareReplyToQueue(__channel, applicationKey)
@@ -86,10 +90,10 @@ def connecttobrokerWithAppToken(brokerip, brokerport, apptoken):
 
 def connecttobrokerWithUsernameAndPWAndAppKey(brokerip, brokerport, username, userpw, applicationKey):
     global __channel, __connection, __callback_queue, userid
-    authServer=brokerip+":3000"
+    authServer=brokerip
     userid, applicationKey, apptoken = authClient(authServer, username, userpw, applicationKey)
     credentials = pika.PlainCredentials(userid, apptoken)
-    parameters = pika.ConnectionParameters(brokerip, brokerport, "/", credentials)
+    parameters = pika.ConnectionParameters(brokerip, brokerport, "/", credentials, ssl_options=ssl_options)
     __connection = pika.BlockingConnection(parameters)
     __channel = __connection.channel()
     __callback_queue = declareReplyToQueue(__channel, applicationKey)
@@ -97,13 +101,13 @@ def connecttobrokerWithUsernameAndPWAndAppKey(brokerip, brokerport, username, us
 
 def connecttobrokerWithUsernameAndPW(brokerip, brokerport, username, userpw):
     global __channel, __connection, userid, __callback_queue
-    authServer=brokerip+":3000"
+    authServer=brokerip
     userid, applicationKey, apptoken = authClient(authServer, username, userpw, "")
     print(userid)
     print(applicationKey)
     print(apptoken)
     credentials = pika.PlainCredentials(userid, apptoken)
-    parameters = pika.ConnectionParameters(brokerip, brokerport, "/", credentials)
+    parameters = pika.ConnectionParameters(brokerip, brokerport, "/", credentials, ssl_options=ssl_options)
     __connection = pika.BlockingConnection(parameters)
     __channel = __connection.channel()
     __callback_queue = declareReplyToQueue(__channel, applicationKey)

@@ -8,8 +8,8 @@
 
 trading API for the flexible energy trading platform GLocalFlex
 
-- **Github repository**: <https://github.com/glocalflex/flextrade/>
-- **Documentation** <https://glocalflex.github.io/flextrade/>
+- **Github repository**: <https://github.com/glocalflex/flxtrd/>
+- **Documentation** <https://glocalflex.github.io/flxtrd/>
 
 ## Getting started with your project
 

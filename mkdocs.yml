@@ -1,0 +1,54 @@
+site_name: flextrade
+repo_url: https://github.com/glocalflex/flextrade
+site_url: https://glocalflex.github.io/flextrade
+site_description: Energy trading client for the flexible energy platform GLocalFlex
+site_author: GLocalFlex
+edit_uri: edit/main/docs/
+repo_name: glocalflex/flextrade
+copyright: Maintained by <a href="https://glocalflex.com">GLocalFlex</a>.
+
+nav:
+  - Home: index.md
+  - Modules: modules.md
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+            setup_commands:
+                - import sys
+                - sys.path.append('../')
+theme:
+  name: material
+  feature:
+    tabs: true
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: white
+      accent: deep orange
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: deep orange
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  icon:
+    repo: fontawesome/brands/github
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/glocalflex/flextrade
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/flextrade
+
+markdown_extensions:
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true

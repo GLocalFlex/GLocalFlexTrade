@@ -16,6 +16,6 @@ COPY poetry.lock pyproject.toml /code/
 RUN poetry install --no-interaction --no-ansi --no-root --no-dev
 
 # Copy Python code to the Docker image
-COPY flextrade /code/flextrade/
+COPY flxtrd /code/flxtrd/
 
-CMD [ "python", "flextrade/foo.py"]
+CMD [ "python", "flxtrd/foo.py"]

@@ -13,7 +13,7 @@ Types of Contributions
 Report Bugs
 ~~~~~~~~~~~
 
-Report bugs at https://github.com/glocalflex/flextrade/issues
+Report bugs at https://github.com/glocalflex/flxtrd/issues
 
 If you are reporting a bug, please include:
 
@@ -44,7 +44,7 @@ Submit Feedback
 ~~~~~~~~~~~~~~~
 
 The best way to send feedback is to file an issue at
-https://github.com/glocalflex/flextrade/issues.
+https://github.com/glocalflex/flxtrd/issues.
 
 If you are proposing a new feature:
 
@@ -56,25 +56,25 @@ If you are proposing a new feature:
 Get Started!
 ------------
 
-Ready to contribute? Here's how to set up `flextrade` for local
+Ready to contribute? Here's how to set up `flxtrd` for local
 development. Please note this documentation assumes you already have
 `poetry` and `Git` installed and ready to go.
 
-| 1. Fork the `flextrade` repo on GitHub. 
+| 1. Fork the `flxtrd` repo on GitHub. 
 
 | 2. Clone your fork locally:
 
    .. code-block:: bash
 
         cd <directory_in_which_repo_should_be_created>
-        git clone git@github.com:YOUR_NAME/flextrade.git
+        git clone git@github.com:YOUR_NAME/flxtrd.git
 
 
 | 3. Now we need to install the environment. Navigate into the directory
 
    .. code-block:: bash
 
-       cd flextrade
+       cd flxtrd
 
    If you are using ``pyenv``, select a version to use locally. (See installed versions with ``pyenv versions``)
 

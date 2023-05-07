@@ -1,12 +1,12 @@
-# flextrade
+# flxtrd
 
-[![Release](https://img.shields.io/github/v/release/glocalflex/flextrade)](https://img.shields.io/github/v/release/glocalflex/flextrade)
-[![Build status](https://img.shields.io/github/actions/workflow/status/glocalflex/flextrade/main.yml?branch=main)](https://github.com/glocalflex/flextrade/actions/workflows/main.yml?query=branch%3Amain)
-[![codecov](https://codecov.io/gh/glocalflex/flextrade/branch/main/graph/badge.svg)](https://codecov.io/gh/glocalflex/flextrade)
-[![Commit activity](https://img.shields.io/github/commit-activity/m/glocalflex/flextrade)](https://img.shields.io/github/commit-activity/m/glocalflex/flextrade)
-[![License](https://img.shields.io/github/license/glocalflex/flextrade)](https://img.shields.io/github/license/glocalflex/flextrade)
+[![Release](https://img.shields.io/github/v/release/glocalflex/flxtrd)](https://img.shields.io/github/v/release/glocalflex/flxtrd)
+[![Build status](https://img.shields.io/github/actions/workflow/status/glocalflex/flxtrd/main.yml?branch=main)](https://github.com/glocalflex/flxtrd/actions/workflows/main.yml?query=branch%3Amain)
+[![codecov](https://codecov.io/gh/glocalflex/flxtrd/branch/main/graph/badge.svg)](https://codecov.io/gh/glocalflex/flxtrd)
+[![Commit activity](https://img.shields.io/github/commit-activity/m/glocalflex/flxtrd)](https://img.shields.io/github/commit-activity/m/glocalflex/flxtrd)
+[![License](https://img.shields.io/github/license/glocalflex/flxtrd)](https://img.shields.io/github/license/glocalflex/flxtrd)
 
-trading API for the flexible energy trading platform GLocalFlex
+Public client API for the flexible energy trading market GLocalFlex.
 
 - **Github repository**: <https://github.com/glocalflex/flxtrd/>
 - **Documentation** <https://glocalflex.github.io/flxtrd/>
@@ -19,7 +19,7 @@ First, create a repository on GitHub with the same name as this project, and the
 git init -b main
 git add .
 git commit -m "init commit"
-git remote add origin git@github.com:glocalflex/flextrade.git
+git remote add origin git@github.com:glocalflex/flxtrd.git
 git push -u origin main
 ```
 
@@ -43,8 +43,8 @@ To enable the code coverage reports, see [here](https://fpgmaas.github.io/cookie
 
 - Create an API Token on [Pypi](https://pypi.org/).
 - Add the API Token to your projects secrets with the name `PYPI_TOKEN` by visiting 
-[this page](https://github.com/glocalflex/flextrade/settings/secrets/actions/new).
-- Create a [new release](https://github.com/glocalflex/flextrade/releases/new) on Github. 
+[this page](https://github.com/glocalflex/flxtrd/settings/secrets/actions/new).
+- Create a [new release](https://github.com/glocalflex/flxtrd/releases/new) on Github. 
 Create a new tag in the form ``*.*.*``.
 
 For more details, see [here](https://fpgmaas.github.io/cookiecutter-poetry/features/cicd/#how-to-trigger-a-release).

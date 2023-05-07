@@ -1,10 +1,10 @@
-site_name: flextrade
-repo_url: https://github.com/glocalflex/flextrade
-site_url: https://glocalflex.github.io/flextrade
+site_name: flxtrd
+repo_url: https://github.com/glocalflex/flxtrd
+site_url: https://glocalflex.github.io/flxtrd
 site_description: Energy trading client for the flexible energy platform GLocalFlex
 site_author: GLocalFlex
 edit_uri: edit/main/docs/
-repo_name: glocalflex/flextrade
+repo_name: glocalflex/flxtrd
 copyright: Maintained by <a href="https://glocalflex.com">GLocalFlex</a>.
 
 nav:
@@ -43,9 +43,9 @@ theme:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/glocalflex/flextrade
+      link: https://github.com/glocalflex/flxtrd
     - icon: fontawesome/brands/python
-      link: https://pypi.org/project/flextrade
+      link: https://pypi.org/project/flxtrd
 
 markdown_extensions:
   - toc:

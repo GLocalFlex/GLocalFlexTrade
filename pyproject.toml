@@ -1,10 +1,10 @@
 [tool.poetry]
 name = "flxtrd"
 version = "0.0.1"
-description = "Trading client for the flexible energy trading platform GLocalFlex"
+description = "Public client API for the flexible energy trading market GLocalFlex."
 authors = ["glocalflex"]
-repository = "https://github.com/glocalflex/flextrade"
-documentation = "https://glocalflex.github.io/flextrade/"
+repository = "https://github.com/glocalflex/flxtrade"
+documentation = "https://glocalflex.github.io/flxtrade/"
 readme = "README.md"
 packages = [
   {include = "src/empty"}
@@ -40,7 +40,7 @@ target-version = ['py37']
 preview = true
 
 [tool.mypy]
-files = ["flextrade"]
+files = ["flxtrd"]
 disallow_untyped_defs = "True"
 disallow_any_unimported = "True"
 no_implicit_optional = "True"
@@ -100,6 +100,6 @@ skip_empty = true
 
 [tool.coverage.run]
 branch = true
-source = ["flextrade"]
+source = ["flxtrd"]
 
 

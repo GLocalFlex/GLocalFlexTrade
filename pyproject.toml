@@ -1,13 +1,13 @@
 [tool.poetry]
 name = "flxtrd"
-version = "0.0.1"
+version = "0.0.3"
 description = "Public client API for the flexible energy trading market GLocalFlex."
 authors = ["glocalflex"]
 repository = "https://github.com/glocalflex/flxtrade"
 documentation = "https://glocalflex.github.io/flxtrade/"
 readme = "README.md"
 packages = [
-  {include = "src/empty"}
+  {include = "src"}
 ]
 
 [tool.poetry.dependencies]

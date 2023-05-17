@@ -54,3 +54,10 @@ For more details, see [here](https://fpgmaas.github.io/cookiecutter-poetry/featu
 ---
 
 Repository initiated with [fpgmaas/cookiecutter-poetry](https://github.com/fpgmaas/cookiecutter-poetry).
+
+
+# Development
+
+Poetry error: Failed to unlock the collection!
+
+    export PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring

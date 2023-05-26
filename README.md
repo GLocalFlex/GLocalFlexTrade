@@ -10,13 +10,19 @@ Trade energy or offer flexible loads to the European energy market.
 [![License](https://img.shields.io/github/license/glocalflex/flxtrd)](https://img.shields.io/github/license/glocalflex/flxtrd)
 
 
-- **Github repository**: <https://github.com/glocalflex/GLocalFlexTrade/>
+[GLocalFlexTrade](https://glocalflex.github.io/GLocalFlexTrade/) **Documentation** provides information how to use the the **flxtrd** Python package. 
+
+The official GLocalFlex Market [API Documentation](https://glocalflex.github.io/GLocalFlexTrade/) gives an overview and more details of the public API and energy trading platform.
 
 ## Getting started with GLocalFlexTrade
 
-- **Documentation** <https://glocalflex.github.io/GLocalFlexTrade/>
 
-## Basic Example
+Install GLocalFlexTrade Python package
+
+```sh
+pip install flxtrd
+```
+### Basic Example
 
 ```py
 

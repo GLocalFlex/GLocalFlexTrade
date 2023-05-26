@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-class APIplugin(ABC):
-    def __init__(self, base_url):
+class BasePlugin(ABC):
+    def __init__(self):
         pass
 
     @abstractmethod
@@ -14,4 +14,8 @@ class APIplugin(ABC):
 
     @abstractmethod
     def after_request(self,response: str | dict = None):
+        pass
+
+    @abstractmethod
+    def __str__(self):
         pass

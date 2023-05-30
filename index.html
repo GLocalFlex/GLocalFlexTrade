@@ -250,9 +250,40 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Home
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="." class="md-nav__link md-nav__link--active">
         Home
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#basic-example" class="md-nav__link">
+    Basic Example
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -293,6 +324,21 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#basic-example" class="md-nav__link">
+    Basic Example
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -312,12 +358,17 @@
 
 
 <h1 id="glocalflextrade-public-api">GLocalFlexTrade Public API<a class="headerlink" href="#glocalflextrade-public-api" title="Permanent link">&para;</a></h1>
-<p><a href="https://img.shields.io/github/v/release/glocalflex/flxtrd"><img alt="Release" src="https://img.shields.io/github/v/release/glocalflex/flxtrd" /></a>
-<a href="https://github.com/glocalflex/flxtrd/actions/workflows/main.yml?query=branch%3Amain"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/glocalflex/flxtrd/main.yml?branch=main" /></a>
-<a href="https://img.shields.io/github/commit-activity/m/glocalflex/flxtrd"><img alt="Commit activity" src="https://img.shields.io/github/commit-activity/m/glocalflex/flxtrd" /></a>
-<a href="https://img.shields.io/github/license/glocalflex/flxtrd"><img alt="License" src="https://img.shields.io/github/license/glocalflex/flxtrd" /></a></p>
-<p>Public client API for the flexible energy trading market GLocalFlex.
-Trade energy or offer flexible loads to the European energy market.</p>
+<!-- [![Release](https://img.shields.io/github/v/release/glocalflex/flxtrd)](https://img.shields.io/github/v/release/glocalflex/flxtrd)
+[![Build status](https://img.shields.io/github/actions/workflow/status/glocalflex/flxtrd/main.yml?branch=main)](https://github.com/glocalflex/flxtrd/actions/workflows/main.yml?query=branch%3Amain)
+[![Commit activity](https://img.shields.io/github/commit-activity/m/glocalflex/flxtrd)](https://img.shields.io/github/commit-activity/m/glocalflex/flxtrd) -->
+
+<!-- [![License](https://img.shields.io/github/license/glocalflex/flxtrd)](https://img.shields.io/github/license/glocalflex/flxtrd) -->
+
+<p>Public client API for the flexible energy trading market GLocalFlex Market.</p>
+<p>The client libary provides standard interface to access the GLocalFlex Market public API. 
+The client integrates Rest API and AMPQ protocol for communication with the GLocalFlex server. </p>
+<p>The <strong>GLocalFlex Market</strong> documentation is available here <a href="https://www.glocalflex.com/docs">GLocalFlex Market Documentation</a></p>
+<p>Trade energy or offer flexible loads to the European energy market.</p>
 <p>Install Python package</p>
 <pre><code>pip install flxtrd
 </code></pre>
@@ -326,6 +377,27 @@ Trade energy or offer flexible loads to the European energy market.</p>
 </code></pre>
 <p>You can use a sample trading client from the command line for testing </p>
 <pre><code>python -m flxtrd --help
+</code></pre>
+<h2 id="basic-example">Basic Example<a class="headerlink" href="#basic-example" title="Permanent link">&para;</a></h2>
+<pre><code class="language-py">
+from flxtrd import FlexAPIClient
+from flxtrd import AuthPlugin
+
+
+def main():
+
+    API_BASE_URL = &quot;localhost&quot;
+
+    client = FlexAPIClient(base_url=API_BASE_URL)
+    client.add_plugin(AuthPlugin(app_token=&quot;secret&quot;))
+
+    response = client.make_request(method=&quot;POST&quot;, endpoint=&quot;/user/login&quot;)
+    print(response)
+
+
+if __name__ == &quot;__main__&quot;:
+        main()
+
 </code></pre>
 
 

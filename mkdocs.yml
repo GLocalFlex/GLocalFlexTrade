@@ -9,7 +9,7 @@ copyright: Maintained by <a href="https://glocalflex.com">GLocalFlex</a>.
 
 nav:
   - Home: index.md
-  - Modules: modules.md
+
 plugins:
   - search
   - mkdocstrings:

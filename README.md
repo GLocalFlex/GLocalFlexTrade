@@ -49,3 +49,4 @@ if __name__ == "__main__":
 
 # Development
 
+export PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring

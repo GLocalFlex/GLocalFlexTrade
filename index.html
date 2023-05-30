@@ -62,7 +62,7 @@
     
     
     
-    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="deep-orange">
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="blue">
   
     
     
@@ -119,7 +119,7 @@
           
           
           
-          <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="deep-orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+          <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
           
             <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
@@ -129,7 +129,7 @@
           
           
           
-          <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="deep-orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+          <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
           
             <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
@@ -281,6 +281,26 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#architecture" class="md-nav__link">
+    Architecture
+  </a>
+  
+    <nav class="md-nav" aria-label="Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#classes-relationship" class="md-nav__link">
+    Classes relationship
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -319,6 +339,26 @@
   <a href="#basic-example" class="md-nav__link">
     Basic Example
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture" class="md-nav__link">
+    Architecture
+  </a>
+  
+    <nav class="md-nav" aria-label="Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#classes-relationship" class="md-nav__link">
+    Classes relationship
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -364,26 +404,78 @@ The client integrates Rest API and AMPQ protocol for communication with the GLoc
 <pre><code>python -m flxtrd --help
 </code></pre>
 <h2 id="basic-example">Basic Example<a class="headerlink" href="#basic-example" title="Permanent link">&para;</a></h2>
-<pre><code class="language-python">
-from flxtrd import FlexAPIClient
-from flxtrd import AuthPlugin
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">flxtrd</span> <span class="kn">import</span> <span class="n">FlexAPIClient</span>
+<span class="kn">from</span> <span class="nn">flxtrd</span> <span class="kn">import</span> <span class="n">AuthPlugin</span><span class="p">,</span> <span class="n">ListDevices</span>
+<span class="kn">from</span> <span class="nn">flxtrd</span> <span class="kn">import</span> <span class="n">User</span>
 
 
-def main():
+<span class="c1"># Example usage of the client library</span>
 
-    API_BASE_URL = &quot;localhost&quot;
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
 
-    client = FlexAPIClient(base_url=API_BASE_URL)
-    client.add_plugin(AuthPlugin(app_token=&quot;secret&quot;))
+    <span class="n">GFLEX_API_URL</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
 
-    response = client.make_request(method=&quot;POST&quot;, endpoint=&quot;/user/login&quot;)
-    print(response)
+    <span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="n">password</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
 
+    <span class="n">client</span> <span class="o">=</span> <span class="n">FlexAPIClient</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">base_url</span><span class="o">=</span><span class="n">GFLEX_API_URL</span><span class="p">)</span>
 
-if __name__ == &quot;__main__&quot;:
-        main()
+    <span class="n">response</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">make_request</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+                                        <span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;/users/login&quot;</span><span class="p">,</span> 
+                                        <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">password</span><span class="p">})</span>
 
-</code></pre>
+    <span class="k">if</span> <span class="n">err</span><span class="p">:</span>
+          <span class="nb">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+          <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">request_response</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">request_response</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+        <span class="n">main</span><span class="p">()</span>
+</code></pre></div>
+<h2 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h2>
+<pre class="mermaid"><code>graph LR
+    APIClient --&gt; Protocol
+    MyAPIClient --&gt; APIClient
+    RESTProtocol --&gt; Protocol
+    GRPCProtocol --&gt; Protocol
+    APIClient --&gt; Plugin
+    MyAPIClient --&gt; Plugin
+    APIClient --&gt; APIResponse</code></pre>
+<h3 id="classes-relationship">Classes relationship<a class="headerlink" href="#classes-relationship" title="Permanent link">&para;</a></h3>
+<pre class="mermaid"><code>classDiagram
+    class APIClient {
+        + make_request(endpoint: str, params: dict, data: dict): APIResponse
+    }
+    class MyAPIClient {
+        + make_request(endpoint: str, params: dict, data: dict): APIResponse
+    }
+    class Protocol {
+        + send_request(endpoint: str, params: dict, data: dict): Any
+    }
+    class RESTProtocol {
+        + send_request(endpoint: str, params: dict, data: dict): Any
+    }
+    class GRPCProtocol {
+        + send_request(endpoint: str, params: dict, data: dict): Any
+    }
+    class Plugin {
+        + before_request(endpoint: str, params: dict, data: dict)
+        + after_request(response: Any)
+    }
+    class APIResponse {
+        + response: Any
+        + plugin_data: dict
+    }
+    APIClient --&gt; Protocol
+    MyAPIClient --&gt; APIClient
+    RESTProtocol --&gt; Protocol
+    GRPCProtocol --&gt; Protocol
+    APIClient --&gt; Plugin
+    MyAPIClient --&gt; Plugin
+    APIClient --&gt; APIResponse</code></pre>
 
 
 

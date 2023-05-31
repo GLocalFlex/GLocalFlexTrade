@@ -5,8 +5,6 @@ from flxtrd.core.plugins.base import BasePlugin
 from flxtrd.protocols.base import BaseAPI
 
 
-
-
 class RestAPI(BaseAPI):
     """Example REST API class that uses the requests library to make HTTP requests"""
     
@@ -19,6 +17,7 @@ class RestAPI(BaseAPI):
                      data: Optional[dict] = {},
                      headers: Optional[dict] = {},
                      ssl: bool = True,
+                     verify_ssl: bool = True,
                      **kwargs) -> dict:
         
         if ssl:
@@ -26,7 +25,7 @@ class RestAPI(BaseAPI):
         else:
             url = f"http://{self.base_url + endpoint}"
 
-        response = requests.request(method, url, headers=headers, params=params, data=data)
+        response = requests.request(method, url, headers=headers, params=params, data=data, verify=verify_ssl)
 
 
         return response, self.check_status(response, url, endpoint)

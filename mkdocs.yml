@@ -1,17 +1,31 @@
-site_name: flxtrd
-repo_url: https://github.com/glocalflex/flxtrd
-site_url: https://glocalflex.github.io/flxtrd
+site_name: GLocalFlexTrade
+repo_url: https://github.com/glocalflex/GLocalFlexTrade
+site_url: https://glocalflex.github.io/GLocalFlexTrade
 site_description: Energy trading client for the flexible energy platform GLocalFlex
 site_author: GLocalFlex
 edit_uri: edit/main/docs/
-repo_name: glocalflex/flxtrd
+repo_name: glocalflex/GLocalFlexTrade
 copyright: Maintained by <a href="https://glocalflex.com">GLocalFlex</a>.
 
 nav:
   - Home: index.md
+  # - Diagrams: mermaid.md
 
 plugins:
   - search
+  - glightbox:
+       touchNavigation: true
+       loop: false
+       effect: zoom
+       slide_effect: slide
+       width: 100%
+       height: auto
+       zoomable: true
+       draggable: true
+       skip_classes:
+         - custom-skip-class-name
+       auto_caption: false
+       caption_position: bottom
   - mkdocstrings:
       handlers:
         python:
@@ -26,14 +40,14 @@ theme:
     - media: "(prefers-color-scheme: light)"
       scheme: default
       primary: white
-      accent: deep orange
+      accent: blue
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
       primary: black
-      accent: deep orange
+      accent: blue
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
@@ -43,12 +57,17 @@ theme:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/glocalflex/flxtrd
+      link: https://github.com/glocalflex/GLocalFlexTrade
     - icon: fontawesome/brands/python
-      link: https://pypi.org/project/flxtrd
+      link: https://pypi.org/project/GLocalFlexTrade
 
 markdown_extensions:
   - toc:
       permalink: true
   - pymdownx.arithmatex:
       generic: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format

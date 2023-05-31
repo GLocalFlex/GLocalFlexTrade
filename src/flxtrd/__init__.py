@@ -1,6 +1,5 @@
 from flxtrd.core.api_client import FlexAPIClient
-from flxtrd.core.types import User
-from flxtrd.core.types import Device
+from flxtrd.core.types import Broker, Market, User, Device, FlexError, APIResponse
 
 from flxtrd.core.plugins.base import BasePlugin
 from flxtrd.core.plugins.auth import AuthPlugin, AuthResponse
@@ -10,6 +9,16 @@ from flxtrd.core.plugins.devices import ListDevices
 
 from flxtrd.protocols.base import BaseAPI
 from flxtrd.protocols.grpc import GrpcAPI
+from flxtrd.protocols.ampq import AmpqAPI
 from flxtrd.protocols.restapi import RestAPI
 
-__all__ = [FlexAPIClient, RestAPI, AuthPlugin, AuthResponse, User, Device]
+__all__ = [FlexAPIClient,
+           RestAPI,
+           AmpqAPI,
+           AuthPlugin,
+           AuthResponse, 
+           User,
+           Device,
+           Market,
+           FlexError,
+           APIResponse]

@@ -13,7 +13,7 @@ The client libary provides standard interface to access the GLocalFlex Market pu
 The client integrates Rest API and AMPQ protocol for communication with the GLocalFlex server. 
 
 
-The **GLocalFlex Market** documentation is available here [GLocalFlex Market Documentation](https://www.glocalflex.com/docs)
+The **GLocalFlex Market** documentation is available here [GLocalFlex Market Documentation](https://www.glocalflexmarket.com/docs)
 
 Trade energy or offer flexible loads to the European energy market.
 
@@ -32,24 +32,50 @@ You can use a sample trading client from the command line for testing
 
 ## Basic Example
 
-```py
+```python
 
+import sys
 from flxtrd import FlexAPIClient
-from flxtrd import AuthPlugin
+from flxtrd import AuthPlugin, ListDevices
+from flxtrd import User
 
+
+# Example usage of the client library
+
+GFLEX_API_URL = "localhost"
 
 def main():
+    
+    user = User(name="",
+                password="")
 
-    API_BASE_URL = "localhost"
+    client = FlexAPIClient(user=user, base_url=GFLEX_API_URL)
 
-    client = FlexAPIClient(base_url=API_BASE_URL)
-    client.add_plugin(AuthPlugin(app_token="secret"))
+    response, err = client.make_request(method="POST",
+                                        endpoint="/users/login", 
+                                        data={"email": user.name, "password": user.password})
+    
+    if err:
+          print(err)
+          sys.exit(1)
 
-    response = client.make_request(method="POST", endpoint="/user/login")
-    print(response)
-
+    print(response.request_response.json())
+    print(response.request_response.status_code)
 
 if __name__ == "__main__":
         main()
+```
 
+## Architecture
+
+
+
+``` mermaid
+graph LR
+    MyClient --> FlexAPIClient 
+    MyClient --> TradingStrategy 
+    MyClient --> EnergyManagement
+    MyClient --> CustomPlugins
+    FlexAPIClient --> APIProtocols
+    FlexAPIClient --> FlexPlugins
 ```

@@ -41,12 +41,16 @@ build-and-publish: build publish ## Build and publish.
 
 .PHONY: docs-test
 docs-test: ## Test if documentation can be built without warnings or errors
-	@poetry run mkdocs build -s
+	@poetry run mkdocs build -s 
 
 .PHONY: docs
 docs: ## Build and serve the documentation
-	@poetry run mkdocs serve
+	@poetry run mkdocs serve -a 0.0.0.0:8002
 
+.PHONY: docs_publish
+docs_publish: ## Build and publish the documentation to github pages
+	@poetry run mkdocs build
+	@poetry run mkdocs gh-deploy -r github
 .PHONY: help
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'

@@ -3,7 +3,7 @@ from flxtrd.protocols.base import BaseAPI
 from flxtrd.protocols.restapi import RestAPI
 from flxtrd.core.plugins.auth import AuthPlugin, AuthResponse
 from flxtrd.core.plugins.base import BasePlugin
-from flxtrd.core.types import User, APIResponse
+from flxtrd.core.types import Market, User, APIResponse
 
 
 class FlexAPIClient:
@@ -29,7 +29,7 @@ class FlexAPIClient:
                      params: Optional[dict] = None,
                      ssl: Optional[bool] = False,
                      data: Optional[dict] = None,
-                     user: User = None) ->  APIResponse:
+                     **kwargs) ->  APIResponse:
         """Executes all plugins and forwards the request to the protocol API class"""
 
         plugin_data = {}
@@ -41,9 +41,9 @@ class FlexAPIClient:
         
         response, err= self.protocol.send_request(method,
                                               endpoint,
-                                              params=params,
                                               data=data,
-                                              ssl=ssl)
+                                              ssl=ssl,
+                                              **kwargs)
 
         for _plugin in self.plugins:
             plugin_data[f"{str(_plugin)}_after"] = _plugin.after_request(response)

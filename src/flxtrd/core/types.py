@@ -1,6 +1,45 @@
 from dataclasses import dataclass
+from sys import breakpointhook
 from typing import List, Optional
 import requests
+
+import enum 
+import time
+from random import random
+
+class OrderType(enum.Enum):
+    """Specifies the order types that can be placed on the market
+    
+    Terminology:
+
+    OrderType.ASK creates a sell order to the market
+    
+    OrderType.BID creates a buy order to the market
+
+    """
+    ASK = enum.auto() # sell order
+    BID = enum.auto() # buy order
+
+@dataclass
+class Flexibility:
+    """Specifies the tradable good that is sold or bought on the marketplace
+    
+    wattage: float
+    startime: int
+    duration: int
+
+    """
+    wattage : float
+    starttime: int
+    duration: int
+    expirationtime: int
+    # TODO call as init method
+    energy: float = 0
+
+
+    @staticmethod
+    def to_energy(wattage, duration):
+        return wattage * (duration / (60 * 60 *1000))
 
 @dataclass
 class Device:
@@ -24,7 +63,7 @@ class User:
 class Broker:
     """RabbitMQ Broker dataclass for storing broker data."""
     ip: str
-    port: str
+    port: int = 5671
     tickeroutexname :str = "ticker-out"
     exchangename: str = "in"
 
@@ -36,11 +75,25 @@ class Market:
     port: int = 443
 
 @dataclass
+class MarketOrder:
+    """Maket order type to create sell or buy orders
+    
+    The market order contains the tradable flexibility.
+
+    type: OrderType
+    price: float
+    flexibility: Flexibility
+    """
+
+    type: OrderType
+    price: float
+    flexibility: Flexibility
+
+@dataclass
 class APIResponse:
     """APIResponse dataclass for storing the response from the API and the plugin data."""
     request_response: requests.Response
     plugin_data:  Optional[dict] = None
-
 
 class FlexError(Exception):
     """GLocalflex basic error class."""

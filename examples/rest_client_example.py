@@ -1,31 +1,42 @@
-# Example usage of the client library
+""" Example usage of the REST API client"""
+
 import sys
 from flxtrd import FlexAPIClient
 from flxtrd import AuthPlugin, ListDevices
 from flxtrd import User
+from flxtrd import User, Market, Broker, MarketOrder, Flexibility, OrderType
+from flxtrd import log
+from logging import INFO, DEBUG, WARNING, ERROR, CRITICAL
 
-
-# Example usage of the client library
 
 def main():
 
-    # make User
-    user = User(name="",
-                password="")
     GFLEX_API_URL = "localhost"
 
-    client = FlexAPIClient(user=user, base_url=GFLEX_API_URL)
+    # Define types for the user, market and message broker
+    user = User(name="",
+                password="",
+                accessToken="")
+    
+    market = Market(ip=GFLEX_API_URL,
+                    broker=Broker(ip=GFLEX_API_URL))
 
-    response, err = client.make_request(method="POST",
+    # Create a REST client
+    rest_client = FlexAPIClient(base_url=GFLEX_API_URL,
+                                user=user,
+                                market=market)    
+
+    # Send a request to the GLocalFlex REST API
+    response, err = rest_client.make_request(method="POST",
                                         endpoint="/users/login", 
                                         data={"email": user.name, "password": user.password})
     
     if err:
-          print(err)
+          log(ERROR, err)
           sys.exit(1)
 
-    print(response.request_response.json())
-    print(response.request_response.status_code)
+    log(INFO, response.request_response.json())
+    log(INFO, response.request_response.status_code)
 
 if __name__ == "__main__":
         main()

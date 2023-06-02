@@ -52,7 +52,18 @@
     
     
     
-  </head>
+   <link href="assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
+        html.glightbox-open { overflow: initial; height: 100%; }
+        .gslide-title { margin-top: 0px; user-select: text; }
+        .gslide-desc { color: #666; user-select: text; }
+        .gslide-image img { background: white; }
+        
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color);}
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color);}
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color);}
+            </style> <script src="assets/javascripts/glightbox.min.js"></script></head>
   
   
     
@@ -275,8 +286,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#basic-example" class="md-nav__link">
-    Basic Example
+  <a href="#basic-rest-api-example" class="md-nav__link">
+    Basic Rest API Example
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#basic-trade-example-connecting-to-the-market-message-broker" class="md-nav__link">
+    Basic Trade Example connecting to the market message broker
   </a>
   
 </li>
@@ -285,19 +303,6 @@
   <a href="#architecture" class="md-nav__link">
     Architecture
   </a>
-  
-    <nav class="md-nav" aria-label="Architecture">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#classes-relationship" class="md-nav__link">
-    Classes relationship
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -336,8 +341,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#basic-example" class="md-nav__link">
-    Basic Example
+  <a href="#basic-rest-api-example" class="md-nav__link">
+    Basic Rest API Example
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#basic-trade-example-connecting-to-the-market-message-broker" class="md-nav__link">
+    Basic Trade Example connecting to the market message broker
   </a>
   
 </li>
@@ -346,19 +358,6 @@
   <a href="#architecture" class="md-nav__link">
     Architecture
   </a>
-  
-    <nav class="md-nav" aria-label="Architecture">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#classes-relationship" class="md-nav__link">
-    Classes relationship
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -403,77 +402,119 @@ The client integrates Rest API and AMPQ protocol for communication with the GLoc
 <p>You can use a sample trading client from the command line for testing </p>
 <pre><code>python -m flxtrd --help
 </code></pre>
-<h2 id="basic-example">Basic Example<a class="headerlink" href="#basic-example" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">sys</span>
+<h3 id="basic-rest-api-example">Basic Rest API Example<a class="headerlink" href="#basic-rest-api-example" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot; Example usage of the REST API client&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">flxtrd</span> <span class="kn">import</span> <span class="n">FlexAPIClient</span>
 <span class="kn">from</span> <span class="nn">flxtrd</span> <span class="kn">import</span> <span class="n">AuthPlugin</span><span class="p">,</span> <span class="n">ListDevices</span>
 <span class="kn">from</span> <span class="nn">flxtrd</span> <span class="kn">import</span> <span class="n">User</span>
+<span class="kn">from</span> <span class="nn">flxtrd</span> <span class="kn">import</span> <span class="n">User</span><span class="p">,</span> <span class="n">Market</span><span class="p">,</span> <span class="n">Broker</span><span class="p">,</span> <span class="n">MarketOrder</span><span class="p">,</span> <span class="n">Flexibility</span><span class="p">,</span> <span class="n">OrderType</span>
+<span class="kn">from</span> <span class="nn">flxtrd</span> <span class="kn">import</span> <span class="n">log</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">INFO</span><span class="p">,</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">WARNING</span><span class="p">,</span> <span class="n">ERROR</span><span class="p">,</span> <span class="n">CRITICAL</span>
 
-
-<span class="c1"># Example usage of the client library</span>
-
-<span class="n">GFLEX_API_URL</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
 
 <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
 
+    <span class="n">GFLEX_API_URL</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
+
+    <span class="c1"># Define types for the user, market and message broker</span>
     <span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
-                <span class="n">password</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+                <span class="n">password</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="n">accessToken</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
 
-    <span class="n">client</span> <span class="o">=</span> <span class="n">FlexAPIClient</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">base_url</span><span class="o">=</span><span class="n">GFLEX_API_URL</span><span class="p">)</span>
+    <span class="n">market</span> <span class="o">=</span> <span class="n">Market</span><span class="p">(</span><span class="n">ip</span><span class="o">=</span><span class="n">GFLEX_API_URL</span><span class="p">,</span>
+                    <span class="n">broker</span><span class="o">=</span><span class="n">Broker</span><span class="p">(</span><span class="n">ip</span><span class="o">=</span><span class="n">GFLEX_API_URL</span><span class="p">))</span>
 
-    <span class="n">response</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">make_request</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+    <span class="c1"># Create a REST client</span>
+    <span class="n">rest_client</span> <span class="o">=</span> <span class="n">FlexAPIClient</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="n">GFLEX_API_URL</span><span class="p">,</span>
+                                <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span>
+                                <span class="n">market</span><span class="o">=</span><span class="n">market</span><span class="p">)</span>    
+
+    <span class="c1"># Send a request to the GLocalFlex REST API</span>
+    <span class="n">response</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">rest_client</span><span class="o">.</span><span class="n">make_request</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
                                         <span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;/users/login&quot;</span><span class="p">,</span> 
                                         <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">password</span><span class="p">})</span>
 
     <span class="k">if</span> <span class="n">err</span><span class="p">:</span>
-          <span class="nb">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+          <span class="n">log</span><span class="p">(</span><span class="n">ERROR</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
           <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">request_response</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">request_response</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+    <span class="n">log</span><span class="p">(</span><span class="n">INFO</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">request_response</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>
+    <span class="n">log</span><span class="p">(</span><span class="n">INFO</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">request_response</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+        <span class="n">main</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="basic-trade-example-connecting-to-the-market-message-broker">Basic Trade Example connecting to the market message broker<a class="headerlink" href="#basic-trade-example-connecting-to-the-market-message-broker" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Example usage of the trading client using AMPQ protocol&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">random</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">INFO</span><span class="p">,</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">WARNING</span><span class="p">,</span> <span class="n">ERROR</span><span class="p">,</span> <span class="n">CRITICAL</span>
+
+<span class="kn">from</span> <span class="nn">flxtrd</span> <span class="kn">import</span> <span class="n">log</span>
+<span class="kn">from</span> <span class="nn">flxtrd</span> <span class="kn">import</span> <span class="n">FlexAPIClient</span><span class="p">,</span> <span class="n">AmpqAPI</span>
+<span class="kn">from</span> <span class="nn">flxtrd</span> <span class="kn">import</span> <span class="n">User</span><span class="p">,</span> <span class="n">Market</span><span class="p">,</span> <span class="n">Broker</span><span class="p">,</span> <span class="n">MarketOrder</span><span class="p">,</span> <span class="n">Flexibility</span><span class="p">,</span> <span class="n">OrderType</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+
+    <span class="n">GFLEX_API_URL</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
+    <span class="n">FLEXMQ_TLS_PORT</span> <span class="o">=</span> <span class="mi">5671</span>
+
+    <span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="n">password</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="n">accessToken</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">market</span> <span class="o">=</span> <span class="n">Market</span><span class="p">(</span><span class="n">ip</span><span class="o">=</span><span class="n">GFLEX_API_URL</span><span class="p">,</span>
+                    <span class="n">broker</span><span class="o">=</span><span class="n">Broker</span><span class="p">(</span><span class="n">ip</span><span class="o">=</span><span class="n">GFLEX_API_URL</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">FLEXMQ_TLS_PORT</span><span class="p">))</span>
+
+    <span class="c1"># Define the tradable flexibility to sell or buy</span>
+    <span class="n">flex</span> <span class="o">=</span> <span class="n">Flexibility</span><span class="p">(</span><span class="n">wattage</span> <span class="o">=</span> <span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span>
+                        <span class="n">starttime</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">+</span> <span class="p">(</span><span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">10</span><span class="p">))</span> <span class="o">/</span> <span class="mi">60</span><span class="p">)</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">,</span>
+                        <span class="n">duration</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(((</span><span class="nb">round</span><span class="p">(</span><span class="n">random</span><span class="p">())</span> <span class="o">*</span> <span class="mi">14</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mf">60.0</span><span class="p">)</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">),</span>
+                        <span class="n">expirationtime</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">/</span> <span class="p">(</span><span class="mi">60</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span> <span class="o">+</span> <span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">20</span><span class="p">)</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
+
+    <span class="c1"># Create a market order to sell or buy flexibility</span>
+    <span class="n">market_order</span> <span class="o">=</span> <span class="n">MarketOrder</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">OrderType</span><span class="o">.</span><span class="n">ASK</span><span class="p">,</span>
+                        <span class="n">price</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                        <span class="n">flexibility</span><span class="o">=</span><span class="n">flex</span><span class="p">)</span>
+
+    <span class="c1"># Create a AMPQ client that connects to the message broker</span>
+    <span class="n">ampq_client</span> <span class="o">=</span> <span class="n">FlexAPIClient</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="n">GFLEX_API_URL</span><span class="p">,</span>
+                                <span class="n">protocol</span><span class="o">=</span><span class="n">AmpqAPI</span><span class="p">,</span>
+                                <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span>
+                                <span class="n">market</span><span class="o">=</span><span class="n">market</span>
+                                <span class="p">)</span>
+
+    <span class="c1"># Send the market order to the message broker</span>
+    <span class="n">response</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">ampq_client</span><span class="o">.</span><span class="n">make_request</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                                        <span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;ask&quot;</span><span class="p">,</span>
+                                        <span class="n">ssl</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                        <span class="n">verify_ssl</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                        <span class="n">order</span><span class="o">=</span><span class="n">market_order</span><span class="p">,</span>
+                                        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">err</span><span class="p">:</span>
+          <span class="n">log</span><span class="p">(</span><span class="n">ERROR</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+          <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">log</span><span class="p">(</span><span class="n">INFO</span><span class="p">,</span> <span class="s2">&quot;Received response from message broker&quot;</span><span class="p">)</span>
+    <span class="n">log</span><span class="p">(</span><span class="n">INFO</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
         <span class="n">main</span><span class="p">()</span>
 </code></pre></div>
 <h2 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h2>
 <pre class="mermaid"><code>graph LR
-    FlexAPIClient --&gt; Protocol
-    MyAPIClient --&gt; FlexAPIClient
-    APIClient --&gt; Plugin
-    MyAPIClient --&gt; Plugin
-    APIClient --&gt; APIResponse</code></pre>
-<h3 id="classes-relationship">Classes relationship<a class="headerlink" href="#classes-relationship" title="Permanent link">&para;</a></h3>
-<pre class="mermaid"><code>classDiagram
-    class APIClient {
-        + make_request(endpoint: str, params: dict, data: dict): APIResponse
-    }
-    class MyAPIClient {
-        + make_request(endpoint: str, params: dict, data: dict): APIResponse
-    }
-    class Protocol {
-        + send_request(endpoint: str, params: dict, data: dict): Any
-    }
-    class RestAPI {
-        + send_request(endpoint: str, params: dict, data: dict): Any
-    }
-    class AmpqAPI {
-        + send_request(endpoint: str, params: dict, data: dict): Any
-    }
-    class Plugin {
-        + before_request(endpoint: str, params: dict, data: dict)
-        + after_request(response: Any)
-    }
-    class APIResponse {
-        + response: Any
-        + plugin_data: dict
-    }
-    APIClient --&gt; Protocol
-    MyAPIClient --&gt; APIClient
-    RestAPI --&gt; Protocol
-    AmpqAPI --&gt; Protocol
-    APIClient --&gt; Plugin
-    MyAPIClient --&gt; Plugin
-    APIClient --&gt; APIResponse</code></pre>
+    MyClient --&gt; FlexAPIClient 
+    MyClient --&gt; TradingStrategy 
+    MyClient --&gt; EnergyManagement
+    MyClient --&gt; CustomPlugins
+    FlexAPIClient --&gt; APIProtocols
+    FlexAPIClient --&gt; FlexPlugins</code></pre>
 
 
 
@@ -544,5 +585,5 @@ The client integrates Rest API and AMPQ protocol for communication with the GLoc
       
     
     
-  </body>
+  <script>document$.subscribe(() => {const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});})</script></body>
 </html>

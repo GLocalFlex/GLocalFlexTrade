@@ -1,5 +1,6 @@
 import pytest
 import requests
+
 from flxtrd.protocols.restapi import RestAPI
 
 """
@@ -31,12 +32,11 @@ app.use('/iota', iotaRoutes);
 """
 
 
-
-
 @pytest.fixture
 def create_rest_api_instance(base_url="localhost"):
     """Creates a RestAPI instance"""
     return RestAPI(base_url=base_url)
+
 
 def test_restapi_instance(create_rest_api_instance):
     """Tests that a RestAPI instance is created"""
@@ -62,10 +62,16 @@ def test_restapi_instance(create_rest_api_instance):
         ("/api/v1/users/1/addresses", 200, True),
     ],
 )
-def test_restapi_send_request(create_rest_api_instance, endpoint, expected_status_code, ssl):
+def test_restapi_send_request(
+    create_rest_api_instance, endpoint, expected_status_code, ssl
+):
     """Tests that the send_request method returns a response"""
-    response, error = create_rest_api_instance.send_request(method="GET", endpoint=endpoint, ssl=ssl, verify_ssl=False)
+    response, error = create_rest_api_instance.send_request(
+        method="GET", endpoint=endpoint, ssl=ssl, verify_ssl=False
+    )
     assert isinstance(response, requests.Response)
     assert not error, f"{error, response}"
-    assert response.status_code == expected_status_code, f"Received status code: {response.status_code} instead of {expected_status_code}"
-
+    assert response.status_code == expected_status_code, (
+        f"Received status code: {response.status_code} instead of"
+        f" {expected_status_code}"
+    )

@@ -1,33 +1,41 @@
-import requests
-from typing import List, Optional
+from typing import Optional
 
-from flxtrd.core.plugins.base import BasePlugin
+import requests
+
 from flxtrd.protocols.base import BaseAPI
-from flxtrd.core.logger import log
-from logging import INFO, DEBUG, WARNING, ERROR, CRITICAL
+
 
 class RestAPI(BaseAPI):
-    """Example REST API class that uses the requests library to make HTTP requests"""
-    
+    """Example REST API class that uses the requests library to make HTTP requests
+    """
+
     def __init__(self, base_url: str):
         super().__init__(base_url=base_url)
 
-    def send_request(self, method: str,
-                     endpoint: str,
-                     params: Optional[dict] = {},
-                     data: Optional[dict] = {},
-                     headers: Optional[dict] = {},
-                     ssl: bool = True,
-                     verify_ssl: bool = True,
-                     **kwargs) -> dict:
-        
+    def send_request(
+        self,
+        method: str,
+        endpoint: str,
+        params: Optional[dict] = None,
+        data: Optional[dict] = None,
+        headers: Optional[dict] = None,
+        ssl: bool = True,
+        verify_ssl: bool = True,
+        **kwargs,
+    ) -> dict:
         if ssl:
             url = f"https://{self.base_url + endpoint}"
         else:
             url = f"http://{self.base_url + endpoint}"
 
-        response = requests.request(method, url, headers=headers, params=params, data=data, verify=verify_ssl)
-
+        response = requests.request(
+            method,
+            url,
+            headers=headers,
+            params=params,
+            data=data,
+            verify=verify_ssl,
+        )
 
         return response, self.check_status(response, url, endpoint)
 
@@ -40,4 +48,4 @@ class RestAPI(BaseAPI):
         elif response.status_code == 404:
             return f"{url} not found"
         elif response.status_code == 500:
-            return f"""Internal server error, endpoint is correct but data or parameters might be wrong. Check the API documentation for endpoint {endpoint} """    
+            return f"""Internal server error, endpoint is correct but data or parameters might be wrong. Check the API documentation for endpoint {endpoint} """

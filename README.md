@@ -1,4 +1,4 @@
-# GLocalFlexTrade Public API 
+# GLocalFlexTrade Public API
 
 Public client API for the flexible energy trading market GLocalFlex.
 Trade energy or offer flexible loads to the European energy market.
@@ -10,7 +10,7 @@ Trade energy or offer flexible loads to the European energy market.
 [![License](https://img.shields.io/github/license/glocalflex/flxtrd)](https://img.shields.io/github/license/glocalflex/flxtrd)
 
 
-[GLocalFlexTrade](https://glocalflex.github.io/GLocalFlexTrade/) **Documentation** provides information how to use the the **flxtrd** Python package. 
+[GLocalFlexTrade](https://glocalflex.github.io/GLocalFlexTrade/) **Documentation** provides information how to use the **flxtrd** Python package.
 
 The official GLocalFlex Market [API Documentation](https://www.glocalflexmarket.com/docs/) gives an overview and more details of the public API and energy trading platform.
 
@@ -44,20 +44,20 @@ def main():
     user = User(name="",
                 password="",
                 accessToken='')
-    
+
     market = Market(ip=GFLEX_API_URL,
                     broker=Broker(ip=GFLEX_API_URL))
 
     # Create a REST client
     rest_client = FlexAPIClient(base_url=GFLEX_API_URL,
                                 user=user,
-                                market=market)    
+                                market=market)
 
     # Send a request to the GLocalFlex REST API
     response, err = rest_client.make_request(method="POST",
-                                        endpoint="/users/login", 
+                                        endpoint="/users/login",
                                         data={"email": user.name, "password": user.password})
-    
+
     if err:
           log(ERROR, err)
           sys.exit(1)
@@ -91,10 +91,10 @@ def main():
     user = User(name="",
                 password="",
                 accessToken="")
-    
+
     market = Market(ip=GFLEX_API_URL,
                     broker=Broker(ip=GFLEX_API_URL, port=FLEXMQ_TLS_PORT))
-    
+
     # Define the tradable flexibility to sell or buy
     flex = Flexibility(wattage = random() * 100,
                         starttime = int((time.time() + (60 * 60 * random() * 10)) / 60) * 60 * 1000,
@@ -120,7 +120,7 @@ def main():
                                         verify_ssl=False,
                                         order=market_order,
                                         )
-    
+
     if err:
           log(ERROR, err)
           sys.exit(1)

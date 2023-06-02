@@ -1,18 +1,24 @@
-import requests
-import time
-import pika
 import json
 import ssl as _ssl
-from random import random
-from typing import List, Optional
+import string
+import time
+from logging import ERROR, INFO
+from typing import Optional
 
-from flxtrd.core.types import Broker, Market, MarketOrder, OrderType, User, FlexError
-from flxtrd.core.plugins.base import BasePlugin
-from flxtrd.protocols.base import BaseAPI
-from flxtrd.core.plugins import auth
+import pika
+
 from flxtrd.core.logger import log
-from logging import INFO, DEBUG, WARNING, ERROR, CRITICAL
-from flxtrd.core.types import OrderType, Flexibility
+from flxtrd.core.types import (
+    Broker,
+    FlexError,
+    Flexibility,
+    Market,
+    MarketOrder,
+    OrderType,
+    User,
+)
+from flxtrd.protocols.base import BaseAPI
+
 
 class AmpqContext:
     """Context for AmpqAPI keeps the connection to the broker"""
@@ -28,7 +34,7 @@ class AmpqContext:
 
     def _ssl_context(self):
         context = _ssl.create_default_context()
-        if self.verify_ssl == False:
+        if self.verify_ssl is False:
             # Disable ssl verification for development with self signed certificates
             context.check_hostname = False
             context.verify_mode = _ssl.CERT_NONE
@@ -40,28 +46,35 @@ class AmpqContext:
         # TODO somewhere here some logic that checks if password and user or appkey or accesskeys are available
         # based on what the user provided different methods to connect to the server can be selected
         ssl_options = self._ssl_context()
-        err = self._connecttobrokerWithAppToken(user=self.user,
-                                                broker=self.broker,
-                                                ssl_options=ssl_options,
-                                                verify_ssl=self.verify_ssl)
-        # TODO   
+        err = self._connecttobrokerWithAppToken(
+            user=self.user,
+            broker=self.broker,
+            ssl_options=ssl_options,
+            verify_ssl=self.verify_ssl,
+        )
+        # TODO
         return err
 
     def close_connection(self):
         """Close connection gracefully to message broker"""
         self.connection.close()
 
-    def publish(self,
-                message: str,
-                userid: str,
-                routingkey: str,
-                exchangename=str):
+    def publish(
+        self, message: str, userid: str, routingkey: str, exchangename=str
+    ):
         """Send message to the broker"""
-        props = pika.BasicProperties(user_id=userid,
-                                     reply_to=self.callback_queue_id,
-                                     headers={'sendertimestamp_in_ms': getcurrenttimems()})
+        props = pika.BasicProperties(
+            user_id=userid,
+            reply_to=self.callback_queue_id,
+            headers={"sendertimestamp_in_ms": getcurrenttimems()},
+        )
         try:
-            self.channel.basic_publish(exchange=exchangename, routing_key=routingkey, properties=props, body=message)
+            self.channel.basic_publish(
+                exchange=exchangename,
+                routing_key=routingkey,
+                properties=props,
+                body=message,
+            )
         except Exception as error:
             raise FlexError(str(error))
 
@@ -71,16 +84,18 @@ class AmpqContext:
     def is_connected(self):
         return self.connection.is_open
 
-    def _connecttobrokerWithAppToken(self, 
-                                    user: User,
-                                    broker: Broker,
-                                    ssl_options: pika.SSLOptions,
-                                    verify_ssl: bool = True):
+    def _connecttobrokerWithAppToken(
+        self,
+        user: User,
+        broker: Broker,
+        ssl_options: pika.SSLOptions,
+        verify_ssl: bool = True,
+    ):
         """Connects to the broker with the application token"""
         err = None
         brokerip = broker.ip
         brokerport = broker.port
-        accessToken =user.accessToken
+        accessToken = user.accessToken
         tickeroutexname = broker.tickeroutexname
 
         # userid, applicationKey = validateApplicationToken(authServer=authServer,
@@ -94,38 +109,44 @@ class AmpqContext:
             raise FlexError("User or application key is None")
 
         credentials = pika.PlainCredentials(userid, accessToken)
-        parameters = pika.ConnectionParameters(brokerip, brokerport, "/", credentials, ssl_options=ssl_options)
-        
+        parameters = pika.ConnectionParameters(
+            brokerip, brokerport, "/", credentials, ssl_options=ssl_options
+        )
+
         # Todo check which exceptions can occur
         try:
             self.connection = pika.BlockingConnection(parameters)
             self.channel = self.connection.channel()
-            self.callback_queue_id = declareReplyToQueue(self.channel, applicationKey, tickeroutexname)
+            self.callback_queue_id = declareReplyToQueue(
+                self.channel, applicationKey, tickeroutexname
+            )
         except Exception as excep:
             err = FlexError(str(excep))
             raise err
         return err
 
+
 class AmpqAPI(BaseAPI):
     """Amqp API implementation that connects to public API"""
-    
+
     def __init__(self, base_url: str):
         super().__init__(base_url=base_url)
 
-    def send_request(self,
-                     endpoint: str,
-                     params: Optional[dict] = None,
-                     data: Optional[dict] = None,
-                     verifiy_ssl: Optional[bool] = False,
-                     **kwargs) -> dict:
-        
-        if not "market" in kwargs:
+    def send_request(
+        self,
+        endpoint: str,
+        params: Optional[dict] = None,
+        data: Optional[dict] = None,
+        verifiy_ssl: Optional[bool] = False,
+        **kwargs,
+    ) -> dict:
+        if "market" not in kwargs:
             raise FlexError("'market' not found arguments")
-        if not "user" in kwargs:
+        if "user" not in kwargs:
             raise FlexError("'user' not found in arguments")
-        if not "order" in kwargs:
+        if "order" not in kwargs:
             raise FlexError("'order' not found in arguments")
-        if not "context" in kwargs:
+        if "context" not in kwargs:
             raise FlexError("'context' not found in arguments")
 
         ampq_context: AmpqContext = kwargs["context"]
@@ -150,12 +171,15 @@ class AmpqAPI(BaseAPI):
         #                                                                         broker=market.broker,
         #                                                                         ssl_options=ssl_options,
         #                                                                         verify_ssl=verifiy_ssl)
-        
+
         if "/" in endpoint:
             # accept endpoint in rest api style
             routingkeys = [key for key in endpoint.split("/") if key]
             if len(routingkeys) > 1:
-                log(INFO, f"Received routing key with in Rest style: {endpoint}")
+                log(
+                    INFO,
+                    f"Received routing key with in Rest style: {endpoint}",
+                )
             # take last item from list as expected
             routingkey = routingkeys[-1]
         else:
@@ -164,44 +188,43 @@ class AmpqAPI(BaseAPI):
         log(INFO, f"Using {routingkey} as routing key for message broker")
 
         log(INFO, f"Creating line protocol message for the order {order}")
-        msg = self.create_line_message(user=user,
-                                       flexibility=flexibility,
-                                       marketOrder=order)
-        
+        msg = self.create_line_message(
+            user=user, flexibility=flexibility, marketOrder=order
+        )
+
         log(INFO, f"Send market order {order}")
         log(INFO, f"Order message: {msg}")
 
-        ampq_context.publish(message=msg,
-                userid=user.userId,
-                routingkey=routingkey,
-                exchangename=broker.exchangename)
-        
+        ampq_context.publish(
+            message=msg,
+            userid=user.userId,
+            routingkey=routingkey,
+            exchangename=broker.exchangename,
+        )
+
         replies = ampq_context.checkreplies()
-        
 
         err = None
         return replies, err
 
     @staticmethod
-    def create_line_message(user: User,
-                            flexibility: Flexibility,
-                            marketOrder: MarketOrder
-                            ):
-    
+    def create_line_message(
+        user: User, flexibility: Flexibility, marketOrder: MarketOrder
+    ):
         """Create a line protocol message for InfluxDB that is the payload in the AMQP message
-        
+
         Format ask:
         ask,applicationKey=64218f1adc42c714c1f08043,version=1 starttime=1685730000000i,wattage=19.556418841474642,runtime=60000i,totalenergy=0.32594031402457735,askingprice=7.933964367826437,expirationtime=1685730000000i
 
         Bid:
         bid,applicationKey=64218f1adc42c714c1f08043,version=1 starttime=1685732700000i,wattage=226.3288909510559,runtime=840000i,totalenergy=52.81007455524638,biddingprice=6.56704792164692,expirationtime=1685732700000i
-        
+
         """
         lineordermsg = ""
         if marketOrder.type == OrderType.ASK:
-            pricename="askingprice"
+            pricename = "askingprice"
         elif marketOrder.type == OrderType.BID:
-            pricename="biddingprice"
+            pricename = "biddingprice"
         else:
             raise FlexError(f"Order type {marketOrder.type} not supported")
 
@@ -211,18 +234,19 @@ class AmpqAPI(BaseAPI):
         duration = flexibility.duration
         starttime = flexibility.starttime
         totalenergy = flexibility.energy
-        orderprice = marketOrder.price 
+        orderprice = marketOrder.price
         expirationtime = flexibility.expirationtime
-                            
-        lineordermsg = (f"{order_type.value},"
-                        f"applicationKey={applicationKey},"
-                        f"version=1 starttime={starttime}i,"
-                        f"wattage={wattage},"
-                        f"runtime={duration}i,"
-                        f"totalenergy={totalenergy},"
-                        f"{pricename}={orderprice},"
-                        f"expirationtime={expirationtime}i"
-                        )
+
+        lineordermsg = (
+            f"{order_type.value},"
+            f"applicationKey={applicationKey},"
+            f"version=1 starttime={starttime}i,"
+            f"wattage={wattage},"
+            f"runtime={duration}i,"
+            f"totalenergy={totalenergy},"
+            f"{pricename}={orderprice},"
+            f"expirationtime={expirationtime}i"
+        )
 
         return json.dumps(lineordermsg).strip('"')
         # linemsg = createLineMessage(user=user ,marketOrder=marketOrder, flexibility=flexibility)
@@ -231,7 +255,7 @@ class AmpqAPI(BaseAPI):
 
 # def createLineMessage(user: User, marketOrder: MarketOrder ,flexibility: Flexibility) -> str:
 #     """Create a line protocol"""
-    
+
 #     lineordermsg = ""
 #     if marketOrder.type == OrderType.ASK.name:
 #         pricename="askingprice"
@@ -244,9 +268,9 @@ class AmpqAPI(BaseAPI):
 #     duration = flexibility.duration
 #     starttime = flexibility.starttime
 #     totalenergy = flexibility.energy
-#     orderprice = marketOrder.price 
+#     orderprice = marketOrder.price
 #     expirationtime = flexibility.expirationtime
-                        
+
 #     # lineordermsg = "{0},applicationKey={1},version=1 starttime={2}i,wattage={3},runtime={4}i,totalenergy={5},biddingprice={6},expirationtime={7}i"
 #     # lineordermsg = "{0},applicationKey={1},version=1 starttime={2}i,wattage={3},runtime={4}i,totalenergy={5},askingprice={6},expirationtime={7}i"
 #     # return lineordermsg.format(order, applicationKey, starttime, wattage, duration, totalenergy, orderprice, expirationtime)
@@ -279,10 +303,16 @@ class AmpqAPI(BaseAPI):
 # def checkreplies(connection):
 #     connection.process_data_events()
 
-def getcurrenttimems():
-    return  int(time.time()*1000)
 
-def declareReplyToQueue(channel: pika.adapters.blocking_connection.BlockingChannel , applicationKey: str, tickeroutexname: str) -> None:
+def getcurrenttimems():
+    return int(time.time() * 1000)
+
+
+def declareReplyToQueue(
+    channel: pika.adapters.blocking_connection.BlockingChannel,
+    applicationKey: str,
+    tickeroutexname: str,
+) -> str:
     """Create a queue for the reply to messages from the broker
     The provided applicationKey is used as the queue name"""
     try:
@@ -292,13 +322,14 @@ def declareReplyToQueue(channel: pika.adapters.blocking_connection.BlockingChann
         log(INFO, f"Created queue with ID {callback_queue_id}")
         return callback_queue_id
     except pika.exceptions.ChannelClosedByBroker:
-        log(ERROR, "ReplyTo queue creation failed "+applicationKey)
+        log(ERROR, "ReplyTo queue creation failed " + applicationKey)
+
 
 # def connecttobrokerWithAppToken(user: User,
 #                                 broker: Broker,
 #                                 ssl_options: pika.SSLOptions,
 #                                 verify_ssl: bool = True):
-    
+
 #     authServer = broker.ip # TODO: This should be the auth server
 #     brokerip = broker.ip
 #     brokerport = broker.port
@@ -317,11 +348,16 @@ def declareReplyToQueue(channel: pika.adapters.blocking_connection.BlockingChann
 #     callback_queue_id = declareReplyToQueue(channel, applicationKey, tickeroutexname)
 #     return user, connection, channel, callback_queue_id
 
+
 def setreceiver(callback, callback_queue, channel):
-    channel.basic_consume(queue=callback_queue, on_message_callback=callback, auto_ack=True)
+    channel.basic_consume(
+        queue=callback_queue, on_message_callback=callback, auto_ack=True
+    )
+
 
 def checkreplies(connection):
     connection.process_data_events()
+
 
 # def closeconnection(connection):
 #     connection.close()
@@ -330,7 +366,7 @@ def checkreplies(connection):
 #             callback_queue: pika.adapters.blocking_connection.BlockingChannel,
 #             userid: str,
 #             channel: pika.channel.Channel,
-#             routingkey: str, 
+#             routingkey: str,
 #             exchangename: str):
 #     """Send message to the broker"""
 #     props = pika.BasicProperties(user_id=userid, reply_to=callback_queue, headers={'sendertimestamp_in_ms': getcurrenttimems()})
@@ -338,11 +374,11 @@ def checkreplies(connection):
 
 # def getLineMessage(endpoint: str,
 #                    applicationKey: str,
-#                    wattage: float, 
+#                    wattage: float,
 #                    duration: int,
-#                    starttime: int, 
-#                    totalenergy: float, 
-#                    price: float, 
+#                    starttime: int,
+#                    totalenergy: float,
+#                    price: float,
 #                    expirationtime:int):
 #     """Create a line protocol message for InfluxDB that is the payload in the AMQP message"""
 #     linemsg = createLineMessage(endpoint, applicationKey, wattage, duration, starttime, totalenergy, price, expirationtime)
@@ -358,7 +394,6 @@ def checkreplies(connection):
 #     if "bid" in order:
 #         lineordermsg = "{0},applicationKey={1},version=1 starttime={2}i,wattage={3},runtime={4}i,totalenergy={5},biddingprice={6},expirationtime={7}i"
 #     return lineordermsg.format(order, applicationKey, starttime, wattage, duration, totalenergy, orderprice, expirationtime)
-
 
 
 # def authClient(authServer, username, password, applicationKey):

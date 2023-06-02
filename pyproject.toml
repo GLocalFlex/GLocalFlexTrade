@@ -36,9 +36,13 @@ build-backend = "poetry.core.masonry.api"
 # [tool.poetry.scripts]
 # gflex-trading-bot = "gflex.client:main"
 
+[tool.flake8]
+max-line-length = 79
+max-complexity = 18
+
 [tool.black]
-line-length = 120
-target-version = ['py37']
+line-length = 79
+target-version = ['py310']
 preview = true
 
 [tool.mypy]
@@ -53,8 +57,8 @@ show_error_codes = "True"
 
 [tool.ruff]
 target-version = "py37"
-line-length = 120
-fix = true
+line-length = 79
+fix = false
 select = [
     # flake8-2020
     "YTT",
@@ -103,5 +107,3 @@ skip_empty = true
 [tool.coverage.run]
 branch = true
 source = ["flxtrd"]
-
-

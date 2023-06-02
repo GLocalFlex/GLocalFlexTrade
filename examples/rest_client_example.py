@@ -13,7 +13,7 @@ def main():
     user = User(
         name="123@123.fi",
         password="12345",
-        accessToken="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDIxODY3NmRjNDJjNzE0YzFmMDgwNDEiLCJ1dWlkIjoiZjk3NTIzMGYtOWU3Yi00YjZlLWJhYjgtMTI1MjU2OGFlMDVkIiwiaWF0IjoxNjc5OTIwOTIyLCJleHAiOjE3NzQ1Mjg5MjJ9.CsPwTxcTDNIohdN6HH0weeHQI_gy8Y3STq_0inyRFGo",
+        accessToken="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDIxODY3NmRjNDJjNzE0YzFmMDgwNDEiLCJ1dWlkIjoiZjk3NTIzMGYtOWU3Yi00YjZlLWJhYjgtMTI1MjU2OGFlMDVkIiwiaWF0IjoxNjc5OTIwOTIyLCJleHAiOjE3NzQ1Mjg5MjJ9.CsPwTxcTDNIohdN6HH0weeHQI_gy8Y3STq_0inyRFGo", # noqa
     )
 
     market = Market(ip=GFLEX_API_URL, broker=Broker(ip=GFLEX_API_URL))

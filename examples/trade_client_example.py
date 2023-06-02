@@ -24,7 +24,7 @@ def main() -> None:
     user = User(
         name="123@123.fi",
         password="12345",
-        accessToken="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDIxODY3NmRjNDJjNzE0YzFmMDgwNDEiLCJ1dWlkIjoiZjk3NTIzMGYtOWU3Yi00YjZlLWJhYjgtMTI1MjU2OGFlMDVkIiwiaWF0IjoxNjc5OTIwOTIyLCJleHAiOjE3NzQ1Mjg5MjJ9.CsPwTxcTDNIohdN6HH0weeHQI_gy8Y3STq_0inyRFGo",
+        accessToken="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDIxODY3NmRjNDJjNzE0YzFmMDgwNDEiLCJ1dWlkIjoiZjk3NTIzMGYtOWU3Yi00YjZlLWJhYjgtMTI1MjU2OGFlMDVkIiwiaWF0IjoxNjc5OTIwOTIyLCJleHAiOjE3NzQ1Mjg5MjJ9.CsPwTxcTDNIohdN6HH0weeHQI_gy8Y3STq_0inyRFGo", # noqa
     )
 
     market = Market(
@@ -34,13 +34,9 @@ def main() -> None:
     # Define the tradable flexibility to sell or buy
     flex = Flexibility(
         wattage=random() * 100,
-        starttime=int((time.time() + (60 * 60 * random() * 10)) / 60)
-        * 60
-        * 1000,
+        starttime=int((time.time() + (60 * 60 * random() * 10)) / 60) * 60 * 1000,
         duration=int(((round(random()) * 14 + 1) / 60.0) * 60 * 60 * 1000),
-        expirationtime=int(time.time() / (60 * 1000) + random() * 20)
-        * 60
-        * 1000,
+        expirationtime=int(time.time() / (60 * 1000) + random() * 20) * 60 * 1000,
     )
 
     # Create a market order to sell or buy flexibility

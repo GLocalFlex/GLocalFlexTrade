@@ -12,7 +12,8 @@ class ListDevices(BasePlugin):
         return None
 
     def after_request(self, response: dict) -> None | dict:
-        """Retrieves the location from the user which contains registerd devices and returns id and device name
+        """Retrieves the location from the user which contains registerd devices and
+           returns id and device name
         """
         if response.status_code != 200:
             log(ERROR, f"{response.status_code}")
@@ -27,7 +28,8 @@ class ListDevices(BasePlugin):
             locations = user_data["locations"]
             log(INFO, f"User has {len(locations)} devices in user account")
             for location in locations:
-                # log(INFO, f"Device id: {location['_id']} \t Device name: {location['name']}")
+                log(INFO, f"Device id: {location['_id']} \t Device name:"
+                    f"{location['name']}")
                 devices[location["_id"]] = location["name"]
             return devices
         else:

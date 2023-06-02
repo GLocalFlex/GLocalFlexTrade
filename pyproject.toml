@@ -37,11 +37,12 @@ build-backend = "poetry.core.masonry.api"
 # gflex-trading-bot = "gflex.client:main"
 
 [tool.flake8]
-max-line-length = 79
+max-line-length = 90
 max-complexity = 18
+ignore = "F401 E501"
 
 [tool.black]
-line-length = 79
+line-length = 90
 target-version = ['py310']
 preview = true
 
@@ -57,7 +58,7 @@ show_error_codes = "True"
 
 [tool.ruff]
 target-version = "py37"
-line-length = 79
+line-length = 90
 fix = false
 select = [
     # flake8-2020

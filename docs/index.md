@@ -9,8 +9,8 @@
 
 Public client API for the flexible energy trading market GLocalFlex Market.
 
-The client libary provides standard interface to access the GLocalFlex Market public API. 
-The client integrates Rest API and AMPQ protocol for communication with the GLocalFlex server. 
+The client libary provides standard interface to access the GLocalFlex Market public API.
+The client integrates Rest API and AMPQ protocol for communication with the GLocalFlex server.
 
 
 The **GLocalFlex Market** documentation is available here [GLocalFlex Market Documentation](https://www.glocalflexmarket.com/docs)
@@ -25,7 +25,7 @@ Import in to your trading client
 
     import flxtrd
 
-You can use a sample trading client from the command line for testing 
+You can use a sample trading client from the command line for testing
 
     python -m flxtrd --help
 
@@ -52,20 +52,20 @@ def main():
     user = User(name="",
                 password="",
                 accessToken='')
-    
+
     market = Market(ip=GFLEX_API_URL,
                     broker=Broker(ip=GFLEX_API_URL))
 
     # Create a REST client
     rest_client = FlexAPIClient(base_url=GFLEX_API_URL,
                                 user=user,
-                                market=market)    
+                                market=market)
 
     # Send a request to the GLocalFlex REST API
     response, err = rest_client.make_request(method="POST",
-                                        endpoint="/users/login", 
+                                        endpoint="/users/login",
                                         data={"email": user.name, "password": user.password})
-    
+
     if err:
           log(ERROR, err)
           sys.exit(1)
@@ -99,10 +99,10 @@ def main():
     user = User(name="",
                 password="",
                 accessToken="")
-    
+
     market = Market(ip=GFLEX_API_URL,
                     broker=Broker(ip=GFLEX_API_URL, port=FLEXMQ_TLS_PORT))
-    
+
     # Define the tradable flexibility to sell or buy
     flex = Flexibility(wattage = random() * 100,
                         starttime = int((time.time() + (60 * 60 * random() * 10)) / 60) * 60 * 1000,
@@ -128,7 +128,7 @@ def main():
                                         verify_ssl=False,
                                         order=market_order,
                                         )
-    
+
     if err:
           log(ERROR, err)
           sys.exit(1)
@@ -149,8 +149,8 @@ if __name__ == "__main__":
 
 ``` mermaid
 graph LR
-    MyClient --> FlexAPIClient 
-    MyClient --> TradingStrategy 
+    MyClient --> FlexAPIClient
+    MyClient --> TradingStrategy
     MyClient --> EnergyManagement
     MyClient --> CustomPlugins
     FlexAPIClient --> APIProtocols

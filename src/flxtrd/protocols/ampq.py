@@ -1,6 +1,5 @@
 import json
 import ssl as _ssl
-import string
 import time
 from logging import ERROR, INFO
 from typing import Optional
@@ -43,8 +42,10 @@ class AmpqContext:
     def connect(self):
         """Connect to RabbitMQ broker"""
 
-        # TODO somewhere here some logic that checks if password and user or appkey or accesskeys are available
-        # based on what the user provided different methods to connect to the server can be selected
+        # TODO somewhere here some logic that checks if password and user or
+        #  appkey or accesskeys are available
+        # based on what the user provided different methods
+        #  to connect to the server can be selected
         ssl_options = self._ssl_context()
         err = self._connecttobrokerWithAppToken(
             user=self.user,
@@ -253,57 +254,6 @@ class AmpqAPI(BaseAPI):
         # return json.dumps(linemsg).strip('"')
 
 
-# def createLineMessage(user: User, marketOrder: MarketOrder ,flexibility: Flexibility) -> str:
-#     """Create a line protocol"""
-
-#     lineordermsg = ""
-#     if marketOrder.type == OrderType.ASK.name:
-#         pricename="askingprice"
-#     elif marketOrder.type == OrderType.BID.name:
-#         pricename="biddingprice"
-
-#     order_type = marketOrder.type
-#     applicationKey = user.appKey
-#     wattage = flexibility.wattage
-#     duration = flexibility.duration
-#     starttime = flexibility.starttime
-#     totalenergy = flexibility.energy
-#     orderprice = marketOrder.price
-#     expirationtime = flexibility.expirationtime
-
-#     # lineordermsg = "{0},applicationKey={1},version=1 starttime={2}i,wattage={3},runtime={4}i,totalenergy={5},biddingprice={6},expirationtime={7}i"
-#     # lineordermsg = "{0},applicationKey={1},version=1 starttime={2}i,wattage={3},runtime={4}i,totalenergy={5},askingprice={6},expirationtime={7}i"
-#     # return lineordermsg.format(order, applicationKey, starttime, wattage, duration, totalenergy, orderprice, expirationtime)
-
-#     lineordermsg = f"{order_type}"
-#     f"applicationKey={applicationKey}"
-#     f"version=1 starttime={starttime}i"
-#     f"wattage={wattage}"f"runtime={duration}i"
-#     f"totalenergy={totalenergy}"f"{pricename}={orderprice}"
-#     f"expirationtime={expirationtime}i"
-#     return lineordermsg
-# #
-# def validateApplicationToken(authServer, accessTaken, verify_ssl=True):
-#     appAuthUrl = f'https://{authServer}/users/mptoken/{accessTaken}'
-#     userId = ""
-#     applicationKey = ""
-#     response = requests.get(appAuthUrl, verify=verify_ssl)
-#     if response.status_code == 200:
-#         userId = response.json()['userId']
-#         if 'locations' in response.json().keys():
-#             if len(response.json()['locations']) > 0:
-#                 applicationKey = response.json()['locations'][0]['_id']
-#             else:
-#                 log(INFO, f'Failed to validate applicationToken {accessTaken}')
-#         log(INFO, f'Application token {accessTaken} successfully validated with applicationKey {applicationKey}')
-#     else:
-#         log(INFO, f'Failed to validate applicationToken {accessTaken}')
-#     return userId, applicationKey
-
-# def checkreplies(connection):
-#     connection.process_data_events()
-
-
 def getcurrenttimems():
     return int(time.time() * 1000)
 
@@ -325,30 +275,6 @@ def declareReplyToQueue(
         log(ERROR, "ReplyTo queue creation failed " + applicationKey)
 
 
-# def connecttobrokerWithAppToken(user: User,
-#                                 broker: Broker,
-#                                 ssl_options: pika.SSLOptions,
-#                                 verify_ssl: bool = True):
-
-#     authServer = broker.ip # TODO: This should be the auth server
-#     brokerip = broker.ip
-#     brokerport = broker.port
-#     accessToken =user.accessToken
-#     tickeroutexname = broker.tickeroutexname
-
-#     userid, applicationKey = validateApplicationToken(authServer=authServer,
-#                                                       accessTaken=accessToken,
-#                                                       verify_ssl=verify_ssl)
-#     user.userId = userid
-#     user.appkey = applicationKey
-#     credentials = pika.PlainCredentials(userid, accessToken)
-#     parameters = pika.ConnectionParameters(brokerip, brokerport, "/", credentials, ssl_options=ssl_options)
-#     connection = pika.BlockingConnection(parameters)
-#     channel = connection.channel()
-#     callback_queue_id = declareReplyToQueue(channel, applicationKey, tickeroutexname)
-#     return user, connection, channel, callback_queue_id
-
-
 def setreceiver(callback, callback_queue, channel):
     channel.basic_consume(
         queue=callback_queue, on_message_callback=callback, auto_ack=True
@@ -357,69 +283,3 @@ def setreceiver(callback, callback_queue, channel):
 
 def checkreplies(connection):
     connection.process_data_events()
-
-
-# def closeconnection(connection):
-#     connection.close()
-
-# def sendmsg(message: str,
-#             callback_queue: pika.adapters.blocking_connection.BlockingChannel,
-#             userid: str,
-#             channel: pika.channel.Channel,
-#             routingkey: str,
-#             exchangename: str):
-#     """Send message to the broker"""
-#     props = pika.BasicProperties(user_id=userid, reply_to=callback_queue, headers={'sendertimestamp_in_ms': getcurrenttimems()})
-#     channel.basic_publish(exchange=exchangename, routing_key=routingkey, properties=props, body=message)
-
-# def getLineMessage(endpoint: str,
-#                    applicationKey: str,
-#                    wattage: float,
-#                    duration: int,
-#                    starttime: int,
-#                    totalenergy: float,
-#                    price: float,
-#                    expirationtime:int):
-#     """Create a line protocol message for InfluxDB that is the payload in the AMQP message"""
-#     linemsg = createLineMessage(endpoint, applicationKey, wattage, duration, starttime, totalenergy, price, expirationtime)
-#     return json.dumps(linemsg)
-
-
-# def createLineMessage(order, applicationKey, wattage, duration, starttime, totalenergy, orderprice, expirationtime):
-#     """Create a line protocol"""
-#     starttime=int(starttime)
-#     lineordermsg = ""
-#     if "ask" in order:
-#         lineordermsg = "{0},applicationKey={1},version=1 starttime={2}i,wattage={3},runtime={4}i,totalenergy={5},askingprice={6},expirationtime={7}i"
-#     if "bid" in order:
-#         lineordermsg = "{0},applicationKey={1},version=1 starttime={2}i,wattage={3},runtime={4}i,totalenergy={5},biddingprice={6},expirationtime={7}i"
-#     return lineordermsg.format(order, applicationKey, starttime, wattage, duration, totalenergy, orderprice, expirationtime)
-
-
-# def authClient(authServer, username, password, applicationKey):
-#     userauthurl = f'https://{authServer}/users/login'
-#     usertoken=""
-#     appToken=""
-#     userId=""
-#     authdata = {'email': username, 'password': password}
-#     log(INFO, authdata)
-#     log(INFO, userauthurl)
-#     response = requests.post(userauthurl, data=authdata)
-#     if response.status_code == 200:
-#         log(INFO, "USER AUTH SUCCESFULL")
-#         json_response = response.json()
-#         userId = json_response['userId']
-#         if 'locations' in json_response:
-#             for locs in json_response['locations']:
-#                 if applicationKey is not "":
-#                     if applicationKey == locs['_id']:
-#                         appToken = locs['token']
-#                         break
-#                 else:
-#                     #Pick first application/Metering point
-#                     applicationKey = locs['_id']
-#                     appToken = locs['token']
-#                     break
-#     else:
-#         log(INFO, f'Location/measurement point/application auth failed with response {response.status_code}')
-#     return userId, applicationKey, appToken

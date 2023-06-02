@@ -3,7 +3,8 @@ from typing import List, Optional
 
 from flxtrd.core.plugins.base import BasePlugin
 from flxtrd.protocols.base import BaseAPI
-
+from flxtrd.core.logger import log
+from logging import INFO, DEBUG, WARNING, ERROR, CRITICAL
 
 class RestAPI(BaseAPI):
     """Example REST API class that uses the requests library to make HTTP requests"""

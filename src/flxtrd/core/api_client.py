@@ -1,49 +1,94 @@
+from logging import WARNING
+from socket import create_connection
 from typing import List, Optional, Tuple
 from flxtrd.protocols.base import BaseAPI
 from flxtrd.protocols.restapi import RestAPI
 from flxtrd.core.plugins.auth import AuthPlugin, AuthResponse
 from flxtrd.core.plugins.base import BasePlugin
-from flxtrd.core.types import Market, User, APIResponse
-
+from flxtrd.core.types import FlexError, Market, User, APIResponse
+from flxtrd.core.types import Broker
+from flxtrd.protocols.ampq import AmpqAPI, AmpqContext
+from flxtrd.core.logger import log
+from logging import INFO, DEBUG, WARNING, ERROR, CRITICAL
+# userid, applicationKey = validateApplicationToken(authServer=authServer,
+#                                                 accessTaken=accessToken,
+#                                                 verify_ssl=verify_ssl)
 
 class FlexAPIClient:
     """Example API Client that uses the api and auth plugin
     
     Params:
-        user: User object
-        base_url: Base url of the API
-        protocol: Protocol to use for communication with the public API
+        user: User account object
+        Market: Market information 
+        base_url: Base url of the API server
+        protocol: Protocol used for communication with the public API of the market
         plugins: List of plugins to use
 
     """
     
-    def __init__(self, user: User,  base_url: str, protocol: BaseAPI = RestAPI, plugins: Optional[List[BasePlugin]] = None) -> None:
+    def __init__(self, user: User, market: Market,  base_url: str, protocol: BaseAPI = RestAPI, plugins: Optional[List[BasePlugin]] = None) -> None:
+        # user account data
+        self.user = user
+        self.market = market
         self.protocol = protocol(base_url=base_url)
+
         # By default the Auth Plugin is added
         self.plugins = plugins or [AuthPlugin(user=user,
-                                              authServer=base_url)]
+                                              authServer=base_url,
+                                              verify_ssl=False)]
+        # Keeps connection alive if the protocol requires it
+        self.context = None
 
     def make_request(self, 
                      method: str,
                      endpoint: str,
                      params: Optional[dict] = None,
-                     ssl: Optional[bool] = False,
                      data: Optional[dict] = None,
+                     ssl: Optional[bool] = False,
+                     verify_ssl: Optional[bool] = True,
                      **kwargs) ->  APIResponse:
+        
         """Executes all plugins and forwards the request to the protocol API class"""
+        market = self.market
+        user = self.user
 
+        # Check is connection is alive
+        create_context = False
+        if self.context is None:
+            create_context = True
+        elif not self.context.is_connected():
+            create_context = True
+        
+    
         plugin_data = {}
 
         for _plugin in self.plugins:
-            print(f"Execute plugin {_plugin}")
+            log(INFO, f"Execute plugin {_plugin}")
             plugin_data[f"{str(_plugin)}_before"] =  _plugin.before_request(endpoint, params=params, data=data)
 
-        
-        response, err= self.protocol.send_request(method,
-                                              endpoint,
-                                              data=data,
-                                              ssl=ssl,
-                                              **kwargs)
+
+        if create_context:
+            self.context = self._require_api_context(protocol=self.protocol,
+                                                     verify_ssl=verify_ssl,
+                                                     user = self.user,
+                                                     market=self.market)
+            # check if context was created since it is not necessary for all protocols
+            # if created connect to the broker
+            if self.context is not None:
+                self.context.connect()
+                
+        if self.context is not None:
+            if not self.context.is_connected():
+                raise FlexError("Connection for context is not established")    
+                    
+        response, err= self.protocol.send_request(method=method,
+                                                endpoint=endpoint,
+                                                data=data,
+                                                ssl=ssl,
+                                                context=self.context,
+                                                user = self.user,
+                                                market=self.market,
+                                                **kwargs)
 
         for _plugin in self.plugins:
             plugin_data[f"{str(_plugin)}_after"] = _plugin.after_request(response)
@@ -56,7 +101,16 @@ class FlexAPIClient:
 
         for _plugin in self.plugins:
             if type(_plugin) == type(plugin):
-                print(f"Found already a plugin type {type(plugin)}, plugin {str(plugin)} is not added")
+                log(WARNING, f"Found already a plugin type {type(plugin)}, plugin {str(plugin)} is not added")
                 return 
         self.plugins.append(plugin)
-        print(f"Added plugin {plugin}")
+        log(INFO, f"Added plugin {plugin}")
+
+    @staticmethod
+    def _require_api_context(user: User, market: Market, protocol:BaseAPI, verify_ssl: bool = True,  **kwargs):
+        """Creates a connection context which is specific for every protocol. 
+        Rest API do no require any context the function will return None as default"""
+        if isinstance(protocol, AmpqAPI):
+            return AmpqContext(user=user, broker=market.broker, verify_ssl=verify_ssl)
+        else:
+            return None

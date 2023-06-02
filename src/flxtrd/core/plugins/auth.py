@@ -4,6 +4,8 @@ from flxtrd.core.types import User
 import requests
 import ssl
 from typing import Tuple
+from flxtrd.core.logger import log
+from logging import INFO, DEBUG, WARNING, ERROR, CRITICAL
 
 @dataclass
 class AuthResponse:
@@ -39,7 +41,8 @@ class AuthPlugin(BasePlugin):
                        params = {},
                        data = {}) -> None:
         
-        headers['Authorization'] = f"Bearer {self.user.appKey}"
+        if self.user.accessToken is not None:
+            self.validateApplicationToken(authServer=self.authServer, accessToken=self.user.accessToken, verify_ssl=self.verify_ssl)
 
     def after_request(self, response):
         pass
@@ -65,7 +68,7 @@ class AuthPlugin(BasePlugin):
         authdata = {'email':  self.user.username, 'password': self.user.password}
         response = requests.post(userauthurl, data=authdata)
         if response.status_code == 200:
-            print("USER AUTH SUCCESFULL")
+            log(INFO, "USER AUTH SUCCESFULL")
             json_response = response.json()
             self.user.userId = json_response['userId']
             if 'locations' in json_response:
@@ -80,28 +83,31 @@ class AuthPlugin(BasePlugin):
                         self.user.accessToken = locs['token']
                         break
         else:
-            print(f'Location/measurement point/application auth failed with response {response.status_code}')
+            log(INFO, f'Location/measurement point/application auth failed with response {response.status_code}')
 
 
-def validateApplicationToken(authServer: str,
-                             accessToken: str,
-                             endpoint: str = "/users/mptoken/",
-                             verify_ssl: bool= True) -> Tuple[str, str]:
-    appAuthUrl = f'https://{authServer}{endpoint}{accessToken}'
-    response = requests.get(appAuthUrl, verify=verify_ssl)
-    
-    if not response.status_code == 200:
-        print(f'Failed to validate accessToken {accessToken}')
-        return "", ""
-    
-    userId = response.json()['userId']
-    if 'locations' in response.json().keys():
-        if len(response.json()['locations']) > 0:
-            applicationKey = response.json()['locations'][0]['_id']
-        else:
-            applicationKey = ""
-            print(f'Failed to validate accessToken {accessToken}')
-            return userId, applicationKey
-    
-    print(f'Access token successfully validated')
-    return userId, applicationKey
+    def validateApplicationToken(self, 
+                                 authServer: str,
+                                accessToken: str,
+                                endpoint: str = "/users/mptoken/",
+                                verify_ssl: bool= True) -> Tuple[str, str]:
+        appAuthUrl = f'https://{authServer}{endpoint}{accessToken}'
+        response = requests.get(appAuthUrl, verify=verify_ssl)
+        
+        if not response.status_code == 200:
+            log(ERROR, f"Response status code {response.status_code},"
+                    f"failed to validate accessToken {accessToken}")
+            return "", ""
+        
+        self.user.userId = response.json()['userId']
+        if 'locations' in response.json().keys():
+            if len(response.json()['locations']) > 0:
+                self.user.appKey = response.json()['locations'][0]['_id']
+            else:
+                self.user.appKey = None
+                log(ERROR, f'Failed to validate accessToken {accessToken}')
+                return
+        
+        log(INFO, f'Access token successfully validated')
+        return
+

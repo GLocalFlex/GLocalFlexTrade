@@ -7,7 +7,7 @@ import enum
 import time
 from random import random
 
-class OrderType(enum.Enum):
+class OrderType(str, enum.Enum):
     """Specifies the order types that can be placed on the market
     
     Terminology:
@@ -17,8 +17,8 @@ class OrderType(enum.Enum):
     OrderType.BID creates a buy order to the market
 
     """
-    ASK = enum.auto() # sell order
-    BID = enum.auto() # buy order
+    ASK = "ask"# sell order
+    BID = "bid" # buy order
 
 @dataclass
 class Flexibility:

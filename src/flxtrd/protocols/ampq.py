@@ -214,7 +214,7 @@ class AmpqAPI(BaseAPI):
         orderprice = marketOrder.price 
         expirationtime = flexibility.expirationtime
                             
-        lineordermsg = (f"{order_type.name.lower()},"
+        lineordermsg = (f"{order_type.value},"
                         f"applicationKey={applicationKey},"
                         f"version=1 starttime={starttime}i,"
                         f"wattage={wattage},"

@@ -56,8 +56,7 @@ class FlexAPIClient:
         verify_ssl: Optional[bool] = True,
         **kwargs,
     ) -> APIResponse:
-        """Executes all plugins and forwards the request to the protocol API class
-        """
+        """Executes all plugins and forwards the request to the protocol API class"""
 
         # Check is connection is alive
         create_context = False
@@ -104,9 +103,7 @@ class FlexAPIClient:
             plugin_data[f"{_plugin!s}_after"] = _plugin.after_request(response)
 
         return (
-            APIResponse(
-                request_response=response, plugin_data=plugin_data or None
-            ),
+            APIResponse(request_response=response, plugin_data=plugin_data or None),
             err,
         )
 
@@ -136,8 +133,6 @@ class FlexAPIClient:
         Rest API do no require any context the function will return None as default
         """
         if isinstance(protocol, AmpqAPI):
-            return AmpqContext(
-                user=user, broker=market.broker, verify_ssl=verify_ssl
-            )
+            return AmpqContext(user=user, broker=market.broker, verify_ssl=verify_ssl)
         else:
             return None

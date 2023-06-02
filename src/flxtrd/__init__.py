@@ -1,5 +1,5 @@
 from flxtrd.core.api_client import FlexAPIClient
-from flxtrd.core.logger import log # noqa
+from flxtrd.core.logger import log  # noqa
 from flxtrd.core.plugins.auth import AuthPlugin, AuthResponse
 from flxtrd.core.plugins.base import BasePlugin
 from flxtrd.core.types import (

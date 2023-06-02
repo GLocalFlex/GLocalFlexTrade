@@ -71,7 +71,6 @@ def test_restapi_send_request(
     )
     assert isinstance(response, requests.Response)
     assert not error, f"{error, response}"
-    assert response.status_code == expected_status_code, (
-        f"Received status code: {response.status_code} instead of"
-        f" {expected_status_code}"
-    )
+    assert (
+        response.status_code == expected_status_code
+    ), f"Received status code: {response.status_code} instead of {expected_status_code}"

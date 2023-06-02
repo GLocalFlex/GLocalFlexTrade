@@ -8,8 +8,7 @@ flexLogger = logging.getLogger(LOGGER_NAME)
 flexLogger.setLevel(logging.INFO)
 
 DEFAULT_FORMATTER = logging.Formatter(
-    "%(levelname)s %(name)s %(asctime)s | %(filename)s:%(lineno)d |"
-    " %(message)s"
+    "%(levelname)s %(name)s %(asctime)s | %(filename)s:%(lineno)d | %(message)s"
 )
 
 # Configure console logger

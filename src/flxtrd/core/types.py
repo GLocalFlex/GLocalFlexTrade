@@ -54,8 +54,7 @@ class Device:
 
 @dataclass
 class User:
-    """User dataclass for storing user data for authencation and registered devices.
-    """
+    """User dataclass for storing user data for authencation and registered devices."""
 
     name: str
     password: str
@@ -102,8 +101,7 @@ class MarketOrder:
 
 @dataclass
 class APIResponse:
-    """APIResponse dataclass for storing the response from the API and the plugin data.
-    """
+    """APIResponse dataclass for storing the response from the API and the plugin data."""
 
     request_response: requests.Response
     plugin_data: Optional[dict] = None

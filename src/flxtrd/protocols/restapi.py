@@ -6,8 +6,7 @@ from flxtrd.protocols.base import BaseAPI
 
 
 class RestAPI(BaseAPI):
-    """Example REST API class that uses the requests library to make HTTP requests
-    """
+    """Example REST API class that uses the requests library to make HTTP requests"""
 
     def __init__(self, base_url: str):
         super().__init__(base_url=base_url)

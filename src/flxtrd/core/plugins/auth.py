@@ -23,9 +23,7 @@ class AuthPlugin(BasePlugin):
 
     plugin_name = "AuthPlugin"
 
-    def __init__(
-        self, user: User, authServer: str, verify_ssl: bool = True
-    ) -> None:
+    def __init__(self, user: User, authServer: str, verify_ssl: bool = True) -> None:
         self.authServer = authServer
         self.user = user
         self.verify_ssl = verify_ssl

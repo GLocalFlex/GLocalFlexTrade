@@ -60,9 +60,7 @@ class AmpqContext:
         """Close connection gracefully to message broker"""
         self.connection.close()
 
-    def publish(
-        self, message: str, userid: str, routingkey: str, exchangename=str
-    ):
+    def publish(self, message: str, userid: str, routingkey: str, exchangename=str):
         """Send message to the broker"""
         props = pika.BasicProperties(
             user_id=userid,

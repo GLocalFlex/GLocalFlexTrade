@@ -5,7 +5,7 @@ import logging
 # Create logger
 LOGGER_NAME = "flxtrd"
 flexLogger = logging.getLogger(LOGGER_NAME)
-flexLogger.setLevel(logging.INFO)
+flexLogger.setLevel(logging.DEBUG)
 
 DEFAULT_FORMATTER = logging.Formatter(
     "%(levelname)s %(name)s %(asctime)s | %(filename)s:%(lineno)d | %(message)s"

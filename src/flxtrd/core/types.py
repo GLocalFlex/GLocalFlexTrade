@@ -103,7 +103,8 @@ class MarketOrder:
 class APIResponse:
     """APIResponse dataclass for storing the response from the API and the plugin data."""
 
-    request_response: requests.Response
+    request_response: requests.Response = None
+    order_response: str = "Not implemented"
     plugin_data: Optional[dict] = None
 
 

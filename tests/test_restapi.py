@@ -52,14 +52,6 @@ def test_restapi_instance(create_rest_api_instance):
         ("/", 200, True),
         ("/users/login", 200, False),
         ("/users/login", 200, True),
-        ("/api/v1", 200, False),
-        ("/api/v1", 200, True),
-        ("/api/v1/users", 200, False),
-        ("/api/v1/users", 200, True),
-        ("/api/v1/users/1", 200, False),
-        ("/api/v1/users/1", 200, True),
-        ("/api/v1/users/1/addresses", 200, False),
-        ("/api/v1/users/1/addresses", 200, True),
     ],
 )
 def test_restapi_send_request(

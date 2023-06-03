@@ -1,6 +1,6 @@
 import ssl
 from dataclasses import dataclass
-from logging import ERROR, INFO
+from logging import DEBUG, ERROR, INFO
 
 import requests
 
@@ -102,6 +102,10 @@ class AuthPlugin(BasePlugin):
         endpoint: str = "/users/mptoken/",
         verify_ssl: bool = True,
     ) -> None:
+        if self._isUserValidated():
+            log(DEBUG, "User already validated")
+            return
+
         appAuthUrl = f"https://{authServer}{endpoint}{accessToken}"
         response = requests.get(appAuthUrl, verify=verify_ssl)
 
@@ -122,5 +126,11 @@ class AuthPlugin(BasePlugin):
                 log(ERROR, f"Failed to validate accessToken {accessToken}")
                 return
 
-        log(INFO, "Access token successfully validated")
+        log(INFO, "Application token successfully received and validated")
         return
+
+    def _isUserValidated(self) -> bool:
+        """Check if the user is validated based on exising appKey"""
+        if self.user.appKey is None:
+            return False
+        return True

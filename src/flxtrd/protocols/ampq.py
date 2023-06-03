@@ -1,7 +1,7 @@
 import json
 import ssl as _ssl
 import time
-from logging import ERROR, INFO
+from logging import DEBUG, ERROR, INFO
 from typing import Optional
 
 import pika
@@ -19,46 +19,98 @@ from flxtrd.core.types import (
 from flxtrd.protocols.base import BaseAPI
 
 
-class AmpqContext:
-    """Context for AmpqAPI keeps the connection to the broker"""
+class AmpqAPI(BaseAPI):
+    """Amqp API implementation that connects to public API"""
 
-    def __init__(self, user: User, broker: Broker, verify_ssl: bool = True):
+    def __init__(self, base_url: str, user: User, broker: Broker, callback_fn=None):
+        super().__init__(base_url=base_url)
         self.user: User = user
         self.broker: Broker = broker
-        self.verify_ssl = verify_ssl
         self.ssl_options: pika.SSLOptions = None
         self.connection = None
         self.channel = None
         self.callback_queue_id = None
+        self.callback_fn = callback_fn
+        self.callback_response = None
 
-    def _ssl_context(self):
+    def send_request(
+        self,
+        endpoint: str = None,
+        params: Optional[dict] = None,
+        data: Optional[dict] = None,
+        verifiy_ssl: Optional[bool] = False,
+        **kwargs,
+    ) -> dict:
+        if "market" not in kwargs:
+            raise FlexError("'market' not found arguments")
+        if "user" not in kwargs:
+            raise FlexError("'user' not found in arguments")
+        if "order" not in kwargs:
+            raise FlexError("'order' not found in arguments")
+
+        market: Market = kwargs["market"]
+
+        user: User = kwargs["user"]
+        order: MarketOrder = kwargs["order"]
+        flexibility = order.flexibility
+
+        routingkey = order.type.value
+
+        log(INFO, f"Using {routingkey} as routing key for message broker")
+
+        log(INFO, f"Creating line protocol message for the order {order}")
+        msg = self.create_line_message(
+            user=user, flexibility=flexibility, marketOrder=order
+        )
+
+        log(INFO, f"Send market order {order}")
+        log(DEBUG, f"Order message: {msg}")
+
+        self.publish(
+            message=msg,
+            userid=user.userId,
+            routingkey=routingkey,
+            exchangename=market.broker.exchangename,
+        )
+
+        replies = self.checkreplies()
+
+        err = None
+        return replies, err
+
+    def _ssl_context(self, verify_ssl: bool = True):
         context = _ssl.create_default_context()
-        if self.verify_ssl is False:
+        if verify_ssl is False:
             # Disable ssl verification for development with self signed certificates
             context.check_hostname = False
             context.verify_mode = _ssl.CERT_NONE
         return pika.SSLOptions(context)
 
-    def connect(self):
+    def connect(self, verify_ssl: bool = True):
         """Connect to RabbitMQ broker"""
+        # TODO handle timeout
 
         # TODO somewhere here some logic that checks if password and user or
         #  appkey or accesskeys are available
         # based on what the user provided different methods
         #  to connect to the server can be selected
-        ssl_options = self._ssl_context()
+        ssl_options = self._ssl_context(verify_ssl)
         err = self._connecttobrokerWithAppToken(
             user=self.user,
             broker=self.broker,
             ssl_options=ssl_options,
-            verify_ssl=self.verify_ssl,
+            verify_ssl=verify_ssl,
         )
         # TODO
         return err
 
     def close_connection(self):
         """Close connection gracefully to message broker"""
-        self.connection.close()
+        if self.connection is not None:
+            self.connection.close()
+            log(INFO, "Connection closed")
+        else:
+            log(INFO, "No connection to be closed")
 
     def publish(self, message: str, userid: str, routingkey: str, exchangename=str):
         """Send message to the broker"""
@@ -81,6 +133,8 @@ class AmpqContext:
         self.connection.process_data_events()
 
     def is_connected(self):
+        if self.connection is None:
+            return False
         return self.connection.is_open
 
     def _connecttobrokerWithAppToken(
@@ -123,88 +177,6 @@ class AmpqContext:
             err = FlexError(str(excep))
             raise err
         return err
-
-
-class AmpqAPI(BaseAPI):
-    """Amqp API implementation that connects to public API"""
-
-    def __init__(self, base_url: str):
-        super().__init__(base_url=base_url)
-
-    def send_request(
-        self,
-        endpoint: str,
-        params: Optional[dict] = None,
-        data: Optional[dict] = None,
-        verifiy_ssl: Optional[bool] = False,
-        **kwargs,
-    ) -> dict:
-        if "market" not in kwargs:
-            raise FlexError("'market' not found arguments")
-        if "user" not in kwargs:
-            raise FlexError("'user' not found in arguments")
-        if "order" not in kwargs:
-            raise FlexError("'order' not found in arguments")
-        if "context" not in kwargs:
-            raise FlexError("'context' not found in arguments")
-
-        ampq_context: AmpqContext = kwargs["context"]
-        market: Market = kwargs["market"]
-        broker = market.broker
-        user: User = kwargs["user"]
-        order: MarketOrder = kwargs["order"]
-        flexibility = order.flexibility
-
-        # context = _ssl.create_default_context()
-        # if verifiy_ssl == False:
-        #     # Disable ssl verification for development with self signed certificates
-        #     context.check_hostname = False
-        #     context.verify_mode = _ssl.CERT_NONE
-        # ssl_options = pika.SSLOptions(context)
-
-        # connection = ampq_context.connection
-        # channel = ampq_context.channel
-        # callback_queue_id = ampq_context.callback_queue_id
-
-        # user, connection, channel, callback_queue_id = connecttobrokerWithAppToken(user=user,
-        #                                                                         broker=market.broker,
-        #                                                                         ssl_options=ssl_options,
-        #                                                                         verify_ssl=verifiy_ssl)
-
-        if "/" in endpoint:
-            # accept endpoint in rest api style
-            routingkeys = [key for key in endpoint.split("/") if key]
-            if len(routingkeys) > 1:
-                log(
-                    INFO,
-                    f"Received routing key with in Rest style: {endpoint}",
-                )
-            # take last item from list as expected
-            routingkey = routingkeys[-1]
-        else:
-            routingkey = endpoint
-
-        log(INFO, f"Using {routingkey} as routing key for message broker")
-
-        log(INFO, f"Creating line protocol message for the order {order}")
-        msg = self.create_line_message(
-            user=user, flexibility=flexibility, marketOrder=order
-        )
-
-        log(INFO, f"Send market order {order}")
-        log(INFO, f"Order message: {msg}")
-
-        ampq_context.publish(
-            message=msg,
-            userid=user.userId,
-            routingkey=routingkey,
-            exchangename=broker.exchangename,
-        )
-
-        replies = ampq_context.checkreplies()
-
-        err = None
-        return replies, err
 
     @staticmethod
     def create_line_message(

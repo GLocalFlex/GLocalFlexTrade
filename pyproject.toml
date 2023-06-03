@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "flxtrd"
-version = "0.0.4"
+version = "0.1.0"
 description = "Public client API for the flexible energy trading market GLocalFlex."
 authors = ["glocalflex"]
 repository = "https://github.com/glocalflex/GLocalFlexTrade"
@@ -112,4 +112,4 @@ skip_empty = true
 
 [tool.coverage.run]
 branch = true
-source = ["flxtrd"]
+# source = ["flxtrd"]

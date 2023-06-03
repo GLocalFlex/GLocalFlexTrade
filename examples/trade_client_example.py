@@ -2,10 +2,10 @@
 import sys
 import time
 from logging import ERROR, INFO
+from pprint import pformat
 from random import random
 
 from flxtrd import (
-    AmpqAPI,
     Broker,
     FlexAPIClient,
     Flexibility,
@@ -19,20 +19,17 @@ from flxtrd import (
 
 def main() -> None:
     GFLEX_API_URL = "localhost"
-    FLEXMQ_TLS_PORT = 5671
 
     user = User(
-        name="123@123.fi",
-        password="12345",
-        accessToken="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NDIxODY3NmRjNDJjNzE0YzFmMDgwNDEiLCJ1dWlkIjoiZjk3NTIzMGYtOWU3Yi00YjZlLWJhYjgtMTI1MjU2OGFlMDVkIiwiaWF0IjoxNjc5OTIwOTIyLCJleHAiOjE3NzQ1Mjg5MjJ9.CsPwTxcTDNIohdN6HH0weeHQI_gy8Y3STq_0inyRFGo",  # noqa
+        name="<your_email>",
+        password="<your_password>",
+        accessToken="<your_device_access_token>",
     )
 
-    market = Market(
-        ip=GFLEX_API_URL, broker=Broker(ip=GFLEX_API_URL, port=FLEXMQ_TLS_PORT)
-    )
+    market = Market(ip=GFLEX_API_URL, broker=Broker(ip=GFLEX_API_URL))
 
     # Define the tradable flexibility to sell or buy
-    flex = Flexibility(
+    flexResource = Flexibility(
         wattage=random() * 100,
         starttime=int((time.time() + (60 * 60 * random() * 10)) / 60) * 60 * 1000,
         duration=int(((round(random()) * 14 + 1) / 60.0) * 60 * 60 * 1000),
@@ -40,18 +37,30 @@ def main() -> None:
     )
 
     # Create a market order to sell or buy flexibility
-    market_order = MarketOrder(type=OrderType.ASK, price=100, flexibility=flex)
+    market_order = MarketOrder(type=OrderType.ASK, price=100, flexibility=flexResource)
 
     # Create a AMPQ client that connects to the message broker
-    ampq_client = FlexAPIClient(
-        base_url=GFLEX_API_URL, protocol=AmpqAPI, user=user, market=market
+    trading_client = FlexAPIClient(base_url=GFLEX_API_URL, user=user, market=market)
+
+    # Send a request to the GLocalFlex with REST API
+    response, err = trading_client.make_request(
+        method="POST",
+        endpoint="/users/login",
+        data={"email": user.name, "password": user.password},
     )
 
-    # Send the market order to the message broker
-    response, err = ampq_client.make_request(
+    if err:
+        log(ERROR, err)
+        sys.exit(1)
+
+    log(INFO, pformat(response.request_response.json()))
+    log(INFO, response.request_response.status_code)
+
+    # Send the market order to the message broker with AMPQ protocol
+    # The connection to the market message broker will be initiated automatically
+    response, err = trading_client.send_order(
         method="",
         endpoint="ask",
-        ssl=True,
         verify_ssl=False,
         order=market_order,
     )
@@ -61,7 +70,26 @@ def main() -> None:
         sys.exit(1)
 
     log(INFO, "Received response from message broker")
-    log(INFO, response)
+    log(INFO, response.order_response)
+
+    # Send the market order to the message broker with AMPQ protocol
+    # The connection to the market message broker will be initiated automatically
+    response, err = trading_client.send_order(
+        method="",
+        endpoint="bi",
+        verify_ssl=False,
+        order=market_order,
+    )
+
+    if err:
+        log(ERROR, err)
+        sys.exit(1)
+
+    log(INFO, "Received response from message broker")
+    log(INFO, response.order_response)
+
+    # Close the connection to the market message broker
+    trading_client.trade_protocol.close_connection()
 
 
 if __name__ == "__main__":

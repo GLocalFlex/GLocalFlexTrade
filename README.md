@@ -22,118 +22,104 @@ Install GLocalFlexTrade Python package
 ```sh
 pip install flxtrd
 ```
-### Basic Rest API Example
-
-```py
-""" Example usage of the REST API client"""
-
-import sys
-from flxtrd import FlexAPIClient
-from flxtrd import AuthPlugin, ListDevices
-from flxtrd import User
-from flxtrd import User, Market, Broker, MarketOrder, Flexibility, OrderType
-from flxtrd import log
-from logging import INFO, DEBUG, WARNING, ERROR, CRITICAL
-
-
-def main():
-
-    GFLEX_API_URL = "localhost"
-
-    # Define types for the user, market and message broker
-    user = User(name="",
-                password="",
-                accessToken='')
-
-    market = Market(ip=GFLEX_API_URL,
-                    broker=Broker(ip=GFLEX_API_URL))
-
-    # Create a REST client
-    rest_client = FlexAPIClient(base_url=GFLEX_API_URL,
-                                user=user,
-                                market=market)
-
-    # Send a request to the GLocalFlex REST API
-    response, err = rest_client.make_request(method="POST",
-                                        endpoint="/users/login",
-                                        data={"email": user.name, "password": user.password})
-
-    if err:
-          log(ERROR, err)
-          sys.exit(1)
-
-    log(INFO, response.request_response.json())
-    log(INFO, response.request_response.status_code)
-
-if __name__ == "__main__":
-        main()
-```
-
-### Basic Trade Example connecting to the market message broker
+### Basic Example
 
 ```py
 """Example usage of the trading client using AMPQ protocol"""
 import sys
 import time
+from logging import ERROR, INFO
+from pprint import pformat
 from random import random
-from logging import INFO, DEBUG, WARNING, ERROR, CRITICAL
 
-from flxtrd import log
-from flxtrd import FlexAPIClient, AmpqAPI
-from flxtrd import User, Market, Broker, MarketOrder, Flexibility, OrderType
+from flxtrd import (
+    Broker,
+    FlexAPIClient,
+    Flexibility,
+    Market,
+    MarketOrder,
+    OrderType,
+    User,
+    log,
+)
 
 
-def main():
-
+def main() -> None:
     GFLEX_API_URL = "localhost"
-    FLEXMQ_TLS_PORT = 5671
 
-    user = User(name="",
-                password="",
-                accessToken="")
+    user = User(
+        name="<your_email>",
+        password="<your_password>",
+        accessToken="<your_device_access_token>",
+    )
 
-    market = Market(ip=GFLEX_API_URL,
-                    broker=Broker(ip=GFLEX_API_URL, port=FLEXMQ_TLS_PORT))
+    market = Market(ip=GFLEX_API_URL, broker=Broker(ip=GFLEX_API_URL))
 
     # Define the tradable flexibility to sell or buy
-    flex = Flexibility(wattage = random() * 100,
-                        starttime = int((time.time() + (60 * 60 * random() * 10)) / 60) * 60 * 1000,
-                        duration = int(((round(random()) * 14 + 1) / 60.0) * 60 * 60 * 1000),
-                        expirationtime = int(time.time() / (60 * 1000) + random() * 20) * 60 * 1000)
+    flexResource = Flexibility(
+        wattage=random() * 100,
+        starttime=int((time.time() + (60 * 60 * random() * 10)) / 60) * 60 * 1000,
+        duration=int(((round(random()) * 14 + 1) / 60.0) * 60 * 60 * 1000),
+        expirationtime=int(time.time() / (60 * 1000) + random() * 20) * 60 * 1000,
+    )
 
     # Create a market order to sell or buy flexibility
-    market_order = MarketOrder(type=OrderType.ASK,
-                        price=100,
-                        flexibility=flex)
+    market_order = MarketOrder(type=OrderType.ASK, price=100, flexibility=flexResource)
 
     # Create a AMPQ client that connects to the message broker
-    ampq_client = FlexAPIClient(base_url=GFLEX_API_URL,
-                                protocol=AmpqAPI,
-                                user=user,
-                                market=market
-                                )
+    trading_client = FlexAPIClient(base_url=GFLEX_API_URL, user=user, market=market)
 
-    # Send the market order to the message broker
-    response, err = ampq_client.make_request(method="",
-                                        endpoint="ask",
-                                        ssl=True,
-                                        verify_ssl=False,
-                                        order=market_order,
-                                        )
+    # Send a request to the GLocalFlex with REST API
+    response, err = trading_client.make_request(
+        method="POST",
+        endpoint="/users/login",
+        data={"email": user.name, "password": user.password},
+    )
 
     if err:
-          log(ERROR, err)
-          sys.exit(1)
+        log(ERROR, err)
+        sys.exit(1)
+
+    log(INFO, pformat(response.request_response.json()))
+    log(INFO, response.request_response.status_code)
+
+    # Send the market order to the message broker with AMPQ protocol
+    # The connection to the market message broker will be initiated automatically
+    response, err = trading_client.send_order(
+        method="",
+        endpoint="ask",
+        verify_ssl=False,
+        order=market_order,
+    )
+
+    if err:
+        log(ERROR, err)
+        sys.exit(1)
 
     log(INFO, "Received response from message broker")
-    log(INFO, response)
+    log(INFO, response.order_response)
+
+    # Send the market order to the message broker with AMPQ protocol
+    # The connection to the market message broker will be initiated automatically
+    response, err = trading_client.send_order(
+        method="",
+        endpoint="bi",
+        verify_ssl=False,
+        order=market_order,
+    )
+
+    if err:
+        log(ERROR, err)
+        sys.exit(1)
+
+    log(INFO, "Received response from message broker")
+    log(INFO, response.order_response)
+
+    # Close the connection to the market message broker
+    trading_client.trade_protocol.close_connection()
 
 
 if __name__ == "__main__":
-        main()
+    main()
 
 ```
-
-# Development
-
-export PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring

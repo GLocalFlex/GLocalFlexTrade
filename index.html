@@ -293,13 +293,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#basic-trade-example-connecting-to-the-market-message-broker" class="md-nav__link">
-    Basic Trade Example connecting to the market message broker
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#architecture" class="md-nav__link">
     Architecture
   </a>
@@ -348,13 +341,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#basic-trade-example-connecting-to-the-market-message-broker" class="md-nav__link">
-    Basic Trade Example connecting to the market message broker
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#architecture" class="md-nav__link">
     Architecture
   </a>
@@ -389,8 +375,8 @@
 <!-- [![License](https://img.shields.io/github/license/glocalflex/flxtrd)](https://img.shields.io/github/license/glocalflex/flxtrd) -->
 
 <p>Public client API for the flexible energy trading market GLocalFlex Market.</p>
-<p>The client libary provides standard interface to access the GLocalFlex Market public API. 
-The client integrates Rest API and AMPQ protocol for communication with the GLocalFlex server. </p>
+<p>The client libary provides standard interface to access the GLocalFlex Market public API.
+The client integrates Rest API and AMPQ protocol for communication with the GLocalFlex server.</p>
 <p>The <strong>GLocalFlex Market</strong> documentation is available here <a href="https://www.glocalflexmarket.com/docs">GLocalFlex Market Documentation</a></p>
 <p>Trade energy or offer flexible loads to the European energy market.</p>
 <p>Install Python package</p>
@@ -399,118 +385,111 @@ The client integrates Rest API and AMPQ protocol for communication with the GLoc
 <p>Import in to your trading client</p>
 <pre><code>import flxtrd
 </code></pre>
-<p>You can use a sample trading client from the command line for testing </p>
+<p>You can use a sample trading client from the command line for testing</p>
 <pre><code>python -m flxtrd --help
 </code></pre>
 <h3 id="basic-rest-api-example">Basic Rest API Example<a class="headerlink" href="#basic-rest-api-example" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot; Example usage of the REST API client&quot;&quot;&quot;</span>
-
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">from</span> <span class="nn">flxtrd</span> <span class="kn">import</span> <span class="n">FlexAPIClient</span>
-<span class="kn">from</span> <span class="nn">flxtrd</span> <span class="kn">import</span> <span class="n">AuthPlugin</span><span class="p">,</span> <span class="n">ListDevices</span>
-<span class="kn">from</span> <span class="nn">flxtrd</span> <span class="kn">import</span> <span class="n">User</span>
-<span class="kn">from</span> <span class="nn">flxtrd</span> <span class="kn">import</span> <span class="n">User</span><span class="p">,</span> <span class="n">Market</span><span class="p">,</span> <span class="n">Broker</span><span class="p">,</span> <span class="n">MarketOrder</span><span class="p">,</span> <span class="n">Flexibility</span><span class="p">,</span> <span class="n">OrderType</span>
-<span class="kn">from</span> <span class="nn">flxtrd</span> <span class="kn">import</span> <span class="n">log</span>
-<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">INFO</span><span class="p">,</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">WARNING</span><span class="p">,</span> <span class="n">ERROR</span><span class="p">,</span> <span class="n">CRITICAL</span>
-
-
-<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-
-    <span class="n">GFLEX_API_URL</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
-
-    <span class="c1"># Define types for the user, market and message broker</span>
-    <span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
-                <span class="n">password</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
-                <span class="n">accessToken</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-
-    <span class="n">market</span> <span class="o">=</span> <span class="n">Market</span><span class="p">(</span><span class="n">ip</span><span class="o">=</span><span class="n">GFLEX_API_URL</span><span class="p">,</span>
-                    <span class="n">broker</span><span class="o">=</span><span class="n">Broker</span><span class="p">(</span><span class="n">ip</span><span class="o">=</span><span class="n">GFLEX_API_URL</span><span class="p">))</span>
-
-    <span class="c1"># Create a REST client</span>
-    <span class="n">rest_client</span> <span class="o">=</span> <span class="n">FlexAPIClient</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="n">GFLEX_API_URL</span><span class="p">,</span>
-                                <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span>
-                                <span class="n">market</span><span class="o">=</span><span class="n">market</span><span class="p">)</span>    
-
-    <span class="c1"># Send a request to the GLocalFlex REST API</span>
-    <span class="n">response</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">rest_client</span><span class="o">.</span><span class="n">make_request</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
-                                        <span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;/users/login&quot;</span><span class="p">,</span> 
-                                        <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">password</span><span class="p">})</span>
-
-    <span class="k">if</span> <span class="n">err</span><span class="p">:</span>
-          <span class="n">log</span><span class="p">(</span><span class="n">ERROR</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
-          <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-
-    <span class="n">log</span><span class="p">(</span><span class="n">INFO</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">request_response</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>
-    <span class="n">log</span><span class="p">(</span><span class="n">INFO</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">request_response</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
-
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-        <span class="n">main</span><span class="p">()</span>
-</code></pre></div>
-<h3 id="basic-trade-example-connecting-to-the-market-message-broker">Basic Trade Example connecting to the market message broker<a class="headerlink" href="#basic-trade-example-connecting-to-the-market-message-broker" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Example usage of the trading client using AMPQ protocol&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">ERROR</span><span class="p">,</span> <span class="n">INFO</span>
+<span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pformat</span>
 <span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">random</span>
-<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">INFO</span><span class="p">,</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">WARNING</span><span class="p">,</span> <span class="n">ERROR</span><span class="p">,</span> <span class="n">CRITICAL</span>
 
-<span class="kn">from</span> <span class="nn">flxtrd</span> <span class="kn">import</span> <span class="n">log</span>
-<span class="kn">from</span> <span class="nn">flxtrd</span> <span class="kn">import</span> <span class="n">FlexAPIClient</span><span class="p">,</span> <span class="n">AmpqAPI</span>
-<span class="kn">from</span> <span class="nn">flxtrd</span> <span class="kn">import</span> <span class="n">User</span><span class="p">,</span> <span class="n">Market</span><span class="p">,</span> <span class="n">Broker</span><span class="p">,</span> <span class="n">MarketOrder</span><span class="p">,</span> <span class="n">Flexibility</span><span class="p">,</span> <span class="n">OrderType</span>
+<span class="kn">from</span> <span class="nn">flxtrd</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Broker</span><span class="p">,</span>
+    <span class="n">FlexAPIClient</span><span class="p">,</span>
+    <span class="n">Flexibility</span><span class="p">,</span>
+    <span class="n">Market</span><span class="p">,</span>
+    <span class="n">MarketOrder</span><span class="p">,</span>
+    <span class="n">OrderType</span><span class="p">,</span>
+    <span class="n">User</span><span class="p">,</span>
+    <span class="n">log</span><span class="p">,</span>
+<span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-
+<span class="k">def</span> <span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">GFLEX_API_URL</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
-    <span class="n">FLEXMQ_TLS_PORT</span> <span class="o">=</span> <span class="mi">5671</span>
 
-    <span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
-                <span class="n">password</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
-                <span class="n">accessToken</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&lt;your_email&gt;&quot;</span><span class="p">,</span>
+        <span class="n">password</span><span class="o">=</span><span class="s2">&quot;&lt;your_password&gt;&quot;</span><span class="p">,</span>
+        <span class="n">accessToken</span><span class="o">=</span><span class="s2">&quot;&lt;your_device_access_token&gt;&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
 
-    <span class="n">market</span> <span class="o">=</span> <span class="n">Market</span><span class="p">(</span><span class="n">ip</span><span class="o">=</span><span class="n">GFLEX_API_URL</span><span class="p">,</span>
-                    <span class="n">broker</span><span class="o">=</span><span class="n">Broker</span><span class="p">(</span><span class="n">ip</span><span class="o">=</span><span class="n">GFLEX_API_URL</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">FLEXMQ_TLS_PORT</span><span class="p">))</span>
+    <span class="n">market</span> <span class="o">=</span> <span class="n">Market</span><span class="p">(</span><span class="n">ip</span><span class="o">=</span><span class="n">GFLEX_API_URL</span><span class="p">,</span> <span class="n">broker</span><span class="o">=</span><span class="n">Broker</span><span class="p">(</span><span class="n">ip</span><span class="o">=</span><span class="n">GFLEX_API_URL</span><span class="p">))</span>
 
     <span class="c1"># Define the tradable flexibility to sell or buy</span>
-    <span class="n">flex</span> <span class="o">=</span> <span class="n">Flexibility</span><span class="p">(</span><span class="n">wattage</span> <span class="o">=</span> <span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span>
-                        <span class="n">starttime</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">+</span> <span class="p">(</span><span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">10</span><span class="p">))</span> <span class="o">/</span> <span class="mi">60</span><span class="p">)</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">,</span>
-                        <span class="n">duration</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(((</span><span class="nb">round</span><span class="p">(</span><span class="n">random</span><span class="p">())</span> <span class="o">*</span> <span class="mi">14</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mf">60.0</span><span class="p">)</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">),</span>
-                        <span class="n">expirationtime</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">/</span> <span class="p">(</span><span class="mi">60</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span> <span class="o">+</span> <span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">20</span><span class="p">)</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
+    <span class="n">flexResource</span> <span class="o">=</span> <span class="n">Flexibility</span><span class="p">(</span>
+        <span class="n">wattage</span><span class="o">=</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="n">starttime</span><span class="o">=</span><span class="nb">int</span><span class="p">((</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">+</span> <span class="p">(</span><span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">10</span><span class="p">))</span> <span class="o">/</span> <span class="mi">60</span><span class="p">)</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">,</span>
+        <span class="n">duration</span><span class="o">=</span><span class="nb">int</span><span class="p">(((</span><span class="nb">round</span><span class="p">(</span><span class="n">random</span><span class="p">())</span> <span class="o">*</span> <span class="mi">14</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mf">60.0</span><span class="p">)</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">),</span>
+        <span class="n">expirationtime</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">/</span> <span class="p">(</span><span class="mi">60</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span> <span class="o">+</span> <span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">20</span><span class="p">)</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="c1"># Create a market order to sell or buy flexibility</span>
-    <span class="n">market_order</span> <span class="o">=</span> <span class="n">MarketOrder</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">OrderType</span><span class="o">.</span><span class="n">ASK</span><span class="p">,</span>
-                        <span class="n">price</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-                        <span class="n">flexibility</span><span class="o">=</span><span class="n">flex</span><span class="p">)</span>
+    <span class="n">market_order</span> <span class="o">=</span> <span class="n">MarketOrder</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">OrderType</span><span class="o">.</span><span class="n">ASK</span><span class="p">,</span> <span class="n">price</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">flexibility</span><span class="o">=</span><span class="n">flexResource</span><span class="p">)</span>
 
     <span class="c1"># Create a AMPQ client that connects to the message broker</span>
-    <span class="n">ampq_client</span> <span class="o">=</span> <span class="n">FlexAPIClient</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="n">GFLEX_API_URL</span><span class="p">,</span>
-                                <span class="n">protocol</span><span class="o">=</span><span class="n">AmpqAPI</span><span class="p">,</span>
-                                <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span>
-                                <span class="n">market</span><span class="o">=</span><span class="n">market</span>
-                                <span class="p">)</span>
+    <span class="n">trading_client</span> <span class="o">=</span> <span class="n">FlexAPIClient</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="n">GFLEX_API_URL</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span> <span class="n">market</span><span class="o">=</span><span class="n">market</span><span class="p">)</span>
 
-    <span class="c1"># Send the market order to the message broker</span>
-    <span class="n">response</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">ampq_client</span><span class="o">.</span><span class="n">make_request</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
-                                        <span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;ask&quot;</span><span class="p">,</span>
-                                        <span class="n">ssl</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                                        <span class="n">verify_ssl</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                                        <span class="n">order</span><span class="o">=</span><span class="n">market_order</span><span class="p">,</span>
-                                        <span class="p">)</span>
+    <span class="c1"># Send a request to the GLocalFlex with REST API</span>
+    <span class="n">response</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">trading_client</span><span class="o">.</span><span class="n">make_request</span><span class="p">(</span>
+        <span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
+        <span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;/users/login&quot;</span><span class="p">,</span>
+        <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">password</span><span class="p">},</span>
+    <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">err</span><span class="p">:</span>
-          <span class="n">log</span><span class="p">(</span><span class="n">ERROR</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
-          <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">log</span><span class="p">(</span><span class="n">ERROR</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">log</span><span class="p">(</span><span class="n">INFO</span><span class="p">,</span> <span class="n">pformat</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">request_response</span><span class="o">.</span><span class="n">json</span><span class="p">()))</span>
+    <span class="n">log</span><span class="p">(</span><span class="n">INFO</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">request_response</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+
+    <span class="c1"># Send the market order to the message broker with AMPQ protocol</span>
+    <span class="c1"># The connection to the market message broker will be initiated automatically</span>
+    <span class="n">response</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">trading_client</span><span class="o">.</span><span class="n">send_order</span><span class="p">(</span>
+        <span class="n">method</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;ask&quot;</span><span class="p">,</span>
+        <span class="n">verify_ssl</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="n">market_order</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">err</span><span class="p">:</span>
+        <span class="n">log</span><span class="p">(</span><span class="n">ERROR</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="n">log</span><span class="p">(</span><span class="n">INFO</span><span class="p">,</span> <span class="s2">&quot;Received response from message broker&quot;</span><span class="p">)</span>
-    <span class="n">log</span><span class="p">(</span><span class="n">INFO</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+    <span class="n">log</span><span class="p">(</span><span class="n">INFO</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">order_response</span><span class="p">)</span>
+
+    <span class="c1"># Send the market order to the message broker with AMPQ protocol</span>
+    <span class="c1"># The connection to the market message broker will be initiated automatically</span>
+    <span class="n">response</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">trading_client</span><span class="o">.</span><span class="n">send_order</span><span class="p">(</span>
+        <span class="n">method</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;bi&quot;</span><span class="p">,</span>
+        <span class="n">verify_ssl</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="n">market_order</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">err</span><span class="p">:</span>
+        <span class="n">log</span><span class="p">(</span><span class="n">ERROR</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">log</span><span class="p">(</span><span class="n">INFO</span><span class="p">,</span> <span class="s2">&quot;Received response from message broker&quot;</span><span class="p">)</span>
+    <span class="n">log</span><span class="p">(</span><span class="n">INFO</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">order_response</span><span class="p">)</span>
+
+    <span class="c1"># Close the connection to the market message broker</span>
+    <span class="n">trading_client</span><span class="o">.</span><span class="n">trade_protocol</span><span class="o">.</span><span class="n">close_connection</span><span class="p">()</span>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-        <span class="n">main</span><span class="p">()</span>
+    <span class="n">main</span><span class="p">()</span>
 </code></pre></div>
 <h2 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h2>
 <pre class="mermaid"><code>graph LR
-    MyClient --&gt; FlexAPIClient 
-    MyClient --&gt; TradingStrategy 
+    MyClient --&gt; FlexAPIClient
+    MyClient --&gt; TradingStrategy
     MyClient --&gt; EnergyManagement
     MyClient --&gt; CustomPlugins
     FlexAPIClient --&gt; APIProtocols

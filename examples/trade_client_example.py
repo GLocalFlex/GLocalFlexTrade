@@ -60,7 +60,6 @@ def main() -> None:
     # The connection to the market message broker will be initiated automatically
     response, err = trading_client.send_order(
         method="",
-        endpoint="ask",
         verify_ssl=False,
         order=market_order,
     )
@@ -76,7 +75,6 @@ def main() -> None:
     # The connection to the market message broker will be initiated automatically
     response, err = trading_client.send_order(
         method="",
-        endpoint="bi",
         verify_ssl=False,
         order=market_order,
     )

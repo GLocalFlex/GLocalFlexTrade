@@ -1,20 +1,24 @@
+from flxtrd.core import utils
 from flxtrd.core.api_client import FlexAPIClient
 from flxtrd.core.logger import log  # noqa
 from flxtrd.core.plugins.auth import AuthPlugin, AuthResponse
 from flxtrd.core.plugins.base import BasePlugin
 from flxtrd.core.types import (
-    APIResponse,
-    Broker,
-    Device,
+    FlexResponse,
+    FlexBroker,
+    FlexDevice,
     FlexError,
-    Flexibility,
-    Market,
+    FlexResource,
+    FlexMarket,
     MarketOrder,
     OrderType,
-    User,
+    FlexUser,
 )
 from flxtrd.protocols.ampq import AmpqAPI
 from flxtrd.protocols.restapi import RestAPI
+
+ASK = OrderType.ASK
+BID = OrderType.BID
 
 __all__ = [
     FlexAPIClient,
@@ -22,9 +26,11 @@ __all__ = [
     AmpqAPI,
     AuthPlugin,
     AuthResponse,
-    User,
-    Device,
-    Market,
+    FlexUser,
+    FlexDevice,
+    FlexMarket,
     FlexError,
-    APIResponse,
+    FlexResponse,
+    ASK,
+    BID,
 ]

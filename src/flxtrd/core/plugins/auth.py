@@ -6,7 +6,7 @@ import requests
 
 from flxtrd.core.logger import log
 from flxtrd.core.plugins.base import BasePlugin
-from flxtrd.core.types import APIResponse, User
+from flxtrd.core.types import FlexResponse, FlexUser
 
 
 @dataclass
@@ -23,7 +23,7 @@ class AuthPlugin(BasePlugin):
 
     plugin_name = "AuthPlugin"
 
-    def __init__(self, user: User, authServer: str, verify_ssl: bool = True) -> None:
+    def __init__(self, user: FlexUser, authServer: str, verify_ssl: bool = True) -> None:
         self.authServer = authServer
         self.user = user
         self.verify_ssl = verify_ssl
@@ -44,14 +44,14 @@ class AuthPlugin(BasePlugin):
         params: dict = None,
         data: dict = None,
     ) -> None:
-        if self.user.accessToken is not None:
+        if self.user.access_token is not None:
             self.validateApplicationToken(
                 authServer=self.authServer,
-                accessToken=self.user.accessToken,
+                accessToken=self.user.access_token,
                 verify_ssl=self.verify_ssl,
             )
 
-    def after_request(self, response: APIResponse) -> None:
+    def after_request(self, response: FlexResponse) -> None:
         pass
 
     def auth_client(
@@ -76,17 +76,17 @@ class AuthPlugin(BasePlugin):
         if response.status_code == 200:
             log(INFO, "USER AUTH SUCCESFULL")
             json_response = response.json()
-            self.user.userId = json_response["userId"]
+            self.user.user_id = json_response["userId"]
             if "locations" in json_response:
                 for locs in json_response["locations"]:
-                    if self.user.appKey:
-                        if self.user.appKey == locs["_id"]:
-                            self.user.accessToken = locs["token"]
+                    if self.user.app_key:
+                        if self.user.app_key == locs["_id"]:
+                            self.user.access_token = locs["token"]
                             break
                     else:
                         # Pick first application/Metering point
-                        self.user.appKey = locs["_id"]
-                        self.user.accessToken = locs["token"]
+                        self.user.app_key = locs["_id"]
+                        self.user.access_token = locs["token"]
                         break
         else:
             log(
@@ -103,7 +103,7 @@ class AuthPlugin(BasePlugin):
         verify_ssl: bool = True,
     ) -> None:
         if self._isUserValidated():
-            log(DEBUG, "User already validated")
+            log(INFO, "User already validated")
             return
 
         appAuthUrl = f"https://{authServer}{endpoint}{accessToken}"
@@ -117,12 +117,12 @@ class AuthPlugin(BasePlugin):
             )
             return "", ""
 
-        self.user.userId = response.json()["userId"]
+        self.user.user_id = response.json()["userId"]
         if "locations" in response.json():
             if len(response.json()["locations"]) > 0:
-                self.user.appKey = response.json()["locations"][0]["_id"]
+                self.user.app_key = response.json()["locations"][0]["_id"]
             else:
-                self.user.appKey = None
+                self.user.app_key = None
                 log(ERROR, f"Failed to validate accessToken {accessToken}")
                 return
 
@@ -131,6 +131,6 @@ class AuthPlugin(BasePlugin):
 
     def _isUserValidated(self) -> bool:
         """Check if the user is validated based on exising appKey"""
-        if self.user.appKey is None:
+        if self.user.app_key is None:
             return False
         return True

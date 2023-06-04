@@ -1,41 +1,86 @@
 import json
 import ssl as _ssl
+import sys
 import time
 from logging import DEBUG, ERROR, INFO
+from pprint import pformat
 from typing import Optional
 
 import pika
 
 from flxtrd.core.logger import log
 from flxtrd.core.types import (
-    Broker,
+    FlexBroker,
     FlexError,
-    Flexibility,
-    Market,
+    FlexResource,
+    FlexMarket,
     MarketOrder,
     OrderType,
-    User,
+    FlexUser,
 )
 from flxtrd.protocols.base import BaseAPI
+
+    
+def create_line_message(
+    user: FlexUser, flexibility: FlexResource, marketOrder: MarketOrder
+):
+    """Create a line protocol message for InfluxDB that is the payload in the AMQP message
+
+    Format ask:
+    ask,applicationKey=64218f1adc42c714c1f08043,version=1 starttime=1685730000000i,wattage=19.556418841474642,runtime=60000i,totalenergy=0.32594031402457735,askingprice=7.933964367826437,expirationtime=1685730000000i
+
+    Bid:
+    bid,applicationKey=64218f1adc42c714c1f08043,version=1 starttime=1685732700000i,wattage=226.3288909510559,runtime=840000i,totalenergy=52.81007455524638,biddingprice=6.56704792164692,expirationtime=1685732700000i
+
+    """
+    lineordermsg = ""
+    if marketOrder.order_type == OrderType.ASK:
+        pricename = "askingprice"
+    elif marketOrder.order_type == OrderType.BID:
+        pricename = "biddingprice"
+    else:
+        raise FlexError(f"Order type {marketOrder.order_type} not supported")
+
+    order_type = marketOrder.order_type
+    application_key = user.app_key
+    wattage = flexibility.power_w
+    duration = flexibility.duration_min
+    starttime = flexibility.start_time_epoch_ms
+    totalenergy = flexibility.energy_wh
+    orderprice = marketOrder.price_eur
+    expirationtime = flexibility.expiration_time_epoch_ms
+
+    lineordermsg = (
+        f"{order_type.value},"
+        f"applicationKey={application_key},"
+        f"version=1 starttime={starttime}i,"
+        f"wattage={wattage},"
+        f"runtime={duration}i,"
+        f"totalenergy={totalenergy},"
+        f"{pricename}={orderprice},"
+        f"expirationtime={expirationtime}i"
+    )
+
+    return json.dumps(lineordermsg).strip('"')
 
 
 class AmpqAPI(BaseAPI):
     """Amqp API implementation that connects to public API"""
 
-    def __init__(self, base_url: str, user: User, broker: Broker, callback_fn=None):
+    def __init__(self, base_url: str, user: FlexUser, broker: FlexBroker, callback_fn=None):
         super().__init__(base_url=base_url)
-        self.user: User = user
-        self.broker: Broker = broker
+        self.user: FlexUser = user
+        self.broker: FlexBroker = broker
         self.ssl_options: pika.SSLOptions = None
         self.connection = None
         self.channel = None
         self.callback_queue_id = None
         self.callback_fn = callback_fn
-        self.callback_response = None
+        self.callback_responses: list = []
 
     def send_request(
         self,
-        endpoint: str = None,
+        endpoint: Optional[str] = None,
         params: Optional[dict] = None,
         data: Optional[dict] = None,
         verifiy_ssl: Optional[bool] = False,
@@ -45,21 +90,20 @@ class AmpqAPI(BaseAPI):
             raise FlexError("'market' not found arguments")
         if "user" not in kwargs:
             raise FlexError("'user' not found in arguments")
-        if "order" not in kwargs:
-            raise FlexError("'order' not found in arguments")
 
-        market: Market = kwargs["market"]
-
-        user: User = kwargs["user"]
+        market: FlexMarket = kwargs["market"]
+        user: FlexUser = kwargs["user"]
         order: MarketOrder = kwargs["order"]
-        flexibility = order.flexibility
+        flexibility = order.resource
 
-        routingkey = order.type.value
+        routingkey = order.order_type.value
 
-        log(INFO, f"Using {routingkey} as routing key for message broker")
-
-        log(INFO, f"Creating line protocol message for the order {order}")
-        msg = self.create_line_message(
+        log(DEBUG, f"Using {routingkey} as routing key for message broker")
+        log(
+            DEBUG,
+            f"Creating line protocol message for the  {order.order_type.name} order",
+        )
+        msg = create_line_message(
             user=user, flexibility=flexibility, marketOrder=order
         )
 
@@ -68,7 +112,7 @@ class AmpqAPI(BaseAPI):
 
         self.publish(
             message=msg,
-            userid=user.userId,
+            userid=user.user_id,
             routingkey=routingkey,
             exchangename=market.broker.exchangename,
         )
@@ -98,10 +142,15 @@ class AmpqAPI(BaseAPI):
         err = self._connecttobrokerWithAppToken(
             user=self.user,
             broker=self.broker,
-            ssl_options=ssl_options,
-            verify_ssl=verify_ssl,
+            ssl_options=ssl_options
         )
-        # TODO
+
+        if not err:
+            self.set_consumer(
+                callback=self.callback_on_response,
+                callback_queue=self.callback_queue_id,
+                channel=self.channel,
+            )
         return err
 
     def close_connection(self):
@@ -117,7 +166,7 @@ class AmpqAPI(BaseAPI):
         props = pika.BasicProperties(
             user_id=userid,
             reply_to=self.callback_queue_id,
-            headers={"sendertimestamp_in_ms": getcurrenttimems()},
+            headers={"sendertimestamp_in_ms": get_current_time_ms()},
         )
         try:
             self.channel.basic_publish(
@@ -139,24 +188,19 @@ class AmpqAPI(BaseAPI):
 
     def _connecttobrokerWithAppToken(
         self,
-        user: User,
-        broker: Broker,
-        ssl_options: pika.SSLOptions,
-        verify_ssl: bool = True,
+        user: FlexUser,
+        broker: FlexBroker,
+        ssl_options: pika.SSLOptions
     ):
         """Connects to the broker with the application token"""
         err = None
-        brokerip = broker.ip
+        brokerip = broker.url
         brokerport = broker.port
-        accessToken = user.accessToken
+        accessToken = user.access_token
         tickeroutexname = broker.tickeroutexname
 
-        # userid, applicationKey = validateApplicationToken(authServer=authServer,
-        #                                                 accessTaken=accessToken,
-        #                                                 verify_ssl=verify_ssl)
-
-        userid = user.userId
-        applicationKey = user.appKey
+        userid = user.user_id
+        applicationKey = user.app_key
 
         if userid is None or applicationKey is None:
             raise FlexError("User or application key is None")
@@ -178,53 +222,49 @@ class AmpqAPI(BaseAPI):
             raise err
         return err
 
-    @staticmethod
-    def create_line_message(
-        user: User, flexibility: Flexibility, marketOrder: MarketOrder
-    ):
-        """Create a line protocol message for InfluxDB that is the payload in the AMQP message
 
-        Format ask:
-        ask,applicationKey=64218f1adc42c714c1f08043,version=1 starttime=1685730000000i,wattage=19.556418841474642,runtime=60000i,totalenergy=0.32594031402457735,askingprice=7.933964367826437,expirationtime=1685730000000i
-
-        Bid:
-        bid,applicationKey=64218f1adc42c714c1f08043,version=1 starttime=1685732700000i,wattage=226.3288909510559,runtime=840000i,totalenergy=52.81007455524638,biddingprice=6.56704792164692,expirationtime=1685732700000i
-
-        """
-        lineordermsg = ""
-        if marketOrder.type == OrderType.ASK:
-            pricename = "askingprice"
-        elif marketOrder.type == OrderType.BID:
-            pricename = "biddingprice"
-        else:
-            raise FlexError(f"Order type {marketOrder.type} not supported")
-
-        order_type = marketOrder.type
-        applicationKey = user.appKey
-        wattage = flexibility.wattage
-        duration = flexibility.duration
-        starttime = flexibility.starttime
-        totalenergy = flexibility.energy
-        orderprice = marketOrder.price
-        expirationtime = flexibility.expirationtime
-
-        lineordermsg = (
-            f"{order_type.value},"
-            f"applicationKey={applicationKey},"
-            f"version=1 starttime={starttime}i,"
-            f"wattage={wattage},"
-            f"runtime={duration}i,"
-            f"totalenergy={totalenergy},"
-            f"{pricename}={orderprice},"
-            f"expirationtime={expirationtime}i"
+    def set_consumer(self, callback, callback_queue, channel):
+        channel.basic_consume(
+            queue=callback_queue, on_message_callback=callback, auto_ack=True
         )
 
-        return json.dumps(lineordermsg).strip('"')
-        # linemsg = createLineMessage(user=user ,marketOrder=marketOrder, flexibility=flexibility)
-        # return json.dumps(linemsg).strip('"')
+    def checkreplies(self):
+        if self.connection is None:
+            raise FlexError("No connection to broker established")
+        self.connection.process_data_events()
+
+    def callback_on_response(self, ch, method, props, body):
+        global tickprice
+        currTimeMs = int(time.time() * 1000)
+        # Tick message ex. {'msgtype': 'tick', 'last_price_time': 1559732378418422410, 'last_price': 7.529581909307273}
+        try:
+            msgBody = json.loads(body.decode("utf-8"))
+            self.callback_responses.append(msgBody)
+
+            log(INFO, f"Received message")
+            log(INFO, f"{pformat(msgBody)}")
+            # if 'msgtype' in msgBody.keys():
+            #     if msgBody['msgtype'] == 'cancel':
+            #             log(INFO,"--- Bohoo! My message got cancelled for ", msgBody['reason'])
+            #     if msgBody['msgtype'] == 'tick':
+            #         tickprice = msgBody['last_price']
+            #         log(INFO,"--- Tick ",tickprice)
+            #         if 'sendertimestamp_in_ms' in props.headers.keys():
+            #             log(INFO,f"----- Tick was received in {currTimeMs - props.headers['sendertimestamp_in_ms']} ms")
+            #     if msgBody['msgtype'] == 'bid_closed_order':
+            #         if "closed_order" in msgBody.keys():
+            #             log(INFO,"--- Wohoo! My bid order deal went through for ", msgBody['closed_order']['price'])
+            #     if msgBody['msgtype'] == 'ask_closed_order':
+            #         if "closed_order" in msgBody.keys():
+            #             log(INFO,"--- Wohoo! My ask order deal went through for ", msgBody['closed_order']['price'])
+
+            # sys.exit(0)
+
+        except ValueError:
+            log(ERROR, "RECEIVED A NON JSON MESSAGE:", body)
 
 
-def getcurrenttimems():
+def get_current_time_ms():
     return int(time.time() * 1000)
 
 
@@ -243,13 +283,3 @@ def declareReplyToQueue(
         return callback_queue_id
     except pika.exceptions.ChannelClosedByBroker:
         log(ERROR, "ReplyTo queue creation failed " + applicationKey)
-
-
-def setreceiver(callback, callback_queue, channel):
-    channel.basic_consume(
-        queue=callback_queue, on_message_callback=callback, auto_ack=True
-    )
-
-
-def checkreplies(connection):
-    connection.process_data_events()

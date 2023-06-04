@@ -1,10 +1,17 @@
-from logging import INFO, WARNING
+from logging import INFO, WARNING, DEBUG
 from typing import List, Optional, Tuple
 
 from flxtrd.core.logger import log
 from flxtrd.core.plugins.auth import AuthPlugin
 from flxtrd.core.plugins.base import BasePlugin
-from flxtrd.core.types import APIResponse, FlexError, Market, User
+from flxtrd.core.types import (
+    FlexResponse,
+    FlexError,
+    FlexMarket,
+    MarketOrder,
+    OrderType,
+    FlexUser,
+)
 from flxtrd.protocols.ampq import AmpqAPI
 from flxtrd.protocols.base import BaseAPI
 from flxtrd.protocols.restapi import RestAPI
@@ -28,8 +35,8 @@ class FlexAPIClient:
 
     def __init__(
         self,
-        user: User,
-        market: Market,
+        user: FlexUser,
+        market: FlexMarket,
         base_url: str,
         request_protocol: BaseAPI = RestAPI,
         trade_protocol: AmpqAPI = AmpqAPI,
@@ -52,14 +59,15 @@ class FlexAPIClient:
 
     def send_order(
         self,
-        method: str,
-        endpoint: str,
+        market_order: MarketOrder,
+        endpoint: Optional[str] = None,
+        method: Optional[str] = None,
         params: Optional[dict] = None,
         data: Optional[dict] = None,
         ssl: Optional[bool] = True,
         verify_ssl: Optional[bool] = True,
         **kwargs,
-    ) -> Tuple[APIResponse, FlexError | None]:
+    ) -> Tuple[FlexResponse, FlexError | None]:
         """Sends trading order to the market"""
 
         plugin_data = {}
@@ -85,6 +93,7 @@ class FlexAPIClient:
             context=self.context,
             user=self.user,
             market=self.market,
+            order=market_order,
             **kwargs,
         )
 
@@ -92,7 +101,7 @@ class FlexAPIClient:
             plugin_data[f"{_plugin!s}_after"] = _plugin.after_request(response)
 
         return (
-            APIResponse(request_response=response, plugin_data=plugin_data or None),
+            FlexResponse(request_response=response, plugin_data=plugin_data or None),
             err,
         )
 
@@ -104,8 +113,7 @@ class FlexAPIClient:
         data: Optional[dict] = None,
         ssl: Optional[bool] = False,
         verify_ssl: Optional[bool] = True,
-        **kwargs,
-    ) -> APIResponse:
+        **kwargs) -> FlexResponse:
         """Executes all plugins and forwards the request to the protocol API class"""
 
         plugin_data = {}
@@ -130,7 +138,7 @@ class FlexAPIClient:
             plugin_data[f"{_plugin!s}_after"] = _plugin.after_request(response)
 
         return (
-            APIResponse(request_response=response, plugin_data=plugin_data or None),
+            FlexResponse(request_response=response, plugin_data=plugin_data or None),
             err,
         )
 
@@ -147,3 +155,49 @@ class FlexAPIClient:
                 return
         self.plugins.append(plugin)
         log(INFO, f"Added plugin {plugin}")
+
+    def check_market_responses(self):
+        """Check the responses from the market"""
+
+        self.trade_protocol.checkreplies()
+        if not self.trade_protocol.callback_responses:
+            log(DEBUG, "No responses from the market")
+            return None
+        return self.trade_protocol.callback_responses
+
+
+class MarketMessages:
+    """Market messages class to store the market messages, closed deals, ticks"""
+
+    def __init__(self) -> None:
+        pass
+
+    @property
+    def ticks(self):
+        """Get a list of ticks received during the trading session"""
+        pass
+
+    def closed_deals(self):
+        """Get a list of closed bid and ask deals executed during the trading session"""
+        pass
+
+    def _add_market_message(self, message):
+        """Add a market message to the list of market messages"""
+        pass
+
+
+#         log(INFO, f"Received message {pformat(msgBody)}")
+#         # if 'msgtype' in msgBody.keys():
+#         #     if msgBody['msgtype'] == 'cancel':
+#         #             log(INFO,"--- Bohoo! My message got cancelled for ", msgBody['reason'])
+#         #     if msgBody['msgtype'] == 'tick':
+#         #         tickprice = msgBody['last_price']
+#         #         log(INFO,"--- Tick ",tickprice)
+#         #         if 'sendertimestamp_in_ms' in props.headers.keys():
+#         #             log(INFO,f"----- Tick was received in {currTimeMs - props.headers['sendertimestamp_in_ms']} ms")
+#         #     if msgBody['msgtype'] == 'bid_closed_order':
+#         #         if "closed_order" in msgBody.keys():
+#         #             log(INFO,"--- Wohoo! My bid order deal went through for ", msgBody['closed_order']['price'])
+#         #     if msgBody['msgtype'] == 'ask_closed_order':
+#         #         if "closed_order" in msgBody.keys():
+#         #             log(INFO,"--- Wohoo! My ask order deal went through for ", msgBody['closed_order']['price'])

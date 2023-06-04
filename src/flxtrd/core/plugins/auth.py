@@ -103,7 +103,7 @@ class AuthPlugin(BasePlugin):
         verify_ssl: bool = True,
     ) -> None:
         if self._isUserValidated():
-            log(DEBUG, "User already validated")
+            log(INFO, "User already validated")
             return
 
         appAuthUrl = f"https://{authServer}{endpoint}{accessToken}"

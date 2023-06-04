@@ -1,8 +1,13 @@
 import enum
+import json
 from dataclasses import dataclass
 from typing import List, Optional
 
 import requests
+
+from flxtrd.core import utils
+
+MILLI = 1000
 
 
 class OrderType(str, enum.Enum):
@@ -20,8 +25,7 @@ class OrderType(str, enum.Enum):
     BID = "bid"  # buy order
 
 
-@dataclass
-class Flexibility:
+class FlexResource:
     """Specifies the tradable good that is sold or bought on the marketplace
 
     wattage: float
@@ -30,16 +34,43 @@ class Flexibility:
 
     """
 
-    wattage: float
-    starttime: int
-    duration: int
-    expirationtime: int
-    # TODO call as init method
-    energy: float = 0
+    def __init__(
+        self,
+        power_w: float,
+        start_time_epoch_s: int,
+        duration_min: int,
+        order_expiration_min: int,  # time in minutes for order validity starting from start time
+        energy_kwh: float = 0,
+    ) -> None:
+        self.power_w = power_w
+        self.start_time_epoch_ms = start_time_epoch_s * MILLI
+        self.duration_min = duration_min
+        self.order_expiration_min = order_expiration_min
+
+        self.expiration_time_epoch_ms = start_time_epoch_s * MILLI + utils.min_to_ms(
+            order_expiration_min
+        )
+        self.energy_wh = self._to_energy(power_w, duration_min)
 
     @staticmethod
-    def to_energy(wattage, duration):
-        return wattage * (duration / (60 * 60 * 1000))
+    def _to_energy(power_w, duration):
+        return power_w * utils.min_to_hour(duration)
+
+    def __str__(self) -> str:
+        return json.dumps(self._format_human_readable(), indent=4)
+
+    def _format_human_readable(self) -> dict:
+        return {
+            "power_w": round(self.power_w, 3),
+            "energy_wh": round(self.energy_wh, 3),
+            "start_time": utils.get_formatted_time(self.start_time_epoch_ms),
+            "duration_min": self.duration_min,
+            "expiration_time": utils.get_formatted_time(self.expiration_time_epoch_ms),
+        }
+
+    @property
+    def as_dict_human_readable(self):
+        return self._format_human_readable()
 
 
 @dataclass
@@ -91,12 +122,23 @@ class MarketOrder:
 
     type: OrderType
     price: float
-    flexibility: Flexibility
+    resource: Flexibility
     """
 
-    type: OrderType
-    price: float
-    flexibility: Flexibility
+    order_type: OrderType
+    price_eur: float
+    resource: FlexResource
+
+    def __str__(self) -> str:
+        return json.dumps(self._format_human_readable(), indent=4)
+
+    def _format_human_readable(self) -> dict:
+        market_dict = {
+            "Order type:": self.order_type.name,
+            "price_eur": round(self.price_eur, 5),
+        }
+
+        return {**market_dict, **{"FlexResource": self.resource.as_dict_human_readable}}
 
 
 @dataclass

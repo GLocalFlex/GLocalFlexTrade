@@ -4,7 +4,14 @@ from typing import List, Optional, Tuple
 from flxtrd.core.logger import log
 from flxtrd.core.plugins.auth import AuthPlugin
 from flxtrd.core.plugins.base import BasePlugin
-from flxtrd.core.types import APIResponse, FlexError, Market, User
+from flxtrd.core.types import (
+    APIResponse,
+    FlexError,
+    Market,
+    MarketOrder,
+    OrderType,
+    User,
+)
 from flxtrd.protocols.ampq import AmpqAPI
 from flxtrd.protocols.base import BaseAPI
 from flxtrd.protocols.restapi import RestAPI
@@ -52,8 +59,9 @@ class FlexAPIClient:
 
     def send_order(
         self,
-        method: str,
-        endpoint: str,
+        market_order: MarketOrder,
+        endpoint: Optional[str] = None,
+        method: Optional[str] = None,
         params: Optional[dict] = None,
         data: Optional[dict] = None,
         ssl: Optional[bool] = True,
@@ -85,6 +93,7 @@ class FlexAPIClient:
             context=self.context,
             user=self.user,
             market=self.market,
+            order=market_order,
             **kwargs,
         )
 
@@ -147,3 +156,49 @@ class FlexAPIClient:
                 return
         self.plugins.append(plugin)
         log(INFO, f"Added plugin {plugin}")
+
+    def check_market_responses(self):
+        """Check the responses from the market"""
+
+        self.trade_protocol.checkreplies()
+        if not self.trade_protocol.callback_responses:
+            log(INFO, "No responses from the market")
+            return None
+        return self.trade_protocol.callback_responses
+
+
+class MarketMessages:
+    """Market messages class to store the market messages, closed deals, ticks"""
+
+    def __init__(self) -> None:
+        pass
+
+    @property
+    def ticks(self):
+        """Get a list of ticks received during the trading session"""
+        pass
+
+    def closed_deals(self):
+        """Get a list of closed bid and ask deals executed during the trading session"""
+        pass
+
+    def _add_market_message(self, message):
+        """Add a market message to the list of market messages"""
+        pass
+
+
+#         log(INFO, f"Received message {pformat(msgBody)}")
+#         # if 'msgtype' in msgBody.keys():
+#         #     if msgBody['msgtype'] == 'cancel':
+#         #             log(INFO,"--- Bohoo! My message got cancelled for ", msgBody['reason'])
+#         #     if msgBody['msgtype'] == 'tick':
+#         #         tickprice = msgBody['last_price']
+#         #         log(INFO,"--- Tick ",tickprice)
+#         #         if 'sendertimestamp_in_ms' in props.headers.keys():
+#         #             log(INFO,f"----- Tick was received in {currTimeMs - props.headers['sendertimestamp_in_ms']} ms")
+#         #     if msgBody['msgtype'] == 'bid_closed_order':
+#         #         if "closed_order" in msgBody.keys():
+#         #             log(INFO,"--- Wohoo! My bid order deal went through for ", msgBody['closed_order']['price'])
+#         #     if msgBody['msgtype'] == 'ask_closed_order':
+#         #         if "closed_order" in msgBody.keys():
+#         #             log(INFO,"--- Wohoo! My ask order deal went through for ", msgBody['closed_order']['price'])

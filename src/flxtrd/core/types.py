@@ -28,9 +28,15 @@ class OrderType(str, enum.Enum):
 class FlexResource:
     """Specifies the tradable good that is sold or bought on the marketplace
 
-    wattage: float
-    startime: int
-    duration: int
+    Attributes:
+        power_w: float
+            The power in Watt that is sold or bought on the marketplace
+        start_time_epoch_s: int
+            The start time of the flexibility in seconds since epoch
+        duration_min: int
+            The duration in minutes of the flexibility
+        order_expiration_min: int
+            The time in minutes for order validity starting from start time
 
     """
 
@@ -40,7 +46,6 @@ class FlexResource:
         start_time_epoch_s: int,
         duration_min: int,
         order_expiration_min: int,  # time in minutes for order validity starting from start time
-        energy_kwh: float = 0,
     ) -> None:
         self.power_w = power_w
         self.start_time_epoch_ms = start_time_epoch_s * MILLI
@@ -74,8 +79,19 @@ class FlexResource:
 
 
 @dataclass
-class Device:
-    """Device dataclass for storing device data and their access keys."""
+class FlexDevice:
+    """Device dataclass for storing device data and their access keys.
+    
+    Attributes:
+        deviceName: str
+            The name of the device
+        deviceId: str
+            The device id
+        accessToken: str
+            The device access token
+        appKey: str
+            The app key
+    """
 
     deviceName: Optional[str] = None
     deviceId: Optional[str] = None
@@ -84,35 +100,37 @@ class Device:
 
 
 @dataclass
-class User:
+class FlexUser:
     """User dataclass for storing user data for authencation and registered devices."""
 
     name: str
     password: str
-    accessToken: Optional[str] = None
-    appKey: Optional[str] = None
-    userId: Optional[str] = None
-    devices: Optional[List[Device]] = None
+    access_token: Optional[str] = None
+    app_key: Optional[str] = None
+    user_id: Optional[str] = None
+    devices: Optional[List[FlexDevice]] = None
 
 
 @dataclass
-class Broker:
+class FlexBroker:
     """RabbitMQ Broker dataclass for storing broker data."""
 
-    ip: str
+    url: str
     port: int = 5671
     tickeroutexname: str = "ticker-out"
     exchangename: str = "in"
 
 
-@dataclass
-class Market:
+
+class FlexMarket:
     """Marketplace dataclass for storing marketplace data."""
 
-    ip: str
-    broker: Broker
-    port: int = 443
-
+    def __init__(self, market_url: str, market_port: int = 443, broker_url: str = None, broker_port: int = 5671) -> None:
+        self.url: str = market_url
+        self.port: int = market_port
+        if broker_url is None:
+            broker_url = market_url
+        self.broker: FlexBroker = FlexBroker(url=broker_url, port=broker_port)
 
 @dataclass
 class MarketOrder:
@@ -142,8 +160,17 @@ class MarketOrder:
 
 
 @dataclass
-class APIResponse:
-    """APIResponse dataclass for storing the response from the API and the plugin data."""
+class FlexResponse:
+    """APIResponse dataclass for storing the response from the API and the plugin data.
+    
+    Attributes:
+        request_response: requests.Response
+            The response from the REST API
+        order_response: str
+            The response from the market broker
+        plugin_data: Optional[dict]
+            The plugin data from the added plugins if any
+    """
 
     request_response: requests.Response = None
     order_response: str = "Not implemented"

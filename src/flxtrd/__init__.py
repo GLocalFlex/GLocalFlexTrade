@@ -4,15 +4,15 @@ from flxtrd.core.logger import log  # noqa
 from flxtrd.core.plugins.auth import AuthPlugin, AuthResponse
 from flxtrd.core.plugins.base import BasePlugin
 from flxtrd.core.types import (
-    APIResponse,
-    Broker,
-    Device,
+    FlexResponse,
+    FlexBroker,
+    FlexDevice,
     FlexError,
     FlexResource,
-    Market,
+    FlexMarket,
     MarketOrder,
     OrderType,
-    User,
+    FlexUser,
 )
 from flxtrd.protocols.ampq import AmpqAPI
 from flxtrd.protocols.restapi import RestAPI
@@ -26,11 +26,11 @@ __all__ = [
     AmpqAPI,
     AuthPlugin,
     AuthResponse,
-    User,
-    Device,
-    Market,
+    FlexUser,
+    FlexDevice,
+    FlexMarket,
     FlexError,
-    APIResponse,
+    FlexResponse,
     ASK,
     BID,
 ]

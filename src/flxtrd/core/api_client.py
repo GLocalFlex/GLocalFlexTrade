@@ -5,12 +5,12 @@ from flxtrd.core.logger import log
 from flxtrd.core.plugins.auth import AuthPlugin
 from flxtrd.core.plugins.base import BasePlugin
 from flxtrd.core.types import (
-    APIResponse,
+    FlexResponse,
     FlexError,
-    Market,
+    FlexMarket,
     MarketOrder,
     OrderType,
-    User,
+    FlexUser,
 )
 from flxtrd.protocols.ampq import AmpqAPI
 from flxtrd.protocols.base import BaseAPI
@@ -35,8 +35,8 @@ class FlexAPIClient:
 
     def __init__(
         self,
-        user: User,
-        market: Market,
+        user: FlexUser,
+        market: FlexMarket,
         base_url: str,
         request_protocol: BaseAPI = RestAPI,
         trade_protocol: AmpqAPI = AmpqAPI,
@@ -67,7 +67,7 @@ class FlexAPIClient:
         ssl: Optional[bool] = True,
         verify_ssl: Optional[bool] = True,
         **kwargs,
-    ) -> Tuple[APIResponse, FlexError | None]:
+    ) -> Tuple[FlexResponse, FlexError | None]:
         """Sends trading order to the market"""
 
         plugin_data = {}
@@ -101,7 +101,7 @@ class FlexAPIClient:
             plugin_data[f"{_plugin!s}_after"] = _plugin.after_request(response)
 
         return (
-            APIResponse(request_response=response, plugin_data=plugin_data or None),
+            FlexResponse(request_response=response, plugin_data=plugin_data or None),
             err,
         )
 
@@ -113,8 +113,7 @@ class FlexAPIClient:
         data: Optional[dict] = None,
         ssl: Optional[bool] = False,
         verify_ssl: Optional[bool] = True,
-        **kwargs,
-    ) -> APIResponse:
+        **kwargs) -> FlexResponse:
         """Executes all plugins and forwards the request to the protocol API class"""
 
         plugin_data = {}
@@ -139,7 +138,7 @@ class FlexAPIClient:
             plugin_data[f"{_plugin!s}_after"] = _plugin.after_request(response)
 
         return (
-            APIResponse(request_response=response, plugin_data=plugin_data or None),
+            FlexResponse(request_response=response, plugin_data=plugin_data or None),
             err,
         )
 

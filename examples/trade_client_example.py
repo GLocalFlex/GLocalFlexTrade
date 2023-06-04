@@ -1,9 +1,7 @@
 """Example usage of the trading client using AMPQ protocol"""
-import signal
 import sys
 import time
 from logging import ERROR, INFO
-from pprint import pformat
 
 from flxtrd import (
     ASK,

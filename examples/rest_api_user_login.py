@@ -1,21 +1,13 @@
-"""Example usage of the trading client using AMPQ protocol"""
-import signal
-import sys
-import time
+"""Example usage of the REST API client"""
+
 from logging import ERROR, INFO
 from pprint import pformat
 
 from flxtrd import (
-    ASK,
-    BID,
-    FlexBroker,
     FlexAPIClient,
-    FlexResource,
     FlexMarket,
-    MarketOrder,
     FlexUser,
     log,
-    utils,
 )
 
 

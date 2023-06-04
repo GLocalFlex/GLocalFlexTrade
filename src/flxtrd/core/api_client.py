@@ -1,4 +1,4 @@
-from logging import INFO, WARNING
+from logging import INFO, WARNING, DEBUG
 from typing import List, Optional, Tuple
 
 from flxtrd.core.logger import log
@@ -161,7 +161,7 @@ class FlexAPIClient:
 
         self.trade_protocol.checkreplies()
         if not self.trade_protocol.callback_responses:
-            log(INFO, "No responses from the market")
+            log(DEBUG, "No responses from the market")
             return None
         return self.trade_protocol.callback_responses
 

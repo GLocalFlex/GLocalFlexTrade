@@ -22,77 +22,69 @@ from flxtrd import (
 def main() -> None:
     GLOCALFLEX_MARKET_URL = "localhost"
 
-    user = FlexUser(
-        name="<your_email>",
-        password="<your_password>",
-        accessToken="<your_device_access_token>",
-    )
-    
+    user = FlexUser(name="<your_email>",
+                    password="<your_password>",
+                    access_token="<your_device_access_token>",
+                    )
+
     market = FlexMarket(market_url=GLOCALFLEX_MARKET_URL)
 
     # Create a AMPQ client that connects to the message broker
-    trading_client = FlexAPIClient(base_url=GLOCALFLEX_MARKET_URL, user=user, market=market)
+    trading_client = FlexAPIClient(base_url=GLOCALFLEX_MARKET_URL,
+                                   user=user,
+                                   market=market
+                                   )
 
-    # Send a request to the GLocalFlex with REST API
-    response, err = trading_client.make_request(
-        method="POST",
-        endpoint="/users/login",
-        data={"email": user.name, "password": user.password},
-    )
-    if err:
-        log(ERROR, err)
+    # Define a flexibility resource that will be traded
+    # The resource is a 100W power for 60 minutes starting in 5 minutes
+    flex_resource = FlexResource(power_w=100,
+                                 start_time_epoch_s=utils.utc_timestamp_s() + utils.min_to_s(5), 
+                                 duration_min=60,  
+                                 order_expiration_min=50)
 
-    log(INFO, pformat(response.request_response.json()))
-    log(INFO, response.request_response.status_code)
-
-    # add a 5 min offset from current time
-    flex_resource = FlexResource(
-        power_w=100,
-        start_time_epoch_s=utils.utc_timestamp_s() + utils.min_to_s(5), 
-        duration_min=60,  # start time + 60 minutes
-        order_expiration_min=50,  # start time + 50 minutes
-    )
-
-    # Create a market order to sell flexibility and
-    # define the tradable flexibility to sell or buy
+    # Create a market ask order to sell flexibility
     market_order = MarketOrder(order_type=ASK,
                                price_eur=100,
                                resource=flex_resource)
 
-    # Send the market order to the message broker with AMPQ protocol
-    # The connection to the market message broker will be initiated automatically
+    # Send the market order to the message broker
+    # The connection to the broker will be initiated automatically
     _, err = trading_client.send_order(market_order=market_order,
                                        verify_ssl=False)
-    # exit on error
+    
     if err: log(ERROR, err)
 
-    # Create a market order to sell flexibility
+    # Create a market bid order to buy flexibility
     market_order = MarketOrder(order_type=BID,
                                price_eur=100,
                                resource=flex_resource)
 
-    # Send the market order to the message broker with AMPQ protocol
-    # The connection to the market message broker will be initiated automatically
     _, err = trading_client.send_order(market_order=market_order,
                                        verify_ssl=False)
     
     if err: log(ERROR, err); sys.exit(1)
 
+    # Check the market responses for closed_deals, price tick messages
+    # from the message broker for 60 seconds and exit
+    wait_sec = 0
+    expected_responses = 3
+    log(INFO, f"Waiting for messages from market broker")
+
     try:
-        wait_sec = 0
         while wait_sec < 60:
             market_responses = trading_client.check_market_responses()
-            if market_responses is None:
-                log(INFO, "No market responses received")
-            else:
-                log(INFO, f"Received {len(market_responses)} responses from message broker")
+            if market_responses is not None:
+                log(INFO, f"Received {len(market_responses)} responses from market broker")
                 # Close the connection to the market message broker
-
+                if len(market_responses) == expected_responses:
+                    break
+                
             time.sleep(1)
             wait_sec += 1
 
     except KeyboardInterrupt:
-        log(INFO, "Keyboard interrupt received. Closing connection to the market message broker")
+        log(INFO, "Keyboard interrupt received. Closing connection to the market broker")
+    finally:
         trading_client.trade_protocol.close_connection()
 
 

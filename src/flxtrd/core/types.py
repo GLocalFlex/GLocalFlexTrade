@@ -34,9 +34,9 @@ class FlexResource:
         start_time_epoch_s: int
             The start time of the flexibility in seconds since epoch
         duration_min: int
-            The duration in minutes of the flexibility
+            The duration in minutes of the flexibility. Beginning from start_time_epoch_s.
         order_expiration_min: int
-            The time in minutes for order validity starting from start time
+            The time in minutes for order validity starting from start_time_epoch_s.
 
     """
 

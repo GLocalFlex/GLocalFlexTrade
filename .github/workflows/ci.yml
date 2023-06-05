@@ -1,11 +1,17 @@
-name: Main_workflow
+name: workflow
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - dev
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: Test flxtrd package
+    name: pytest_cov_report
     steps:
     - uses: actions/checkout@v1
     - name: Install poetry
@@ -13,12 +19,8 @@ jobs:
     - name: Install requirements
       run: poetry install
     - name: Run tests and collect coverage
-      run: pytest --cov .
+      run: poetry run pytest --cov .
     - name: Upload coverage reports to Codecov
-      run: |
-        # Replace `linux` below with the appropriate OS
-        # Options are `alpine`, `linux`, `macos`, `windows`
-        curl -Os https://uploader.codecov.io/latest/linux/codecov
-        chmod +x codecov
-        ./codecov -t ${CODECOV_TOKEN}
-
+      uses: codecov/codecov-action@v3
+      env: 
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

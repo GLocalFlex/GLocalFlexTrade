@@ -25,10 +25,17 @@ Import in to your trading client
 
     import flxtrd
 
-You can use a sample trading client from the command line for testing
+## Architecture
 
-    python -m flxtrd --help
-
+``` mermaid
+graph LR
+    MyClient --> FlexAPIClient
+    MyClient --> TradingStrategy
+    MyClient --> EnergyManagement
+    MyClient --> CustomPlugins
+    FlexAPIClient --> APIProtocols
+    FlexAPIClient --> FlexPlugins
+```
 
 ### Basic trading client example
 
@@ -187,15 +194,4 @@ if __name__ == "__main__":
 
 ```
 
-## Architecture
 
-
-``` mermaid
-graph LR
-    MyClient --> FlexAPIClient
-    MyClient --> TradingStrategy
-    MyClient --> EnergyManagement
-    MyClient --> CustomPlugins
-    FlexAPIClient --> APIProtocols
-    FlexAPIClient --> FlexPlugins
-```

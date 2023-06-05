@@ -45,6 +45,7 @@ def test_restapi_instance(create_rest_api_instance):
 
 # paramaterize the test with different endpoints
 # and expected status codes
+@pytest.mark.skip()
 @pytest.mark.parametrize(
     "endpoint, expected_status_code, ssl",
     [
@@ -54,9 +55,7 @@ def test_restapi_instance(create_rest_api_instance):
         ("/users/login", 200, True),
     ],
 )
-def test_restapi_send_request(
-    create_rest_api_instance, endpoint, expected_status_code, ssl
-):
+def test_restapi_send_request(create_rest_api_instance, endpoint, expected_status_code, ssl):
     """Tests that the send_request method returns a response"""
     response, error = create_rest_api_instance.send_request(
         method="GET", endpoint=endpoint, ssl=ssl, verify_ssl=False

@@ -1,2 +1,2 @@
 ignore:
-  - ".venv/bin/coverage*"
+  - ".venv/bin/coverage-3.10"

@@ -3,11 +3,11 @@
 Public client API for the flexible energy trading market GLocalFlex.
 Trade energy or offer flexible loads to the European energy market.
 
-[![Release](https://img.shields.io/github/v/release/glocalflex/flxtrd)](https://img.shields.io/github/v/release/glocalflex/flxtrd)
-[![Build status](https://img.shields.io/github/actions/workflow/status/glocalflex/flxtrd/main.yml?branch=main)](https://github.com/glocalflex/flxtrd/actions/workflows/main.yml?query=branch%3Amain)
-[![codecov](https://codecov.io/gh/glocalflex/flxtrd/branch/main/graph/badge.svg)](https://codecov.io/gh/glocalflex/flxtrd)
-[![Commit activity](https://img.shields.io/github/commit-activity/m/glocalflex/flxtrd)](https://img.shields.io/github/commit-activity/m/glocalflex/flxtrd)
-[![License](https://img.shields.io/github/license/glocalflex/flxtrd)](https://img.shields.io/github/license/glocalflex/flxtrd)
+[![Release](https://img.shields.io/github/v/release/glocalflex/GLocalFlexTrade)](https://img.shields.io/github/v/release/glocalflex/GLocalFlexTrade)
+[![Build status](https://img.shields.io/github/actions/workflow/status/glocalflex/GLocalFlexTrade/main.yml?branch=main)](https://github.com/glocalflex/GLocalFlexTrade/actions/workflows/main.yml?query=branch%3Amain)
+[![codecov](https://codecov.io/gh/glocalflex/GLocalFlexTrade/branch/main/graph/badge.svg)](https://codecov.io/gh/glocalflex/GLocalFlexTrade)
+[![Commit activity](https://img.shields.io/github/commit-activity/m/glocalflex/GLocalFlexTrade)](https://img.shields.io/github/commit-activity/m/glocalflex/GLocalFlexTrade)
+[![License](https://img.shields.io/github/license/glocalflex/GLocalFlexTrade)](https://img.shields.io/github/license/glocalflex/GLocalFlexTrade)
 
 
 [GLocalFlexTrade](https://glocalflex.github.io/GLocalFlexTrade/) **Documentation** provides information how to use the **flxtrd** Python package.
@@ -62,8 +62,8 @@ def main() -> None:
     # Define a flexibility resource that will be traded
     # The resource is a 100W power for 60 minutes starting in 5 minutes
     flex_resource = FlexResource(power_w=100,
-                                 start_time_epoch_s=utils.utc_timestamp_s() + utils.min_to_s(5), 
-                                 duration_min=60,  
+                                 start_time_epoch_s=utils.utc_timestamp_s() + utils.min_to_s(5),
+                                 duration_min=60,
                                  order_expiration_min=50)
 
     # Create a market ask order to sell flexibility
@@ -75,7 +75,7 @@ def main() -> None:
     # The connection to the broker will be initiated automatically
     _, err = trading_client.send_order(market_order=market_order,
                                        verify_ssl=False)
-    
+
     if err: log(ERROR, err)
 
     # Create a market bid order to buy flexibility
@@ -85,7 +85,7 @@ def main() -> None:
 
     _, err = trading_client.send_order(market_order=market_order,
                                        verify_ssl=False)
-    
+
     if err: log(ERROR, err); sys.exit(1)
 
     # Check the market responses for closed_deals, price tick messages
@@ -102,7 +102,7 @@ def main() -> None:
                 # Close the connection to the market message broker
                 if len(market_responses) == expected_responses:
                     break
-                
+
             time.sleep(1)
             wait_sec += 1
 
@@ -147,7 +147,7 @@ def main() -> None:
                     access_token="<your_device_access_token>"
                     )
 
-    
+
     market = FlexMarket(market_url=GLOCALFLEX_MARKET_URL)
 
     # Create a AMPQ client that connects to the message broker

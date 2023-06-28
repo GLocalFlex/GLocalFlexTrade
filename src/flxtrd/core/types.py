@@ -81,7 +81,7 @@ class FlexResource:
 @dataclass
 class FlexDevice:
     """Device dataclass for storing device data and their access keys.
-    
+
     Attributes:
         deviceName: str
             The name of the device
@@ -121,16 +121,24 @@ class FlexBroker:
     exchangename: str = "in"
 
 
-
 class FlexMarket:
     """Marketplace dataclass for storing marketplace data."""
 
-    def __init__(self, market_url: str, market_port: int = 443, broker_url: str = None, broker_port: int = 5671) -> None:
+    def __init__(
+        self,
+        market_url: str,
+        market_port: int = 443,
+        broker_url: str = None,
+        broker_port: int = 5671,
+    ) -> None:
+        # TODO url deprecated
         self.url: str = market_url
+        self.market_url: str = market_url
         self.port: int = market_port
         if broker_url is None:
             broker_url = market_url
         self.broker: FlexBroker = FlexBroker(url=broker_url, port=broker_port)
+
 
 @dataclass
 class MarketOrder:
@@ -162,7 +170,7 @@ class MarketOrder:
 @dataclass
 class FlexResponse:
     """APIResponse dataclass for storing the response from the API and the plugin data.
-    
+
     Attributes:
         request_response: requests.Response
             The response from the REST API

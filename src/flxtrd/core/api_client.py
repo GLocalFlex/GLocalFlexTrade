@@ -1,18 +1,17 @@
-from warnings import warn
-from logging import INFO, WARNING, DEBUG
+from logging import DEBUG, INFO, WARNING
 from typing import List, Optional, Tuple
+from warnings import warn
 
 from flxtrd.core.logger import log
 from flxtrd.core.plugins.auth import AuthPlugin
 from flxtrd.core.plugins.base import BasePlugin
 from flxtrd.core.types import (
-    FlexResponse,
     FlexError,
     FlexMarket,
+    FlexResponse,
+    FlexUser,
     MarketOrder,
     OrderType,
-    FlexUser,
-
 )
 from flxtrd.protocols.ampq import AmpqAPI
 from flxtrd.protocols.base import BaseAPI
@@ -40,23 +39,22 @@ class FlexAPIClient:
         trade_protocol: AmpqAPI = AmpqAPI,
         plugins: List[BasePlugin] = [],
     ) -> None:
-        
         if base_url is not None:
-            warn('Argument base_url is deprecated in favor of market.market_url v0.2.0', DeprecationWarning, stacklevel=2)
+            warn(
+                "Argument base_url is deprecated in favor of market.market_url v0.2.0",
+                DeprecationWarning,
+                stacklevel=2,
+            )
 
         self.user = user
         self.market = market
         self.request_protocol = request_protocol(base_url=market.market_url)
-        
+
         # By default the Auth Plugin is added
-        self.plugins = plugins or [
-            AuthPlugin(user=user, authServer=base_url)
-        ]
+        self.plugins = plugins or [AuthPlugin(user=user, authServer=base_url)]
 
         self.trade_protocol: AmpqAPI = trade_protocol(
-            base_url=market.market_url,
-            user=user,
-            broker=market.broker
+            base_url=market.market_url, user=user, broker=market.broker
         )
 
         self.context = None
@@ -117,7 +115,8 @@ class FlexAPIClient:
         data: Optional[dict] = None,
         ssl: Optional[bool] = False,
         verify_ssl: Optional[bool] = True,
-        **kwargs) -> FlexResponse:
+        **kwargs,
+    ) -> FlexResponse:
         """Executes all plugins and forwards the request to the protocol API class"""
 
         plugin_data = {}

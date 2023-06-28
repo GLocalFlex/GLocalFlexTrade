@@ -12,18 +12,16 @@ from flxtrd.core.logger import log
 from flxtrd.core.types import (
     FlexBroker,
     FlexError,
-    FlexResource,
     FlexMarket,
+    FlexResource,
+    FlexUser,
     MarketOrder,
     OrderType,
-    FlexUser,
 )
 from flxtrd.protocols.base import BaseAPI
 
-    
-def create_line_message(
-    user: FlexUser, flexibility: FlexResource, marketOrder: MarketOrder
-):
+
+def create_line_message(user: FlexUser, flexibility: FlexResource, marketOrder: MarketOrder):
     """Create a line protocol message for InfluxDB that is the payload in the AMQP message
 
     Format ask:
@@ -103,9 +101,7 @@ class AmpqAPI(BaseAPI):
             DEBUG,
             f"Creating line protocol message for the  {order.order_type.name} order",
         )
-        msg = create_line_message(
-            user=user, flexibility=flexibility, marketOrder=order
-        )
+        msg = create_line_message(user=user, flexibility=flexibility, marketOrder=order)
 
         log(INFO, f"Send market order {order}")
         log(DEBUG, f"Order message: {msg}")
@@ -140,9 +136,7 @@ class AmpqAPI(BaseAPI):
         #  to connect to the server can be selected
         ssl_options = self._ssl_context(verify_ssl)
         err = self._connecttobrokerWithAppToken(
-            user=self.user,
-            broker=self.broker,
-            ssl_options=ssl_options
+            user=self.user, broker=self.broker, ssl_options=ssl_options
         )
 
         if not err:
@@ -179,7 +173,7 @@ class AmpqAPI(BaseAPI):
             raise FlexError(str(error))
 
     def checkreplies(self):
-        self.connection.process_data_events()
+        self.connection.process_data_events(time_limit=1)
 
     def is_connected(self):
         if self.connection is None:
@@ -187,10 +181,7 @@ class AmpqAPI(BaseAPI):
         return self.connection.is_open
 
     def _connecttobrokerWithAppToken(
-        self,
-        user: FlexUser,
-        broker: FlexBroker,
-        ssl_options: pika.SSLOptions
+        self, user: FlexUser, broker: FlexBroker, ssl_options: pika.SSLOptions
     ):
         """Connects to the broker with the application token"""
         err = None
@@ -222,11 +213,8 @@ class AmpqAPI(BaseAPI):
             raise err
         return err
 
-
     def set_consumer(self, callback, callback_queue, channel):
-        channel.basic_consume(
-            queue=callback_queue, on_message_callback=callback, auto_ack=True
-        )
+        channel.basic_consume(queue=callback_queue, on_message_callback=callback, auto_ack=True)
 
     def checkreplies(self):
         if self.connection is None:

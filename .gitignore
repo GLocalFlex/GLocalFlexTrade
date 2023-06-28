@@ -1,8 +1,10 @@
 design.md
 mermaid.md
 messenger
-messageser*
-example_trader*
+# messageser*
+# example_trader*
+examples/local*
+examples/gflex*
 src/flxtrd/protocols/utils
 docs/source
 *grpc*

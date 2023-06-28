@@ -9,7 +9,7 @@ copyright: Maintained by <a href="https://glocalflex.com">GLocalFlex</a>.
 
 nav:
   - Home: index.md
-  # - Diagrams: mermaid.md
+  - Diagrams: mermaid.md
 
 plugins:
   - search
@@ -55,6 +55,8 @@ theme:
     repo: fontawesome/brands/github
 
 extra:
+  version:
+    provider: mike
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/glocalflex/GLocalFlexTrade

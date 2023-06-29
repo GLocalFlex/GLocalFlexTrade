@@ -275,21 +275,6 @@
   
 
     
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../mermaid/" class="md-nav__link">
-        Diagrams
-      </a>
-    </li>
-  
-
-    
   </ul>
 </nav>
                   </div>
@@ -310,6 +295,28 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#poetry" class="md-nav__link">
+    Poetry
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#docs" class="md-nav__link">
+    Docs
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -329,7 +336,13 @@
 
 
 <h1 id="development">Development<a class="headerlink" href="#development" title="Permanent link">&para;</a></h1>
-<p>export PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring</p>
+<h2 id="poetry">Poetry<a class="headerlink" href="#poetry" title="Permanent link">&para;</a></h2>
+<pre><code>export PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring
+</code></pre>
+<h2 id="docs">Docs<a class="headerlink" href="#docs" title="Permanent link">&para;</a></h2>
+<p>Publish docs to GitHub Pages:</p>
+<pre><code>mike deploy -r github --push --update-aliases v0.2 latest
+</code></pre>
 
 
 

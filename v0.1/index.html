@@ -306,7 +306,14 @@
     Architecture
   </a>
   
-    <nav class="md-nav" aria-label="Architecture">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quickstart-guide" class="md-nav__link">
+    Quickstart Guide
+  </a>
+  
+    <nav class="md-nav" aria-label="Quickstart Guide">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -332,21 +339,6 @@
   
 </nav>
       
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="mermaid/" class="md-nav__link">
-        Diagrams
-      </a>
     </li>
   
 
@@ -382,7 +374,14 @@
     Architecture
   </a>
   
-    <nav class="md-nav" aria-label="Architecture">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quickstart-guide" class="md-nav__link">
+    Quickstart Guide
+  </a>
+  
+    <nav class="md-nav" aria-label="Quickstart Guide">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -424,25 +423,29 @@
   </a>
 
 
-<h1 id="glocalflextrade-public-api">GLocalFlexTrade Public API<a class="headerlink" href="#glocalflextrade-public-api" title="Permanent link">&para;</a></h1>
+<!-- BEGIN INCLUDE README.md -->
+
 <!-- [![Release](https://img.shields.io/github/v/release/glocalflex/flxtrd)](https://img.shields.io/github/v/release/glocalflex/flxtrd)
 [![Build status](https://img.shields.io/github/actions/workflow/status/glocalflex/flxtrd/main.yml?branch=main)](https://github.com/glocalflex/flxtrd/actions/workflows/main.yml?query=branch%3Amain)
 [![Commit activity](https://img.shields.io/github/commit-activity/m/glocalflex/flxtrd)](https://img.shields.io/github/commit-activity/m/glocalflex/flxtrd) -->
 
 <!-- [![License](https://img.shields.io/github/license/glocalflex/flxtrd)](https://img.shields.io/github/license/glocalflex/flxtrd) -->
 
-<p>Public client API for the flexible energy trading market GLocalFlex Market.</p>
-<p>The client libary provides standard interface to access the GLocalFlex Market public API.
+<h1 id="glocalflextrade-public-api">GLocalFlexTrade Public API<a class="headerlink" href="#glocalflextrade-public-api" title="Permanent link">&para;</a></h1>
+<p>Public client API for the flexible energy trading market GLocalFlex.
+Trade energy or offer flexible loads to the European energy market.
+The client libary provides standard interface to access the GLocalFlex Market public API.
 The client integrates Rest API and AMPQ protocol for communication with the GLocalFlex server.</p>
-<p>The <strong>GLocalFlex Market</strong> documentation is available here <a href="https://www.glocalflexmarket.com/docs">GLocalFlex Market Documentation</a></p>
-<p>Trade energy or offer flexible loads to the European energy market.</p>
-<p>Install Python package</p>
-<pre><code>pip install flxtrd
-</code></pre>
-<p>Import in to your trading client</p>
-<pre><code>import flxtrd
-</code></pre>
+<p><a href="https://img.shields.io/github/v/release/glocalflex/GLocalFlexTrade"><img alt="Release" src="https://img.shields.io/github/v/release/glocalflex/GLocalFlexTrade" /></a>
+<a href="https://github.com/glocalflex/GLocalFlexTrade/actions/workflows/main.yml?query=branch%3Amain"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/glocalflex/GLocalFlexTrade/main.yml?branch=main" /></a>
+<a href="https://codecov.io/gh/glocalflex/GLocalFlexTrade"><img alt="codecov" src="https://codecov.io/gh/glocalflex/GLocalFlexTrade/branch/main/graph/badge.svg" /></a>
+<a href="https://img.shields.io/github/commit-activity/m/glocalflex/GLocalFlexTrade"><img alt="Commit activity" src="https://img.shields.io/github/commit-activity/m/glocalflex/GLocalFlexTrade" /></a>
+<a href="https://img.shields.io/github/license/glocalflex/GLocalFlexTrade"><img alt="License" src="https://img.shields.io/github/license/glocalflex/GLocalFlexTrade" /></a></p>
+<p>The GLocalFlexTrade client API <a href="https://glocalflex.github.io/GLocalFlexTrade/">Documentation</a> provides more information how to use the <strong>flxtrd</strong> Python package.</p>
+<p>The official <strong>GLocalFlex Market</strong>  <a href="https://www.glocalflexmarket.com/docs/">API Documentation</a> gives an overview and more details of the public API and energy trading platform.</p>
 <h2 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h2>
+<p>The basic functionality of the client is to send market orders to the GLocalFlex Market server and receive market responses. The API client is designed to be used in a trading client application.
+It is up to the user which additional functionalities are implemented to the client. As an example a trading strategy and energy management logic can be integrated to the client.</p>
 <pre class="mermaid"><code>graph LR
     MyClient --&gt; FlexAPIClient
     MyClient --&gt; TradingStrategy
@@ -450,13 +453,13 @@ The client integrates Rest API and AMPQ protocol for communication with the GLoc
     MyClient --&gt; CustomPlugins
     FlexAPIClient --&gt; APIProtocols
     FlexAPIClient --&gt; FlexPlugins</code></pre>
+<h2 id="quickstart-guide">Quickstart Guide<a class="headerlink" href="#quickstart-guide" title="Permanent link">&para;</a></h2>
+<p>Install GLocalFlexTrade Python package</p>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>flxtrd
+</code></pre></div>
 <h3 id="basic-trading-client-example">Basic trading client example<a class="headerlink" href="#basic-trading-client-example" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Example usage of the trading client using AMPQ protocol&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">signal</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">ERROR</span><span class="p">,</span> <span class="n">INFO</span>
-<span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pformat</span>
 
 <span class="kn">from</span> <span class="nn">flxtrd</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">ASK</span><span class="p">,</span>
@@ -491,8 +494,8 @@ The client integrates Rest API and AMPQ protocol for communication with the GLoc
     <span class="c1"># Define a flexibility resource that will be traded</span>
     <span class="c1"># The resource is a 100W power for 60 minutes starting in 5 minutes</span>
     <span class="n">flex_resource</span> <span class="o">=</span> <span class="n">FlexResource</span><span class="p">(</span><span class="n">power_w</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-                                 <span class="n">start_time_epoch_s</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">utc_timestamp_s</span><span class="p">()</span> <span class="o">+</span> <span class="n">utils</span><span class="o">.</span><span class="n">min_to_s</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> 
-                                 <span class="n">duration_min</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>  
+                                 <span class="n">start_time_epoch_s</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">utc_timestamp_s</span><span class="p">()</span> <span class="o">+</span> <span class="n">utils</span><span class="o">.</span><span class="n">min_to_s</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span>
+                                 <span class="n">duration_min</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
                                  <span class="n">order_expiration_min</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
 
     <span class="c1"># Create a market ask order to sell flexibility</span>
@@ -546,9 +549,6 @@ The client integrates Rest API and AMPQ protocol for communication with the GLoc
 </code></pre></div>
 <h3 id="basic-rest-api-client-example">Basic REST API client example<a class="headerlink" href="#basic-rest-api-client-example" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Example usage of the REST API client&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">signal</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">ERROR</span><span class="p">,</span> <span class="n">INFO</span>
 <span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pformat</span>
 
@@ -598,6 +598,7 @@ The client integrates Rest API and AMPQ protocol for communication with the GLoc
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="n">main</span><span class="p">()</span>
 </code></pre></div>
+<!-- END INCLUDE -->
 
 
 
@@ -613,27 +614,6 @@ The client integrates Rest API and AMPQ protocol for communication with the GLoc
       </main>
       
         <footer class="md-footer">
-  
-    
-    <nav class="md-footer__inner md-grid" aria-label="Footer" >
-      
-      
-        
-        <a href="mermaid/" class="md-footer__link md-footer__link--next" aria-label="Next: Diagrams" rel="next">
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Next
-              </span>
-              Diagrams
-            </div>
-          </div>
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
-          </div>
-        </a>
-      
-    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">

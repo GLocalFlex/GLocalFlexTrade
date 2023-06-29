@@ -277,9 +277,67 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Home
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="." class="md-nav__link md-nav__link--active">
         Home
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#architecture" class="md-nav__link">
+    Architecture
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-started-with-glocalflextrade" class="md-nav__link">
+    Getting started with GLocalFlexTrade
+  </a>
+  
+    <nav class="md-nav" aria-label="Getting started with GLocalFlexTrade">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-trading-client-example" class="md-nav__link">
+    Basic trading client example
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#basic-rest-api-client-example" class="md-nav__link">
+    Basic REST API client example
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -320,6 +378,48 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#architecture" class="md-nav__link">
+    Architecture
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-started-with-glocalflextrade" class="md-nav__link">
+    Getting started with GLocalFlexTrade
+  </a>
+  
+    <nav class="md-nav" aria-label="Getting started with GLocalFlexTrade">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-trading-client-example" class="md-nav__link">
+    Basic trading client example
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#basic-rest-api-client-example" class="md-nav__link">
+    Basic REST API client example
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -338,18 +438,36 @@
   </a>
 
 
-<h1 id="glocalflextrade-public-api">GLocalFlexTrade Public API<a class="headerlink" href="#glocalflextrade-public-api" title="Permanent link">&para;</a></h1>
 <!-- BEGIN INCLUDE README.md -->
-<h1 id="glocalflextrade-public-api_1">GLocalFlexTrade Public API<a class="headerlink" href="#glocalflextrade-public-api_1" title="Permanent link">&para;</a></h1>
+
+<!-- [![Release](https://img.shields.io/github/v/release/glocalflex/flxtrd)](https://img.shields.io/github/v/release/glocalflex/flxtrd)
+[![Build status](https://img.shields.io/github/actions/workflow/status/glocalflex/flxtrd/main.yml?branch=main)](https://github.com/glocalflex/flxtrd/actions/workflows/main.yml?query=branch%3Amain)
+[![Commit activity](https://img.shields.io/github/commit-activity/m/glocalflex/flxtrd)](https://img.shields.io/github/commit-activity/m/glocalflex/flxtrd) -->
+
+<!-- [![License](https://img.shields.io/github/license/glocalflex/flxtrd)](https://img.shields.io/github/license/glocalflex/flxtrd) -->
+
+<h1 id="glocalflextrade-public-api">GLocalFlexTrade Public API<a class="headerlink" href="#glocalflextrade-public-api" title="Permanent link">&para;</a></h1>
 <p>Public client API for the flexible energy trading market GLocalFlex.
-Trade energy or offer flexible loads to the European energy market.</p>
+Trade energy or offer flexible loads to the European energy market.
+The client libary provides standard interface to access the GLocalFlex Market public API.
+The client integrates Rest API and AMPQ protocol for communication with the GLocalFlex server.</p>
 <p><a href="https://img.shields.io/github/v/release/glocalflex/GLocalFlexTrade"><img alt="Release" src="https://img.shields.io/github/v/release/glocalflex/GLocalFlexTrade" /></a>
 <a href="https://github.com/glocalflex/GLocalFlexTrade/actions/workflows/main.yml?query=branch%3Amain"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/glocalflex/GLocalFlexTrade/main.yml?branch=main" /></a>
 <a href="https://codecov.io/gh/glocalflex/GLocalFlexTrade"><img alt="codecov" src="https://codecov.io/gh/glocalflex/GLocalFlexTrade/branch/main/graph/badge.svg" /></a>
 <a href="https://img.shields.io/github/commit-activity/m/glocalflex/GLocalFlexTrade"><img alt="Commit activity" src="https://img.shields.io/github/commit-activity/m/glocalflex/GLocalFlexTrade" /></a>
 <a href="https://img.shields.io/github/license/glocalflex/GLocalFlexTrade"><img alt="License" src="https://img.shields.io/github/license/glocalflex/GLocalFlexTrade" /></a></p>
-<p><a href="https://glocalflex.github.io/GLocalFlexTrade/">GLocalFlexTrade</a> <strong>Documentation</strong> provides information how to use the <strong>flxtrd</strong> Python package.</p>
-<p>The official GLocalFlex Market <a href="https://www.glocalflexmarket.com/docs/">API Documentation</a> gives an overview and more details of the public API and energy trading platform.</p>
+<p>The GLocalFlexTrade client API <a href="https://glocalflex.github.io/GLocalFlexTrade/">Documentation</a> provides more information how to use the <strong>flxtrd</strong> Python package.</p>
+<p>The official<strong>GLocalFlex Market</strong>  <a href="https://www.glocalflexmarket.com/docs/">API Documentation</a> gives an overview and more details of the public API and energy trading platform.</p>
+<h2 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h2>
+<p>The basic functionality of the client is to send market orders to the GLocalFlex Market server and receive market responses. The API client is designed to be used in a trading client application.
+It is up to the user which additional functionalities are implemented to the client. As an example a trading strategy and energy management logic can be integrated to the client.</p>
+<pre class="mermaid"><code>graph LR
+    MyClient --&gt; FlexAPIClient
+    MyClient --&gt; TradingStrategy
+    MyClient --&gt; EnergyManagement
+    MyClient --&gt; CustomPlugins
+    FlexAPIClient --&gt; APIProtocols
+    FlexAPIClient --&gt; FlexPlugins</code></pre>
 <h2 id="getting-started-with-glocalflextrade">Getting started with GLocalFlexTrade<a class="headerlink" href="#getting-started-with-glocalflextrade" title="Permanent link">&para;</a></h2>
 <p>Install GLocalFlexTrade Python package</p>
 <div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>flxtrd
@@ -496,182 +614,6 @@ Trade energy or offer flexible loads to the European energy market.</p>
     <span class="n">main</span><span class="p">()</span>
 </code></pre></div>
 <!-- END INCLUDE -->
-
-<!-- [![Release](https://img.shields.io/github/v/release/glocalflex/flxtrd)](https://img.shields.io/github/v/release/glocalflex/flxtrd)
-[![Build status](https://img.shields.io/github/actions/workflow/status/glocalflex/flxtrd/main.yml?branch=main)](https://github.com/glocalflex/flxtrd/actions/workflows/main.yml?query=branch%3Amain)
-[![Commit activity](https://img.shields.io/github/commit-activity/m/glocalflex/flxtrd)](https://img.shields.io/github/commit-activity/m/glocalflex/flxtrd) -->
-
-<!-- [![License](https://img.shields.io/github/license/glocalflex/flxtrd)](https://img.shields.io/github/license/glocalflex/flxtrd) -->
-
-<p>Public client API for the flexible energy trading market GLocalFlex Market.</p>
-<p>The client libary provides standard interface to access the GLocalFlex Market public API.
-The client integrates Rest API and AMPQ protocol for communication with the GLocalFlex server.</p>
-<p>The <strong>GLocalFlex Market</strong> documentation is available here <a href="https://www.glocalflexmarket.com/docs">GLocalFlex Market Documentation</a></p>
-<p>Trade energy or offer flexible loads to the European energy market.</p>
-<p>Install Python package</p>
-<pre><code>pip install flxtrd
-</code></pre>
-<p>Import in to your trading client</p>
-<pre><code>import flxtrd
-</code></pre>
-<h2 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h2>
-<p>The basic functionality of the client is to send market orders to the GLocalFlex Market server and receive market responses. The API client is designed to be used in a trading client application.
-It is up to the user which additional functionalities are implemented to the client. As an example a trading strategy and energy management logic can be integrated to the client.</p>
-<pre class="mermaid"><code>graph LR
-    MyClient --&gt; FlexAPIClient
-    MyClient --&gt; TradingStrategy
-    MyClient --&gt; EnergyManagement
-    MyClient --&gt; CustomPlugins
-    FlexAPIClient --&gt; APIProtocols
-    FlexAPIClient --&gt; FlexPlugins</code></pre>
-<h3 id="basic-trading-client-example_1">Basic trading client example<a class="headerlink" href="#basic-trading-client-example_1" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Example usage of the trading client using AMPQ protocol&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">signal</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">ERROR</span><span class="p">,</span> <span class="n">INFO</span>
-<span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pformat</span>
-
-<span class="kn">from</span> <span class="nn">flxtrd</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">ASK</span><span class="p">,</span>
-    <span class="n">BID</span><span class="p">,</span>
-    <span class="n">FlexBroker</span><span class="p">,</span>
-    <span class="n">FlexAPIClient</span><span class="p">,</span>
-    <span class="n">FlexResource</span><span class="p">,</span>
-    <span class="n">FlexMarket</span><span class="p">,</span>
-    <span class="n">MarketOrder</span><span class="p">,</span>
-    <span class="n">FlexUser</span><span class="p">,</span>
-    <span class="n">log</span><span class="p">,</span>
-    <span class="n">utils</span><span class="p">,</span>
-<span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">GLOCALFLEX_MARKET_URL</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
-
-    <span class="n">user</span> <span class="o">=</span> <span class="n">FlexUser</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;&lt;your_email&gt;&quot;</span><span class="p">,</span>
-                    <span class="n">password</span><span class="o">=</span><span class="s2">&quot;&lt;your_password&gt;&quot;</span><span class="p">,</span>
-                    <span class="n">access_token</span><span class="o">=</span><span class="s2">&quot;&lt;your_device_access_token&gt;&quot;</span><span class="p">,</span>
-                    <span class="p">)</span>
-
-    <span class="n">market</span> <span class="o">=</span> <span class="n">FlexMarket</span><span class="p">(</span><span class="n">market_url</span><span class="o">=</span><span class="n">GLOCALFLEX_MARKET_URL</span><span class="p">)</span>
-
-    <span class="c1"># Create a AMPQ client that connects to the message broker</span>
-    <span class="n">trading_client</span> <span class="o">=</span> <span class="n">FlexAPIClient</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="n">GLOCALFLEX_MARKET_URL</span><span class="p">,</span>
-                                   <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span>
-                                   <span class="n">market</span><span class="o">=</span><span class="n">market</span>
-                                   <span class="p">)</span>
-
-    <span class="c1"># Define a flexibility resource that will be traded</span>
-    <span class="c1"># The resource is a 100W power for 60 minutes starting in 5 minutes</span>
-    <span class="n">flex_resource</span> <span class="o">=</span> <span class="n">FlexResource</span><span class="p">(</span><span class="n">power_w</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-                                 <span class="n">start_time_epoch_s</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">utc_timestamp_s</span><span class="p">()</span> <span class="o">+</span> <span class="n">utils</span><span class="o">.</span><span class="n">min_to_s</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> 
-                                 <span class="n">duration_min</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>  
-                                 <span class="n">order_expiration_min</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
-
-    <span class="c1"># Create a market ask order to sell flexibility</span>
-    <span class="n">market_order</span> <span class="o">=</span> <span class="n">MarketOrder</span><span class="p">(</span><span class="n">order_type</span><span class="o">=</span><span class="n">ASK</span><span class="p">,</span>
-                               <span class="n">price_eur</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-                               <span class="n">resource</span><span class="o">=</span><span class="n">flex_resource</span><span class="p">)</span>
-
-    <span class="c1"># Send the market order to the message broker</span>
-    <span class="c1"># The connection to the broker will be initiated automatically</span>
-    <span class="n">_</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">trading_client</span><span class="o">.</span><span class="n">send_order</span><span class="p">(</span><span class="n">market_order</span><span class="o">=</span><span class="n">market_order</span><span class="p">,</span>
-                                       <span class="n">verify_ssl</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">err</span><span class="p">:</span> <span class="n">log</span><span class="p">(</span><span class="n">ERROR</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
-
-    <span class="c1"># Create a market bid order to buy flexibility</span>
-    <span class="n">market_order</span> <span class="o">=</span> <span class="n">MarketOrder</span><span class="p">(</span><span class="n">order_type</span><span class="o">=</span><span class="n">BID</span><span class="p">,</span>
-                               <span class="n">price_eur</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-                               <span class="n">resource</span><span class="o">=</span><span class="n">flex_resource</span><span class="p">)</span>
-
-    <span class="n">_</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">trading_client</span><span class="o">.</span><span class="n">send_order</span><span class="p">(</span><span class="n">market_order</span><span class="o">=</span><span class="n">market_order</span><span class="p">,</span>
-                                       <span class="n">verify_ssl</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">err</span><span class="p">:</span> <span class="n">log</span><span class="p">(</span><span class="n">ERROR</span><span class="p">,</span> <span class="n">err</span><span class="p">);</span> <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-
-    <span class="c1"># Check the market responses for closed_deals, price tick messages</span>
-    <span class="c1"># from the message broker for 60 seconds and exit</span>
-    <span class="n">wait_sec</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">expected_responses</span> <span class="o">=</span> <span class="mi">3</span>
-    <span class="n">log</span><span class="p">(</span><span class="n">INFO</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Waiting for messages from market broker&quot;</span><span class="p">)</span>
-
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">while</span> <span class="n">wait_sec</span> <span class="o">&lt;</span> <span class="mi">60</span><span class="p">:</span>
-            <span class="n">market_responses</span> <span class="o">=</span> <span class="n">trading_client</span><span class="o">.</span><span class="n">check_market_responses</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">market_responses</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">log</span><span class="p">(</span><span class="n">INFO</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Received </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">market_responses</span><span class="p">)</span><span class="si">}</span><span class="s2"> responses from market broker&quot;</span><span class="p">)</span>
-                <span class="c1"># Close the connection to the market message broker</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">market_responses</span><span class="p">)</span> <span class="o">==</span> <span class="n">expected_responses</span><span class="p">:</span>
-                    <span class="k">break</span>
-
-            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-            <span class="n">wait_sec</span> <span class="o">+=</span> <span class="mi">1</span>
-
-    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
-        <span class="n">log</span><span class="p">(</span><span class="n">INFO</span><span class="p">,</span> <span class="s2">&quot;Keyboard interrupt received. Closing connection to the market broker&quot;</span><span class="p">)</span>
-    <span class="k">finally</span><span class="p">:</span>
-        <span class="n">trading_client</span><span class="o">.</span><span class="n">trade_protocol</span><span class="o">.</span><span class="n">close_connection</span><span class="p">()</span>
-
-
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="n">main</span><span class="p">()</span>
-</code></pre></div>
-<h3 id="basic-rest-api-client-example_1">Basic REST API client example<a class="headerlink" href="#basic-rest-api-client-example_1" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Example usage of the REST API client&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">signal</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">ERROR</span><span class="p">,</span> <span class="n">INFO</span>
-<span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pformat</span>
-
-<span class="kn">from</span> <span class="nn">flxtrd</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">ASK</span><span class="p">,</span>
-    <span class="n">BID</span><span class="p">,</span>
-    <span class="n">FlexBroker</span><span class="p">,</span>
-    <span class="n">FlexAPIClient</span><span class="p">,</span>
-    <span class="n">FlexResource</span><span class="p">,</span>
-    <span class="n">FlexMarket</span><span class="p">,</span>
-    <span class="n">MarketOrder</span><span class="p">,</span>
-    <span class="n">FlexUser</span><span class="p">,</span>
-    <span class="n">log</span><span class="p">,</span>
-    <span class="n">utils</span><span class="p">,</span>
-<span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">GLOCALFLEX_MARKET_URL</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
-
-    <span class="n">user</span> <span class="o">=</span> <span class="n">FlexUser</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;&lt;your_email&gt;&quot;</span><span class="p">,</span>
-                    <span class="n">password</span><span class="o">=</span><span class="s2">&quot;&lt;your_password&gt;&quot;</span><span class="p">,</span>
-                    <span class="n">access_token</span><span class="o">=</span><span class="s2">&quot;&lt;your_device_access_token&gt;&quot;</span>
-                    <span class="p">)</span>
-
-
-    <span class="n">market</span> <span class="o">=</span> <span class="n">FlexMarket</span><span class="p">(</span><span class="n">market_url</span><span class="o">=</span><span class="n">GLOCALFLEX_MARKET_URL</span><span class="p">)</span>
-
-    <span class="c1"># Create a AMPQ client that connects to the message broker</span>
-    <span class="n">trading_client</span> <span class="o">=</span> <span class="n">FlexAPIClient</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="n">GLOCALFLEX_MARKET_URL</span><span class="p">,</span>
-                                   <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span>
-                                   <span class="n">market</span><span class="o">=</span><span class="n">market</span>
-                                   <span class="p">)</span>
-
-    <span class="c1"># Send a request to the GLocalFlex with REST API</span>
-    <span class="n">response</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">trading_client</span><span class="o">.</span><span class="n">make_request</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">,</span>
-                                                <span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;/users/login&quot;</span><span class="p">,</span>
-                                                <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="n">user</span><span class="o">.</span><span class="n">password</span><span class="p">},</span>
-                                                <span class="p">)</span>
-    <span class="k">if</span> <span class="n">err</span><span class="p">:</span>
-        <span class="n">log</span><span class="p">(</span><span class="n">ERROR</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
-
-    <span class="n">log</span><span class="p">(</span><span class="n">INFO</span><span class="p">,</span> <span class="n">pformat</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">request_response</span><span class="o">.</span><span class="n">json</span><span class="p">()))</span>
-    <span class="n">log</span><span class="p">(</span><span class="n">INFO</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">request_response</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
-
-
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="n">main</span><span class="p">()</span>
-</code></pre></div>
 
 
 

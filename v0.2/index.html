@@ -443,6 +443,8 @@ The client integrates Rest API and AMPQ protocol for communication with the GLoc
 <pre><code>import flxtrd
 </code></pre>
 <h2 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h2>
+<p>The basic functionality of the client is to send market orders to the GLocalFlex Market server and receive market responses. The API client is designed to be used in a trading client application.
+It is up to the user which additional functionalities are implemented to the client. As an example a trading strategy and energy management logic can be integrated to the client.</p>
 <pre class="mermaid"><code>graph LR
     MyClient --&gt; FlexAPIClient
     MyClient --&gt; TradingStrategy
@@ -598,6 +600,7 @@ The client integrates Rest API and AMPQ protocol for communication with the GLoc
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="n">main</span><span class="p">()</span>
 </code></pre></div>
+<p>{% README.md %}</p>
 
 
 

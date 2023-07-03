@@ -1,34 +1,31 @@
-from logging import INFO, WARNING, DEBUG
+from logging import DEBUG, INFO, WARNING
 from typing import List, Optional, Tuple
+from warnings import warn
 
 from flxtrd.core.logger import log
 from flxtrd.core.plugins.auth import AuthPlugin
 from flxtrd.core.plugins.base import BasePlugin
 from flxtrd.core.types import (
-    FlexResponse,
     FlexError,
     FlexMarket,
+    FlexResponse,
+    FlexUser,
     MarketOrder,
     OrderType,
-    FlexUser,
 )
 from flxtrd.protocols.ampq import AmpqAPI
 from flxtrd.protocols.base import BaseAPI
 from flxtrd.protocols.restapi import RestAPI
-
-# userid, applicationKey = validateApplicationToken(authServer=authServer,
-#                                                 accessTaken=accessToken,
-#                                                 verify_ssl=verify_ssl)
 
 
 class FlexAPIClient:
     """Example API Client that uses the api and auth plugin
 
     Params:
-        user: User account object
-        Market: Market information
-        base_url: Base url of the API server
-        protocol: Protocol used for communication with the public API of the market
+        user: User account configuration object
+        market: Market configuration object
+        request_protocol: Protocol used for communication with the Rest API
+        trade_protocol: Protocol used for communication with the trading API
         plugins: List of plugins to use
 
     """
@@ -37,24 +34,29 @@ class FlexAPIClient:
         self,
         user: FlexUser,
         market: FlexMarket,
-        base_url: str,
+        base_url: str = None,
         request_protocol: BaseAPI = RestAPI,
         trade_protocol: AmpqAPI = AmpqAPI,
-        plugins: Optional[List[BasePlugin]] = None,
+        plugins: List[BasePlugin] = [],
     ) -> None:
-        # user account data
+        if base_url is not None:
+            warn(
+                "Argument base_url is deprecated in favor of market.market_url v0.2.0",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+
         self.user = user
         self.market = market
-        self.request_protocol = request_protocol(base_url=base_url)
-        self.trade_protocol: AmpqAPI = trade_protocol(
-            base_url=base_url, user=user, broker=market.broker
-        )
+        self.request_protocol = request_protocol(base_url=market.market_url)
 
         # By default the Auth Plugin is added
-        self.plugins = plugins or [
-            AuthPlugin(user=user, authServer=base_url, verify_ssl=False)
-        ]
-        # Keeps connection alive if the protocol requires it
+        self.plugins = plugins or [AuthPlugin(user=user, market=market)]
+
+        self.trade_protocol: AmpqAPI = trade_protocol(
+            base_url=market.market_url, user=user, broker=market.broker
+        )
+
         self.context = None
 
     def send_order(
@@ -74,7 +76,7 @@ class FlexAPIClient:
 
         for _plugin in self.plugins:
             log(INFO, f"Execute plugin {_plugin}")
-            plugin_data[f"{_plugin!s}_before"] = _plugin.before_request(
+            plugin_data[f"{_plugin}_before"] = _plugin.before_request(
                 endpoint, params=params, data=data
             )
 
@@ -98,7 +100,7 @@ class FlexAPIClient:
         )
 
         for _plugin in self.plugins:
-            plugin_data[f"{_plugin!s}_after"] = _plugin.after_request(response)
+            plugin_data[f"{_plugin}_after"] = _plugin.after_request(response)
 
         return (
             FlexResponse(request_response=response, plugin_data=plugin_data or None),
@@ -111,16 +113,18 @@ class FlexAPIClient:
         endpoint: str,
         params: Optional[dict] = None,
         data: Optional[dict] = None,
-        ssl: Optional[bool] = False,
+        ssl: Optional[bool] = True,
         verify_ssl: Optional[bool] = True,
-        **kwargs) -> FlexResponse:
+        **kwargs,
+    ) -> FlexResponse:
         """Executes all plugins and forwards the request to the protocol API class"""
 
         plugin_data = {}
 
         for _plugin in self.plugins:
             log(INFO, f"Execute plugin {_plugin}")
-            plugin_data[f"{_plugin!s}_before"] = _plugin.before_request(
+
+            plugin_data[f"{_plugin}_before"] = _plugin.before_request(
                 endpoint, params=params, data=data
             )
 
@@ -128,14 +132,15 @@ class FlexAPIClient:
             method=method,
             endpoint=endpoint,
             data=data,
-            ssl=ssl,
             user=self.user,
             market=self.market,
+            ssl=ssl,
+            verify_ssl=verify_ssl,
             **kwargs,
         )
 
         for _plugin in self.plugins:
-            plugin_data[f"{_plugin!s}_after"] = _plugin.after_request(response)
+            plugin_data[f"{_plugin}_after"] = _plugin.after_request(response)
 
         return (
             FlexResponse(request_response=response, plugin_data=plugin_data or None),
@@ -164,6 +169,21 @@ class FlexAPIClient:
             log(DEBUG, "No responses from the market")
             return None
         return self.trade_protocol.callback_responses
+    
+    def connect(self):
+        """Connect to the market"""
+        if self.user.app_key is None:
+            # TODO just a temporary solution
+            self.plugins[0].before_request()
+        self.trade_protocol.connect()
+    
+    def disconnect(self):
+        """Disconnect from the market"""
+        self.trade_protocol.close_connection()
+
+    def sleep(self, seconds: int):
+        """Sleep for a number of seconds"""
+        self.trade_protocol.connection.sleep(seconds)
 
 
 class MarketMessages:

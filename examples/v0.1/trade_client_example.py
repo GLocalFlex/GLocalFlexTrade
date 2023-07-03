@@ -6,12 +6,12 @@ from logging import ERROR, INFO
 from flxtrd import (
     ASK,
     BID,
-    FlexBroker,
     FlexAPIClient,
-    FlexResource,
+    FlexBroker,
     FlexMarket,
-    MarketOrder,
+    FlexResource,
     FlexUser,
+    MarketOrder,
     log,
     utils,
 )
@@ -20,47 +20,44 @@ from flxtrd import (
 def main() -> None:
     GLOCALFLEX_MARKET_URL = "localhost"
 
-    user = FlexUser(name="<your_email>",
-                    password="<your_password>",
-                    access_token="<your_device_access_token>",
-                    )
+    user = FlexUser(
+        name="<your_email>",
+        password="<your_password>",
+        access_token="<your_device_access_token>",
+    )
 
     market = FlexMarket(market_url=GLOCALFLEX_MARKET_URL)
 
     # Create a AMPQ client that connects to the message broker
-    trading_client = FlexAPIClient(base_url=GLOCALFLEX_MARKET_URL,
-                                   user=user,
-                                   market=market
-                                   )
+    trading_client = FlexAPIClient(base_url=GLOCALFLEX_MARKET_URL, user=user, market=market)
 
     # Define a flexibility resource that will be traded
     # The resource is a 100W power for 60 minutes starting in 5 minutes
-    flex_resource = FlexResource(power_w=100,
-                                 start_time_epoch_s=utils.utc_timestamp_s() + utils.min_to_s(5), 
-                                 duration_min=60,  
-                                 order_expiration_min=50)
+    flex_resource = FlexResource(
+        power_w=100,
+        start_time_epoch_s=utils.utc_timestamp_s() + utils.min_to_s(5),
+        duration_min=60,
+        order_expiration_min=50,
+    )
 
     # Create a market ask order to sell flexibility
-    market_order = MarketOrder(order_type=ASK,
-                               price_eur=100,
-                               resource=flex_resource)
+    market_order = MarketOrder(order_type=ASK, price_eur=100, resource=flex_resource)
 
     # Send the market order to the message broker
     # The connection to the broker will be initiated automatically
-    _, err = trading_client.send_order(market_order=market_order,
-                                       verify_ssl=False)
-    
-    if err: log(ERROR, err)
+    _, err = trading_client.send_order(market_order=market_order, verify_ssl=False)
+
+    if err:
+        log(ERROR, err)
 
     # Create a market bid order to buy flexibility
-    market_order = MarketOrder(order_type=BID,
-                               price_eur=100,
-                               resource=flex_resource)
+    market_order = MarketOrder(order_type=BID, price_eur=100, resource=flex_resource)
 
-    _, err = trading_client.send_order(market_order=market_order,
-                                       verify_ssl=False)
-    
-    if err: log(ERROR, err); sys.exit(1)
+    _, err = trading_client.send_order(market_order=market_order, verify_ssl=False)
+
+    if err:
+        log(ERROR, err)
+        sys.exit(1)
 
     # Check the market responses for closed_deals, price tick messages
     # from the message broker for 60 seconds and exit
@@ -76,7 +73,7 @@ def main() -> None:
                 # Close the connection to the market message broker
                 if len(market_responses) == expected_responses:
                     break
-                
+
             time.sleep(1)
             wait_sec += 1
 

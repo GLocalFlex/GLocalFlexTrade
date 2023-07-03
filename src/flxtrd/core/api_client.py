@@ -51,7 +51,7 @@ class FlexAPIClient:
         self.request_protocol = request_protocol(base_url=market.market_url)
 
         # By default the Auth Plugin is added
-        self.plugins = plugins or [AuthPlugin(user=user, authServer=base_url)]
+        self.plugins = plugins or [AuthPlugin(user=user, market=market)]
 
         self.trade_protocol: AmpqAPI = trade_protocol(
             base_url=market.market_url, user=user, broker=market.broker

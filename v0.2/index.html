@@ -335,6 +335,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#listen-to-market-ticker-messages" class="md-nav__link">
+    Listen to market ticker messages
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -403,6 +410,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#listen-to-market-ticker-messages" class="md-nav__link">
+    Listen to market ticker messages
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -433,11 +447,10 @@
 
 <h1 id="glocalflextrade-public-api">GLocalFlexTrade Public API<a class="headerlink" href="#glocalflextrade-public-api" title="Permanent link">&para;</a></h1>
 <p>Public client API for the flexible energy trading market GLocalFlex.
-Trade energy or offer flexible loads to the European energy market.
 The client libary provides standard interface to access the GLocalFlex Market public API.
-The client integrates Rest API and AMPQ protocol for communication with the GLocalFlex server.</p>
-<p><a href="https://img.shields.io/github/v/release/glocalflex/GLocalFlexTrade"><img alt="Release" src="https://img.shields.io/github/v/release/glocalflex/GLocalFlexTrade" /></a>
-<a href="https://github.com/glocalflex/GLocalFlexTrade/actions/workflows/main.yml?query=branch%3Amain"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/glocalflex/GLocalFlexTrade/main.yml?branch=main" /></a>
+The client integrates Rest API and AMPQ protocol for communication with the GLocalFlex marketplace.</p>
+<p><a class="glightbox" href="https://img.shields.io/github/v/release/glocalflex/glocalflextrade?include_prereleases" data-type="image" data-width="100%" data-height="auto" data-desc-position="bottom"><img alt="Release" src="https://img.shields.io/github/v/release/glocalflex/glocalflextrade?include_prereleases" /></a>
+<a href="https://github.com/glocalflex/GLocalFlexTrade/actions/workflows/main.yml?query=branch%3Amain"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/glocalflex/GLocalFlexTrade/ci.yml?branch=main" /></a>
 <a href="https://codecov.io/gh/glocalflex/GLocalFlexTrade"><img alt="codecov" src="https://codecov.io/gh/glocalflex/GLocalFlexTrade/branch/main/graph/badge.svg" /></a>
 <a href="https://img.shields.io/github/commit-activity/m/glocalflex/GLocalFlexTrade"><img alt="Commit activity" src="https://img.shields.io/github/commit-activity/m/glocalflex/GLocalFlexTrade" /></a>
 <a href="https://img.shields.io/github/license/glocalflex/GLocalFlexTrade"><img alt="License" src="https://img.shields.io/github/license/glocalflex/GLocalFlexTrade" /></a></p>
@@ -460,11 +473,11 @@ It is up to the user which additional functionalities are implemented to the cli
 <h3 id="basic-trading-client-example">Basic trading client example<a class="headerlink" href="#basic-trading-client-example" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Example usage of the trading client using AMPQ protocol&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">ERROR</span><span class="p">,</span> <span class="n">INFO</span>
+<span class="kn">import</span> <span class="nn">sys</span>
 
 <span class="kn">from</span> <span class="nn">flxtrd</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">ASK</span><span class="p">,</span>
     <span class="n">BID</span><span class="p">,</span>
-    <span class="n">FlexBroker</span><span class="p">,</span>
     <span class="n">FlexAPIClient</span><span class="p">,</span>
     <span class="n">FlexResource</span><span class="p">,</span>
     <span class="n">FlexMarket</span><span class="p">,</span>
@@ -476,7 +489,7 @@ It is up to the user which additional functionalities are implemented to the cli
 
 
 <span class="k">def</span> <span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">GLOCALFLEX_MARKET_URL</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
+    <span class="n">GLOCALFLEX_MARKET_URL</span> <span class="o">=</span> <span class="s2">&quot;glocalflexmarket.com&quot;</span>
 
     <span class="n">user</span> <span class="o">=</span> <span class="n">FlexUser</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;&lt;your_email&gt;&quot;</span><span class="p">,</span>
                     <span class="n">password</span><span class="o">=</span><span class="s2">&quot;&lt;your_password&gt;&quot;</span><span class="p">,</span>
@@ -486,8 +499,7 @@ It is up to the user which additional functionalities are implemented to the cli
     <span class="n">market</span> <span class="o">=</span> <span class="n">FlexMarket</span><span class="p">(</span><span class="n">market_url</span><span class="o">=</span><span class="n">GLOCALFLEX_MARKET_URL</span><span class="p">)</span>
 
     <span class="c1"># Create a AMPQ client that connects to the message broker</span>
-    <span class="n">trading_client</span> <span class="o">=</span> <span class="n">FlexAPIClient</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="n">GLOCALFLEX_MARKET_URL</span><span class="p">,</span>
-                                   <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span>
+    <span class="n">trading_client</span> <span class="o">=</span> <span class="n">FlexAPIClient</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span>
                                    <span class="n">market</span><span class="o">=</span><span class="n">market</span>
                                    <span class="p">)</span>
 
@@ -505,18 +517,16 @@ It is up to the user which additional functionalities are implemented to the cli
 
     <span class="c1"># Send the market order to the message broker</span>
     <span class="c1"># The connection to the broker will be initiated automatically</span>
-    <span class="n">_</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">trading_client</span><span class="o">.</span><span class="n">send_order</span><span class="p">(</span><span class="n">market_order</span><span class="o">=</span><span class="n">market_order</span><span class="p">,</span>
-                                       <span class="n">verify_ssl</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">trading_client</span><span class="o">.</span><span class="n">send_order</span><span class="p">(</span><span class="n">market_order</span><span class="o">=</span><span class="n">market_order</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">err</span><span class="p">:</span> <span class="n">log</span><span class="p">(</span><span class="n">ERROR</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">err</span><span class="p">:</span> <span class="n">log</span><span class="p">(</span><span class="n">ERROR</span><span class="p">,</span> <span class="n">err</span><span class="p">);</span> <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="c1"># Create a market bid order to buy flexibility</span>
     <span class="n">market_order</span> <span class="o">=</span> <span class="n">MarketOrder</span><span class="p">(</span><span class="n">order_type</span><span class="o">=</span><span class="n">BID</span><span class="p">,</span>
                                <span class="n">price_eur</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
                                <span class="n">resource</span><span class="o">=</span><span class="n">flex_resource</span><span class="p">)</span>
 
-    <span class="n">_</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">trading_client</span><span class="o">.</span><span class="n">send_order</span><span class="p">(</span><span class="n">market_order</span><span class="o">=</span><span class="n">market_order</span><span class="p">,</span>
-                                       <span class="n">verify_ssl</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">trading_client</span><span class="o">.</span><span class="n">send_order</span><span class="p">(</span><span class="n">market_order</span><span class="o">=</span><span class="n">market_order</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">err</span><span class="p">:</span> <span class="n">log</span><span class="p">(</span><span class="n">ERROR</span><span class="p">,</span> <span class="n">err</span><span class="p">);</span> <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
@@ -535,13 +545,14 @@ It is up to the user which additional functionalities are implemented to the cli
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">market_responses</span><span class="p">)</span> <span class="o">==</span> <span class="n">expected_responses</span><span class="p">:</span>
                     <span class="k">break</span>
 
-            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="c1"># Use instead of time.sleep() to allow message broker connection to stay alive</span>
+            <span class="n">trading_client</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
             <span class="n">wait_sec</span> <span class="o">+=</span> <span class="mi">1</span>
 
     <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
         <span class="n">log</span><span class="p">(</span><span class="n">INFO</span><span class="p">,</span> <span class="s2">&quot;Keyboard interrupt received. Closing connection to the market broker&quot;</span><span class="p">)</span>
     <span class="k">finally</span><span class="p">:</span>
-        <span class="n">trading_client</span><span class="o">.</span><span class="n">trade_protocol</span><span class="o">.</span><span class="n">close_connection</span><span class="p">()</span>
+        <span class="n">trading_client</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
@@ -551,6 +562,8 @@ It is up to the user which additional functionalities are implemented to the cli
 <div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Example usage of the REST API client&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">ERROR</span><span class="p">,</span> <span class="n">INFO</span>
 <span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pformat</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">sys</span>
 
 <span class="kn">from</span> <span class="nn">flxtrd</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">ASK</span><span class="p">,</span>
@@ -567,7 +580,7 @@ It is up to the user which additional functionalities are implemented to the cli
 
 
 <span class="k">def</span> <span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">GLOCALFLEX_MARKET_URL</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>
+    <span class="n">GLOCALFLEX_MARKET_URL</span> <span class="o">=</span> <span class="s2">&quot;glocalflexmarket.com&quot;</span>
 
     <span class="n">user</span> <span class="o">=</span> <span class="n">FlexUser</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;&lt;your_email&gt;&quot;</span><span class="p">,</span>
                     <span class="n">password</span><span class="o">=</span><span class="s2">&quot;&lt;your_password&gt;&quot;</span><span class="p">,</span>
@@ -597,6 +610,64 @@ It is up to the user which additional functionalities are implemented to the cli
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="n">main</span><span class="p">()</span>
+</code></pre></div>
+<h2 id="listen-to-market-ticker-messages">Listen to market ticker messages<a class="headerlink" href="#listen-to-market-ticker-messages" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="n">Example</span> <span class="n">usage</span> <span class="n">of</span> <span class="n">the</span> <span class="n">trading</span> <span class="n">client</span> <span class="n">to</span> <span class="n">just</span> <span class="n">listen</span> <span class="n">to</span> <span class="n">market</span> <span class="n">ticker</span> <span class="n">messages</span>
+
+<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">ERROR</span><span class="p">,</span> <span class="n">INFO</span>
+
+<span class="kn">from</span> <span class="nn">flxtrd</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">FlexAPIClient</span><span class="p">,</span>
+    <span class="n">FlexMarket</span><span class="p">,</span>
+    <span class="n">FlexUser</span><span class="p">,</span>
+    <span class="n">log</span><span class="p">,</span>
+
+<span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">GLOCALFLEX_MARKET_URL</span> <span class="o">=</span> <span class="s2">&quot;glocalflexmarket.com&quot;</span>
+
+    <span class="n">user</span> <span class="o">=</span> <span class="n">FlexUser</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;&lt;your_email&gt;&quot;</span><span class="p">,</span>
+                    <span class="n">password</span><span class="o">=</span><span class="s2">&quot;&lt;your_password&gt;&quot;</span><span class="p">,</span>
+                    <span class="n">access_token</span><span class="o">=</span><span class="s2">&quot;&lt;your_device_access_token&gt;&quot;</span>
+                    <span class="p">)</span>
+    <span class="n">market</span> <span class="o">=</span> <span class="n">FlexMarket</span><span class="p">(</span><span class="n">market_url</span><span class="o">=</span><span class="n">GLOCALFLEX_MARKET_URL</span><span class="p">)</span>
+
+    <span class="c1"># Create a AMPQ client that connects to the message broker</span>
+    <span class="n">trading_client</span> <span class="o">=</span> <span class="n">FlexAPIClient</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span>
+                                   <span class="n">market</span><span class="o">=</span><span class="n">market</span><span class="p">,</span>
+                                   <span class="p">)</span>
+
+
+    <span class="n">trading_client</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+
+    <span class="c1"># Check the market responses for closed_deals, price tick messages</span>
+    <span class="c1"># from the message broker for 60 seconds and exit</span>
+    <span class="n">wait_sec</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">expected_responses</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">log</span><span class="p">(</span><span class="n">INFO</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Waiting for ticker messages from marketplace&quot;</span><span class="p">)</span>
+
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">log</span><span class="p">(</span><span class="n">INFO</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Waited </span><span class="si">{</span><span class="n">wait_sec</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+        <span class="n">market_responses</span> <span class="o">=</span> <span class="n">trading_client</span><span class="o">.</span><span class="n">check_market_responses</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">market_responses</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">log</span><span class="p">(</span><span class="n">INFO</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Received </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">market_responses</span><span class="p">)</span><span class="si">}</span><span class="s2"> responses from market broker&quot;</span><span class="p">)</span>
+            <span class="c1"># Close the connection to the market message broker</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">market_responses</span><span class="p">)</span> <span class="o">==</span> <span class="n">expected_responses</span><span class="p">:</span>
+                <span class="k">break</span>
+
+        <span class="n">trading_client</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">wait_sec</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="n">trading_client</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">main</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="n">log</span><span class="p">(</span><span class="n">INFO</span><span class="p">,</span> <span class="s2">&quot;Keyboard interrupt received. Closing connection to the market broker&quot;</span><span class="p">)</span>
 </code></pre></div>
 <!-- END INCLUDE -->
 

@@ -172,6 +172,9 @@ class FlexAPIClient:
     
     def connect(self):
         """Connect to the market"""
+        if self.user.app_key is None:
+            # TODO just a temporary solution
+            self.plugins[0].before_request()
         self.trade_protocol.connect()
     
     def disconnect(self):

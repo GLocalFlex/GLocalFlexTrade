@@ -1,0 +1,2 @@
+ignore:
+  - ".venv/bin/coverage-3.10"

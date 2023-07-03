@@ -11,12 +11,11 @@
 # GLocalFlexTrade Public API
 
 Public client API for the flexible energy trading market GLocalFlex.
-Trade energy or offer flexible loads to the European energy market.
 The client libary provides standard interface to access the GLocalFlex Market public API.
-The client integrates Rest API and AMPQ protocol for communication with the GLocalFlex server.
+The client integrates Rest API and AMPQ protocol for communication with the GLocalFlex marketplace.
 
-[![Release](https://img.shields.io/github/v/release/glocalflex/GLocalFlexTrade)](https://img.shields.io/github/v/release/glocalflex/GLocalFlexTrade)
-[![Build status](https://img.shields.io/github/actions/workflow/status/glocalflex/GLocalFlexTrade/main.yml?branch=main)](https://github.com/glocalflex/GLocalFlexTrade/actions/workflows/main.yml?query=branch%3Amain)
+![Release](https://img.shields.io/github/v/release/glocalflex/glocalflextrade?include_prereleases)
+[![Build status](https://img.shields.io/github/actions/workflow/status/glocalflex/GLocalFlexTrade/ci.yml?branch=main)](https://github.com/glocalflex/GLocalFlexTrade/actions/workflows/main.yml?query=branch%3Amain)
 [![codecov](https://codecov.io/gh/glocalflex/GLocalFlexTrade/branch/main/graph/badge.svg)](https://codecov.io/gh/glocalflex/GLocalFlexTrade)
 [![Commit activity](https://img.shields.io/github/commit-activity/m/glocalflex/GLocalFlexTrade)](https://img.shields.io/github/commit-activity/m/glocalflex/GLocalFlexTrade)
 [![License](https://img.shields.io/github/license/glocalflex/GLocalFlexTrade)](https://img.shields.io/github/license/glocalflex/GLocalFlexTrade)

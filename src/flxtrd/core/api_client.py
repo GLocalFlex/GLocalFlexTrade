@@ -113,7 +113,7 @@ class FlexAPIClient:
         endpoint: str,
         params: Optional[dict] = None,
         data: Optional[dict] = None,
-        ssl: Optional[bool] = False,
+        ssl: Optional[bool] = True,
         verify_ssl: Optional[bool] = True,
         **kwargs,
     ) -> FlexResponse:
@@ -169,6 +169,18 @@ class FlexAPIClient:
             log(DEBUG, "No responses from the market")
             return None
         return self.trade_protocol.callback_responses
+    
+    def connect(self):
+        """Connect to the market"""
+        self.trade_protocol.connect()
+    
+    def disconnect(self):
+        """Disconnect from the market"""
+        self.trade_protocol.close_connection()
+
+    def sleep(self, seconds: int):
+        """Sleep for a number of seconds"""
+        self.trade_protocol.connection.sleep(seconds)
 
 
 class MarketMessages:

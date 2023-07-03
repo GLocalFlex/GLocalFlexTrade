@@ -55,11 +55,11 @@ pip install flxtrd
 ```py
 """Example usage of the trading client using AMPQ protocol"""
 from logging import ERROR, INFO
+import sys
 
 from flxtrd import (
     ASK,
     BID,
-    FlexBroker,
     FlexAPIClient,
     FlexResource,
     FlexMarket,
@@ -71,7 +71,7 @@ from flxtrd import (
 
 
 def main() -> None:
-    GLOCALFLEX_MARKET_URL = "localhost"
+    GLOCALFLEX_MARKET_URL = "glocalflexmarket.com"
 
     user = FlexUser(name="<your_email>",
                     password="<your_password>",
@@ -81,8 +81,7 @@ def main() -> None:
     market = FlexMarket(market_url=GLOCALFLEX_MARKET_URL)
 
     # Create a AMPQ client that connects to the message broker
-    trading_client = FlexAPIClient(base_url=GLOCALFLEX_MARKET_URL,
-                                   user=user,
+    trading_client = FlexAPIClient(user=user,
                                    market=market
                                    )
 
@@ -100,18 +99,16 @@ def main() -> None:
 
     # Send the market order to the message broker
     # The connection to the broker will be initiated automatically
-    _, err = trading_client.send_order(market_order=market_order,
-                                       verify_ssl=False)
+    _, err = trading_client.send_order(market_order=market_order)
 
-    if err: log(ERROR, err)
+    if err: log(ERROR, err); sys.exit(1)
 
     # Create a market bid order to buy flexibility
     market_order = MarketOrder(order_type=BID,
                                price_eur=100,
                                resource=flex_resource)
 
-    _, err = trading_client.send_order(market_order=market_order,
-                                       verify_ssl=False)
+    _, err = trading_client.send_order(market_order=market_order)
 
     if err: log(ERROR, err); sys.exit(1)
 
@@ -130,13 +127,14 @@ def main() -> None:
                 if len(market_responses) == expected_responses:
                     break
 
-            time.sleep(1)
+            # Use instead of time.sleep() to allow message broker connection to stay alive
+            trading_client.sleep(1)
             wait_sec += 1
 
     except KeyboardInterrupt:
         log(INFO, "Keyboard interrupt received. Closing connection to the market broker")
     finally:
-        trading_client.trade_protocol.close_connection()
+        trading_client.disconnect()
 
 
 if __name__ == "__main__":
@@ -151,6 +149,8 @@ if __name__ == "__main__":
 """Example usage of the REST API client"""
 from logging import ERROR, INFO
 from pprint import pformat
+import time
+import sys
 
 from flxtrd import (
     ASK,
@@ -167,7 +167,7 @@ from flxtrd import (
 
 
 def main() -> None:
-    GLOCALFLEX_MARKET_URL = "localhost"
+    GLOCALFLEX_MARKET_URL = "glocalflexmarket.com"
 
     user = FlexUser(name="<your_email>",
                     password="<your_password>",
@@ -197,5 +197,69 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+```
+
+
+## Listen to market ticker messages
+
+```py
+Example usage of the trading client to just listen to market ticker messages
+
+from logging import ERROR, INFO
+
+from flxtrd import (
+    FlexAPIClient,
+    FlexMarket,
+    FlexUser,
+    log,
+
+)
+
+def main() -> None:
+    GLOCALFLEX_MARKET_URL = "glocalflexmarket.com"
+
+    user = FlexUser(name="<your_email>",
+                    password="<your_password>",
+                    access_token="<your_device_access_token>"
+                    )
+    market = FlexMarket(market_url=GLOCALFLEX_MARKET_URL)
+
+    # Create a AMPQ client that connects to the message broker
+    trading_client = FlexAPIClient(user=user,
+                                   market=market,
+                                   )
+
+    
+    trading_client.connect()
+
+    # Check the market responses for closed_deals, price tick messages
+    # from the message broker for 60 seconds and exit
+    wait_sec = 0
+    expected_responses = 1
+    log(INFO, f"Waiting for ticker messages from marketplace")
+
+
+    while True:
+        log(INFO, f"Waited {wait_sec} seconds")
+        market_responses = trading_client.check_market_responses()
+        if market_responses is not None:
+            log(INFO, f"Received {len(market_responses)} responses from market broker")
+            # Close the connection to the market message broker
+            if len(market_responses) == expected_responses:
+                break
+            
+        trading_client.sleep(1)
+        wait_sec += 1
+        
+    trading_client.disconnect()
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        log(INFO, "Keyboard interrupt received. Closing connection to the market broker")
+
 
 ```

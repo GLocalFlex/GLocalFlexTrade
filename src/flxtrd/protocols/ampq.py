@@ -194,7 +194,10 @@ class AmpqAPI(BaseAPI):
         applicationKey = user.app_key
 
         if userid is None or applicationKey is None:
-            raise FlexError("User or application key is None")
+            raise FlexError(
+                "User authentication error. \nCheck if user credentials are correct or if auth"
+                " plugin was correctly executed before connection."
+            )
 
         credentials = pika.PlainCredentials(userid, accessToken)
         parameters = pika.ConnectionParameters(

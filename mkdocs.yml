@@ -9,9 +9,10 @@ copyright: Maintained by <a href="https://glocalflex.com">GLocalFlex</a>.
 
 nav:
   - Home: index.md
-  - Diagrams: mermaid.md
+  # - Diagrams: mermaid.md
 
 plugins:
+  - include-markdown
   - search
   - glightbox:
        touchNavigation: true
@@ -32,6 +33,7 @@ plugins:
             setup_commands:
                 - import sys
                 - sys.path.append('../')
+
 theme:
   name: material
   custom_dir: docs/overrides
@@ -69,6 +71,7 @@ markdown_extensions:
       permalink: true
   - pymdownx.arithmatex:
       generic: true
+  # - markdown_include
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid

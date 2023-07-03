@@ -1,7 +1,19 @@
+
+<!-- [![Release](https://img.shields.io/github/v/release/glocalflex/flxtrd)](https://img.shields.io/github/v/release/glocalflex/flxtrd)
+[![Build status](https://img.shields.io/github/actions/workflow/status/glocalflex/flxtrd/main.yml?branch=main)](https://github.com/glocalflex/flxtrd/actions/workflows/main.yml?query=branch%3Amain)
+[![Commit activity](https://img.shields.io/github/commit-activity/m/glocalflex/flxtrd)](https://img.shields.io/github/commit-activity/m/glocalflex/flxtrd) -->
+
+<!-- [![License](https://img.shields.io/github/license/glocalflex/flxtrd)](https://img.shields.io/github/license/glocalflex/flxtrd) -->
+
+
+
+
 # GLocalFlexTrade Public API
 
 Public client API for the flexible energy trading market GLocalFlex.
 Trade energy or offer flexible loads to the European energy market.
+The client libary provides standard interface to access the GLocalFlex Market public API.
+The client integrates Rest API and AMPQ protocol for communication with the GLocalFlex server.
 
 [![Release](https://img.shields.io/github/v/release/glocalflex/GLocalFlexTrade)](https://img.shields.io/github/v/release/glocalflex/GLocalFlexTrade)
 [![Build status](https://img.shields.io/github/actions/workflow/status/glocalflex/GLocalFlexTrade/main.yml?branch=main)](https://github.com/glocalflex/GLocalFlexTrade/actions/workflows/main.yml?query=branch%3Amain)
@@ -10,12 +22,27 @@ Trade energy or offer flexible loads to the European energy market.
 [![License](https://img.shields.io/github/license/glocalflex/GLocalFlexTrade)](https://img.shields.io/github/license/glocalflex/GLocalFlexTrade)
 
 
-[GLocalFlexTrade](https://glocalflex.github.io/GLocalFlexTrade/) **Documentation** provides information how to use the **flxtrd** Python package.
+The GLocalFlexTrade client API [Documentation](https://glocalflex.github.io/GLocalFlexTrade/) provides more information how to use the **flxtrd** Python package.
 
-The official GLocalFlex Market [API Documentation](https://www.glocalflexmarket.com/docs/) gives an overview and more details of the public API and energy trading platform.
+The official **GLocalFlex Market**  [API Documentation](https://www.glocalflexmarket.com/docs/) gives an overview and more details of the public API and energy trading platform.
 
-## Getting started with GLocalFlexTrade
 
+## Architecture
+
+The basic functionality of the client is to send market orders to the GLocalFlex Market server and receive market responses. The API client is designed to be used in a trading client application.
+It is up to the user which additional functionalities are implemented to the client. As an example a trading strategy and energy management logic can be integrated to the client.
+
+``` mermaid
+graph LR
+    MyClient --> FlexAPIClient
+    MyClient --> TradingStrategy
+    MyClient --> EnergyManagement
+    MyClient --> CustomPlugins
+    FlexAPIClient --> APIProtocols
+    FlexAPIClient --> FlexPlugins
+```
+
+## Quickstart Guide
 
 Install GLocalFlexTrade Python package
 

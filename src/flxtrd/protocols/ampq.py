@@ -213,7 +213,7 @@ class AmpqAPI(BaseAPI):
             )
         except Exception as excep:
             err = FlexError(str(excep))
-            raise err
+            raise excep
         return err
 
     def set_consumer(self, callback, callback_queue, channel):

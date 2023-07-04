@@ -46,7 +46,7 @@ def main() -> None:
 
     # Send the market order to the message broker
     # The connection to the broker will be initiated automatically
-    _, err = trading_client.send_order(market_order=market_order, verify_ssl=False)
+    _, err = trading_client.send_order(market_order=market_order)
 
     if err:
         log(ERROR, err)
@@ -54,7 +54,7 @@ def main() -> None:
     # Create a market bid order to buy flexibility
     market_order = MarketOrder(order_type=BID, price_eur=100, resource=flex_resource)
 
-    _, err = trading_client.send_order(market_order=market_order, verify_ssl=False)
+    _, err = trading_client.send_order(market_order=market_order)
 
     if err:
         log(ERROR, err)

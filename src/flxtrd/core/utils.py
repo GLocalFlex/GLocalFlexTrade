@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, timezone
 from logging import ERROR
 
 from flxtrd.core.logger import log
@@ -6,14 +6,14 @@ from flxtrd.core.logger import log
 MILLI = 1000
 
 
-def get_formatted_time(milliseconds: int) -> datetime.datetime:
+def get_formatted_time(milliseconds: int) -> datetime:
     """
     Converts milliseconds to a human-readable string with milliseconds
     :param milliseconds: milliseconds to convert
     :return: human-readable string with milliseconds
     """
 
-    dt = datetime.datetime.fromtimestamp(milliseconds / MILLI)
+    dt = datetime.fromtimestamp(milliseconds / MILLI, tz=timezone.utc)
     return dt.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
 
 
@@ -33,14 +33,14 @@ def milliseconds_to_min(seconds: int):
 
 def utc_timestamp_ms() -> float:
     # Get current UTC timestamp in seconds
-    timestamp = datetime.datetime.utcnow().timestamp()
+    timestamp = datetime.now(tz=timezone.utc).timestamp()
     # Convert seconds to milliseconds
     return int(timestamp * MILLI)
 
 
 def utc_timestamp_s() -> float:
     # Get current UTC timestamp in seconds
-    timestamp = datetime.datetime.utcnow().timestamp()
+    timestamp = datetime.now(tz=timezone.utc).timestamp()
     return int(timestamp)
 
 

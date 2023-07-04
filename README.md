@@ -43,10 +43,30 @@ graph LR
 
 ## Quickstart Guide
 
+Create virtual environment
+
+```sh
+python3 -m venv venv
+```
+
+Activate virtual environment
+
+```sh
+source venv/bin/activate
+```
+
 Install GLocalFlexTrade Python package
 
 ```sh
 pip install flxtrd
+```
+
+Update GLocalFlexTrade Python package to latest version
+
+```sh
+pip install --upgrade flxtrd
+# or
+pip install -U flxtrd
 ```
 
 ### Basic trading client example

@@ -139,13 +139,14 @@ class AmpqAPI(BaseAPI):
             user=self.user, broker=self.broker, ssl_options=ssl_options
         )
 
-        if not err:
-            self.set_consumer(
-                callback=self.callback_on_response,
-                callback_queue=self.callback_queue_id,
-                channel=self.channel,
-            )
-        return err
+        if err:
+            return err
+        
+        self.set_consumer(
+            callback=self.callback_on_response,
+            callback_queue=self.callback_queue_id,
+            channel=self.channel,
+        )
 
     def close_connection(self):
         """Close connection gracefully to message broker"""
@@ -169,8 +170,10 @@ class AmpqAPI(BaseAPI):
                 properties=props,
                 body=message,
             )
-        except Exception as error:
-            raise FlexError(str(error))
+        except pika.exceptions.ChannelWrongStateError as error:
+            if 'Channel is closed' in str(error):
+                raise FlexError('Channel is closed. Connection to broker is not possible.')
+
 
     def checkreplies(self):
         self.connection.process_data_events(time_limit=1)
@@ -204,19 +207,23 @@ class AmpqAPI(BaseAPI):
             brokerip, brokerport, "/", credentials, ssl_options=ssl_options
         )
 
-        # Todo check which exceptions can occur
         try:
             self.connection = pika.BlockingConnection(parameters)
-            self.channel = self.connection.channel()
-            self.callback_queue_id = declareReplyToQueue(
-                self.channel, applicationKey, tickeroutexname
-            )
         except Exception as excep:
-            err = FlexError(str(excep))
-            raise excep
-        return err
+            # Todo check which exceptions can occur
+            raise FlexError(str(excep))
 
+        self.channel = self.connection.channel()
+        self.callback_queue_id = declare_reply_queue(
+            self.channel, applicationKey, tickeroutexname
+        )
+        if self.callback_queue_id is None:
+            return FlexError("No callback queue declared, That usually happens if more than one connection to the broker is opened", )
+        return None
+    
     def set_consumer(self, callback, callback_queue, channel):
+        if callback_queue is None:
+            raise FlexError("No callback queue declared, That usually happens if more than one connection to the broker is opened", )
         channel.basic_consume(queue=callback_queue, on_message_callback=callback, auto_ack=True)
 
     def checkreplies(self):
@@ -259,7 +266,7 @@ def get_current_time_ms():
     return int(time.time() * 1000)
 
 
-def declareReplyToQueue(
+def declare_reply_queue(
     channel: pika.adapters.blocking_connection.BlockingChannel,
     applicationKey: str,
     tickeroutexname: str,
@@ -268,9 +275,17 @@ def declareReplyToQueue(
     The provided applicationKey is used as the queue name"""
     try:
         dec_res = channel.queue_declare(applicationKey, exclusive=True)
-        callback_queue_id: str = dec_res.method.queue
-        channel.queue_bind(callback_queue_id, tickeroutexname)
-        log(INFO, f"Created queue with ID {callback_queue_id}")
-        return callback_queue_id
-    except pika.exceptions.ChannelClosedByBroker:
-        log(ERROR, "ReplyTo queue creation failed " + applicationKey)
+    except pika.exceptions.ChannelClosedByBroker as error:
+        if "RESOURCE_LOCKED" in str(error):
+            log(ERROR, "A connection from user with specific access token already exists")
+            return None
+        else:
+            log(ERROR, "ReplyTo queue creation failed " + applicationKey)
+            log(ERROR, error)
+            raise error
+
+    
+    callback_queue_id: str = dec_res.method.queue
+    channel.queue_bind(callback_queue_id, tickeroutexname)
+    log(INFO, f"Created queue with ID {callback_queue_id}")
+    return callback_queue_id

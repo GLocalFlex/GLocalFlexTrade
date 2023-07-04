@@ -177,8 +177,7 @@ def main() -> None:
     market = FlexMarket(market_url=GLOCALFLEX_MARKET_URL)
 
     # Create a AMPQ client that connects to the message broker
-    trading_client = FlexAPIClient(base_url=GLOCALFLEX_MARKET_URL,
-                                   user=user,
+    trading_client = FlexAPIClient(user=user,
                                    market=market
                                    )
 
@@ -201,9 +200,9 @@ if __name__ == "__main__":
 
 
 ## Listen to market ticker messages
+Example usage of the trading client to just listen to market ticker messages
 
 ```py
-Example usage of the trading client to just listen to market ticker messages
 
 from logging import ERROR, INFO
 
@@ -259,6 +258,4 @@ if __name__ == "__main__":
         main()
     except KeyboardInterrupt:
         log(INFO, "Keyboard interrupt received. Closing connection to the market broker")
-
-
 ```

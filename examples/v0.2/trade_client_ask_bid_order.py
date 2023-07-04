@@ -28,7 +28,7 @@ def main() -> None:
     market = FlexMarket(market_url=GLOCALFLEX_MARKET_URL)
 
     # Create a AMPQ client that connects to the message broker
-    trading_client = FlexAPIClient(base_url=GLOCALFLEX_MARKET_URL, user=user, market=market)
+    trading_client = FlexAPIClient(user=user, market=market)
 
     # Define a flexibility resource that will be traded
     # The resource is a 100W power for 60 minutes starting in 5 minutes

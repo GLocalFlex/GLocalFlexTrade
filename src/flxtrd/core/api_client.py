@@ -1,4 +1,5 @@
 from logging import DEBUG, INFO, WARNING
+import sys
 from typing import List, Optional, Tuple
 from warnings import warn
 
@@ -46,6 +47,9 @@ class FlexAPIClient:
                 stacklevel=2,
             )
 
+        if user is None or market is None:
+            raise TypeError("User and market must be provided")
+        
         self.user = user
         self.market = market
         self.request_protocol = request_protocol(base_url=market.market_url)
@@ -80,13 +84,13 @@ class FlexAPIClient:
                 endpoint, params=params, data=data
             )
 
-        # Check is connection is alive
+        # Check if connection exists
         if not self.trade_protocol.is_connected():
-            self.trade_protocol.connect(verify_ssl=verify_ssl)
+            err = self.trade_protocol.connect(verify_ssl=verify_ssl)
 
-        if not self.trade_protocol.is_connected():
-            raise FlexError("Connection for context is not established")
-
+            if err:
+                return (None, err)
+            
         response, err = self.trade_protocol.send_request(
             method=method,
             endpoint=endpoint,
@@ -170,18 +174,20 @@ class FlexAPIClient:
             return None
         return self.trade_protocol.callback_responses
     
-    def connect(self):
+    def connect(self) -> None:
         """Connect to the market"""
         if self.user.app_key is None:
             # TODO just a temporary solution
             self.plugins[0].before_request()
-        self.trade_protocol.connect()
+        err = self.trade_protocol.connect()
+        if err:
+            raise err
     
-    def disconnect(self):
+    def disconnect(self) -> None:
         """Disconnect from the market"""
         self.trade_protocol.close_connection()
 
-    def sleep(self, seconds: int):
+    def sleep(self, seconds: int) -> None:
         """Sleep for a number of seconds"""
         self.trade_protocol.connection.sleep(seconds)
 

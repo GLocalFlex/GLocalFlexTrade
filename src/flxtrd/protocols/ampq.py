@@ -17,6 +17,7 @@ from flxtrd.core.types import (
     FlexUser,
     MarketOrder,
     OrderType,
+    utils
 )
 from flxtrd.protocols.base import BaseAPI
 
@@ -42,7 +43,7 @@ def create_line_message(user: FlexUser, flexibility: FlexResource, marketOrder: 
     order_type = marketOrder.order_type
     application_key = user.app_key
     wattage = flexibility.power_w
-    duration = flexibility.duration_min
+    duration = utils.min_to_ms(flexibility.duration_min)
     starttime = flexibility.start_time_epoch_ms
     totalenergy = flexibility.energy_wh
     orderprice = marketOrder.price_eur

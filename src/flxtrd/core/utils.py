@@ -18,6 +18,7 @@ def get_formatted_time(milliseconds: int) -> datetime:
 
 
 def seconds_to_min(seconds: int):
+    """Convert seconds to minutes"""
     if seconds == 0:
         log(ERROR, "Duration is zero")
         return 0
@@ -25,6 +26,7 @@ def seconds_to_min(seconds: int):
 
 
 def milliseconds_to_min(seconds: int):
+    """Convert milliseconds to minutes"""
     if seconds == 0:
         log(ERROR, "Duration is zero")
         return 0
@@ -32,19 +34,20 @@ def milliseconds_to_min(seconds: int):
 
 
 def utc_timestamp_ms() -> float:
-    # Get current UTC timestamp in seconds
+    """ Get current UTC timestamp in milliseconds"""
     timestamp = datetime.now(tz=timezone.utc).timestamp()
     # Convert seconds to milliseconds
     return int(timestamp * MILLI)
 
 
 def utc_timestamp_s() -> float:
-    # Get current UTC timestamp in seconds
+    """Get current UTC timestamp in seconds"""
     timestamp = datetime.now(tz=timezone.utc).timestamp()
     return int(timestamp)
 
 
 def min_to_ms(minutes: int):
+    """Convert minutes to milliseconds"""
     if minutes == 0:
         log(ERROR, "Minutes can not be zero")
         return 0
@@ -52,6 +55,7 @@ def min_to_ms(minutes: int):
 
 
 def min_to_hour(minutes: int):
+    """Convert minutes to hours"""
     if minutes == 0:
         log(ERROR, "Minutes can not be zero")
         return 0
@@ -59,6 +63,7 @@ def min_to_hour(minutes: int):
 
 
 def min_to_s(minutes: int):
+    """Convert minutes to seconds"""
     if minutes == 0:
         log(ERROR, "Minutes can not be zero")
         return 0

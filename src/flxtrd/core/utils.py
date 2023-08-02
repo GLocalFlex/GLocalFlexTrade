@@ -6,15 +6,29 @@ from flxtrd.core.logger import log
 MILLI = 1000
 
 
-def get_formatted_time(milliseconds: int) -> datetime:
+def epoch_time_to_isoformat(epoch_time: int) -> datetime:
     """
     Converts milliseconds to a human-readable string with milliseconds
     :param milliseconds: milliseconds to convert
-    :return: human-readable string with milliseconds
+    :return: human-readable date string in iso format
     """
+    
+    EPOCH_SEC_LENGTH = 10
+    milliseconds = "000"
 
-    dt = datetime.fromtimestamp(milliseconds / MILLI, tz=timezone.utc)
-    return dt.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+    if not isinstance(epoch_time, str):
+        epoch_time = str(epoch_time)
+
+    if len(epoch_time) > EPOCH_SEC_LENGTH:
+        milliseconds = epoch_time[EPOCH_SEC_LENGTH:13]
+        epoch_time = epoch_time[:EPOCH_SEC_LENGTH]
+    elif len(epoch_time) == EPOCH_SEC_LENGTH:
+        pass
+    else:
+        raise ValueError("Epoch time is too short")
+    
+    dt = datetime.fromtimestamp(int(epoch_time), tz=timezone.utc)
+    return dt.strftime("%Y-%m-%dT%H:%M:%S") + f".{milliseconds}Z"
 
 
 def seconds_to_min(seconds: int):

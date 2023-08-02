@@ -68,9 +68,9 @@ class FlexResource:
         return {
             "power_w": round(self.power_w, 3),
             "energy_wh": round(self.energy_wh, 3),
-            "start_time": utils.get_formatted_time(self.start_time_epoch_ms),
+            "start_time": utils.epoch_time_to_isoformat(self.start_time_epoch_ms),
             "duration_min": self.duration_min,
-            "expiration_time": utils.get_formatted_time(self.expiration_time_epoch_ms),
+            "expiration_time": utils.epoch_time_to_isoformat(self.expiration_time_epoch_ms),
         }
 
     @property

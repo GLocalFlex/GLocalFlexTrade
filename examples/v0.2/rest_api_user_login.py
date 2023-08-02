@@ -10,7 +10,9 @@ def main() -> None:
     GLOCALFLEX_MARKET_URL = "localhost"
 
     user = FlexUser(
-        name="<your_email>", password="<your_password>", access_token="<your_device_access_token>"
+        name="<your_email>",
+        password="<your_password>",
+        access_token="<your_device_access_token>"
     )
 
     market = FlexMarket(market_url=GLOCALFLEX_MARKET_URL)

@@ -120,7 +120,9 @@ class FlexBroker:
     tickeroutexname: str = "ticker-out"
     exchangename: str = "in"
 
-
+    def __str__(self) -> str:
+        return f"FlexBroker url:{self.url} port:{self.port}"
+    
 class FlexMarket:
     """Marketplace dataclass for storing marketplace data."""
 

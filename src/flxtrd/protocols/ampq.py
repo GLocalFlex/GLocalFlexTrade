@@ -104,8 +104,8 @@ class AmpqAPI(BaseAPI):
         )
         msg = create_line_message(user=user, flexibility=flexibility, marketOrder=order)
 
-        log(INFO, f"Send market order {order}")
-        log(DEBUG, f"Order message: {msg}")
+        log(INFO, f"Send market order to {self.broker} \n {order}")
+        log(DEBUG, f"Order message: \n {msg}")
 
         self.publish(
             message=msg,
@@ -237,11 +237,10 @@ class AmpqAPI(BaseAPI):
         currTimeMs = int(time.time() * 1000)
         # Tick message ex. {'msgtype': 'tick', 'last_price_time': 1559732378418422410, 'last_price': 7.529581909307273}
         try:
-            msgBody = json.loads(body.decode("utf-8"))
-            self.callback_responses.append(msgBody)
-
-            log(INFO, f"Received message")
-            log(INFO, f"{pformat(msgBody)}")
+            msg_body = json.loads(body.decode("utf-8"))
+            self.callback_responses.append(msg_body)
+            msg_type = msg_body.get('msg_type', "unknown")
+            log(INFO, f"Received message from {self.broker} type: {msg_type}\n {json.dumps(msg_body, indent=4)}")
             # if 'msgtype' in msgBody.keys():
             #     if msgBody['msgtype'] == 'cancel':
             #             log(INFO,"--- Bohoo! My message got cancelled for ", msgBody['reason'])

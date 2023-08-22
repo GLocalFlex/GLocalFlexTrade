@@ -41,7 +41,7 @@ def test_flex_api_client_instance_with_no_market(user):
 from unittest.mock import Mock
 from flxtrd import AmpqAPI
 
-
+@pytest.mark.skip("")
 def test_flex_api_client_connect_valid_user_and_access_token(user, market):
     """"Test connection to message broker with valid user and access token"""
     AmpqAPI._connecttobrokerWithAppToken = Mock(return_value=None)

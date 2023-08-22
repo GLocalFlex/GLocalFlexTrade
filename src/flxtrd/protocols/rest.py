@@ -1,8 +1,10 @@
-from typing import Optional
+from logging import ERROR
+from typing import Optional, Tuple
 
 import requests
 
 from flxtrd.protocols.base import BaseAPI
+from flxtrd.core.logger import log
 
 
 class RestAPI(BaseAPI):
@@ -21,20 +23,25 @@ class RestAPI(BaseAPI):
         ssl: bool = True,
         verify_ssl: bool = True,
         **kwargs,
-    ) -> dict:
+    ) -> Tuple[dict, bool]:
         if ssl:
             url = f"https://{self.base_url + endpoint}"
         else:
             url = f"http://{self.base_url + endpoint}"
 
-        response = requests.request(
-            method,
-            url,
-            headers=headers,
-            params=params,
-            data=data,
-            verify=verify_ssl,
-        )
+        try:
+            response = requests.request(
+                method,
+                url,
+                headers=headers,
+                params=params,
+                data=data,
+                verify=verify_ssl,
+            )
+        except requests.exceptions.ConnectionError:
+            err = f"Connection to api endpoint {url} failed"
+            log(ERROR, err)
+            return {}, err
 
         return response, self.check_status(response, url, endpoint)
 

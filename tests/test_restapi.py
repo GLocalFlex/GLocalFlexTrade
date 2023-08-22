@@ -1,7 +1,7 @@
 import pytest
 import requests
 
-from flxtrd.protocols.restapi import RestAPI
+from flxtrd.protocols.rest import RestAPI
 
 """
 Use REST-calls like these:
@@ -65,3 +65,12 @@ def test_restapi_send_request(create_rest_api_instance, endpoint, expected_statu
     assert (
         response.status_code == expected_status_code
     ), f"Received status code: {response.status_code} instead of {expected_status_code}"
+
+
+def test_api_not_accessible(create_rest_api_instance: RestAPI):
+    """Tests that the send_request method returns a response"""
+    response, error = create_rest_api_instance.send_request(
+        method="GET", endpoint="/users/login", ssl=True, verify_ssl=False
+    )
+    assert {} == response
+    assert error == "Connection to api endpoint https://localhost/users/login failed"

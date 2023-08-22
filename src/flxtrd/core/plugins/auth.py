@@ -113,9 +113,15 @@ class AuthPlugin(BasePlugin):
         else:
             log(INFO, "User not validated, validating now")
             
-        appAuthUrl = f"https://{authServer}{endpoint}{accessToken}"
-        response = requests.get(appAuthUrl, verify=verify_ssl)
+        url = f"https://{authServer}{endpoint}{accessToken}"
 
+        try:
+            response = requests.get(url, verify=verify_ssl)
+        except requests.exceptions.ConnectionError:
+            err = f"Connection to authentication endpoint {url} failed"
+            log(ERROR, err)
+            return {}, err
+        
         if response.status_code != 200:
             if response.status_code == 404:
                 log(

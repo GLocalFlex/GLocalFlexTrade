@@ -1,5 +1,5 @@
 from logging import DEBUG, INFO, WARNING
-import sys
+
 from typing import List, Optional, Tuple
 from warnings import warn
 
@@ -16,7 +16,7 @@ from flxtrd.core.types import (
 )
 from flxtrd.protocols.ampq import AmpqAPI
 from flxtrd.protocols.base import BaseAPI
-from flxtrd.protocols.restapi import RestAPI
+from flxtrd.protocols.rest import RestAPI
 
 
 class FlexAPIClient:
@@ -33,9 +33,11 @@ class FlexAPIClient:
 
     def __init__(
         self,
-        user: FlexUser,
         market: FlexMarket,
         base_url: str = None,
+        market_url: str = None,
+        access_token: str = None,
+        user: FlexUser = None,
         request_protocol: BaseAPI = RestAPI,
         trade_protocol: AmpqAPI = AmpqAPI,
         plugins: List[BasePlugin] = [],
@@ -47,10 +49,19 @@ class FlexAPIClient:
                 stacklevel=2,
             )
 
-        if user is None or market is None:
-            raise TypeError("User and market must be provided")
-        
-        self.user = user
+        if user is None:
+            if access_token is None:
+                raise ValueError("A FlexUser instance or access token must be provided")
+            else:
+                user = FlexUser(access_token=access_token)
+
+        if market is None:
+            if base_url is None:
+                raise ValueError("A FlexMarket instance must be provided")
+            else:
+                market = FlexMarket(market_url=market_url)
+
+        self.user = user 
         self.market = market
         self.request_protocol = request_protocol(base_url=market.market_url)
 
@@ -102,14 +113,14 @@ class FlexAPIClient:
             order=market_order,
             **kwargs,
         )
+        
+        if response:
+            for _plugin in self.plugins:
+                plugin_data[f"{_plugin}_after"] = _plugin.after_request(response)
 
-        for _plugin in self.plugins:
-            plugin_data[f"{_plugin}_after"] = _plugin.after_request(response)
-
-        return (
-            FlexResponse(request_response=response, plugin_data=plugin_data or None),
-            err,
-        )
+        return (FlexResponse(request_response=response,
+                             plugin_data=plugin_data or None),
+                             err)
 
     def make_request(
         self,
@@ -164,6 +175,17 @@ class FlexAPIClient:
                 return
         self.plugins.append(plugin)
         log(INFO, f"Added plugin {plugin}")
+
+
+    def remove_plugin(self, plugin: BasePlugin):
+        """Remove a plugin from the list of plugins"""
+
+        for _plugin in self.plugins:
+            if type(_plugin) == type(plugin):
+                self.plugins.remove(_plugin)
+                log(INFO, f"Removed plugin {plugin}")
+                return
+        log(WARNING, f"Plugin {plugin} not found")
 
     def check_market_responses(self):
         """Check the responses from the market"""

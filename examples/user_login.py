@@ -1,18 +1,22 @@
 """Example usage of the REST API client"""
 
-from logging import ERROR, INFO
-from pprint import pformat
+import json
+import logging
+import sys
 
-from flxtrd import FlexAPIClient, FlexMarket, FlexUser, log
+from flxtrd import FlexAPIClient, FlexMarket, FlexUser
+
+# create a basic logger
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+logging.basicConfig(level=logging.INFO)
 
 
 def main() -> None:
     GLOCALFLEX_MARKET_URL = "localhost"
 
     user = FlexUser(
-        name="<your_email>",
-        password="<your_password>",
-        access_token="<your_device_access_token>"
+        name="<your_email>", password="<your_password>", access_token="<your_device_access_token>"
     )
 
     market = FlexMarket(market_url=GLOCALFLEX_MARKET_URL)
@@ -27,10 +31,11 @@ def main() -> None:
         data={"email": user.name, "password": user.password},
     )
     if err:
-        log(ERROR, err)
+        logger.error(err)
+        sys.exit(1)
 
-    log(INFO, pformat(response.request_response.json()))
-    log(INFO, response.request_response.status_code)
+    logger.info(json.dumps(response.request_response.json(), indent=4))
+    logger.info(response.request_response.status_code)
 
 
 if __name__ == "__main__":

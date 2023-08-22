@@ -52,7 +52,8 @@ def create_line_message(user: FlexUser, flexibility: FlexResource, marketOrder: 
     lineordermsg = (
         f"{order_type.value},"
         f"applicationKey={application_key},"
-        f"version=1 starttime={starttime}i,"
+        f"version=1," 
+        f"starttime={starttime}i,"
         f"wattage={wattage},"
         f"runtime={duration}i,"
         f"totalenergy={totalenergy},"

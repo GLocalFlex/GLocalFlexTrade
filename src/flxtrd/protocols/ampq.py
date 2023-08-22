@@ -187,7 +187,7 @@ class AmpqAPI(BaseAPI):
 
     def _connecttobrokerWithAppToken(
         self, user: FlexUser, broker: FlexBroker, ssl_options: pika.SSLOptions
-    ):
+    ) -> None:
         """Connects to the broker with the application token"""
         err = None
         brokerip = broker.url

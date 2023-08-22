@@ -3,6 +3,7 @@ import os
 from logging import DEBUG, INFO, WARNING, ERROR
 import flxtrd
 from flxtrd import FlexAPIClient, FlexUser, FlexMarket, AuthResponse, log
+from flxtrd.core.plugins.auth import AuthPlugin
 
 
 username=os.environ.get("FLEX_USERNAME")
@@ -37,9 +38,16 @@ def test_flex_api_client_instance_with_no_market(user):
     with pytest.raises(TypeError):
         FlexAPIClient(user=user, market=None)   
 
-@pytest.mark.skip("")
+from unittest.mock import Mock
+from flxtrd import AmpqAPI
+
+
 def test_flex_api_client_connect_valid_user_and_access_token(user, market):
     """"Test connection to message broker with valid user and access token"""
+    AmpqAPI._connecttobrokerWithAppToken = Mock(return_value=None)
+    AmpqAPI.set_consumer = Mock(return_value=None)
+    AuthPlugin.before_request = Mock(return_value=None)
+
     client = FlexAPIClient(user=user, market=market)
     assert client.connect() == None
     client.disconnect()

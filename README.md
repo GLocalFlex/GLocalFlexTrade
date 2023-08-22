@@ -33,10 +33,10 @@ It is up to the user which additional functionalities are implemented to the cli
 
 ``` mermaid
 graph LR
-    MyClient --> FlexAPIClient
-    MyClient --> TradingStrategy
-    MyClient --> EnergyManagement
-    MyClient --> CustomPlugins
+    TradingClient --> FlexAPIClient
+    TradingClient --> TradingStrategy
+    TradingClient --> EnergyManagement
+    TradingClient --> CustomPlugins
     FlexAPIClient --> APIProtocols
     FlexAPIClient --> FlexPlugins
 ```

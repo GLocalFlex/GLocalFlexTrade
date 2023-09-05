@@ -17,12 +17,14 @@ from flxtrd.core.types import (
     FlexUser,
     MarketOrder,
     OrderType,
-    utils
+    utils,
 )
 from flxtrd.protocols.base import BaseAPI
 
 
-def create_line_message(user: FlexUser, flexibility: FlexResource, marketOrder: MarketOrder):
+def create_line_message(
+    user: FlexUser, flexibility: FlexResource, marketOrder: MarketOrder, version=1
+):
     """Create a line protocol message for InfluxDB that is the payload in the AMQP message
 
     Format ask:
@@ -49,10 +51,11 @@ def create_line_message(user: FlexUser, flexibility: FlexResource, marketOrder: 
     orderprice = marketOrder.price_eur
     expirationtime = flexibility.expiration_time_epoch_ms
 
+    # Note tags and fields are separated by a space
     lineordermsg = (
         f"{order_type.value},"
         f"applicationKey={application_key},"
-        f"version=1," 
+        f"version={version} "
         f"starttime={starttime}i,"
         f"wattage={wattage},"
         f"runtime={duration}i,"
@@ -83,7 +86,6 @@ class AmpqAPI(BaseAPI):
         endpoint: Optional[str] = None,
         params: Optional[dict] = None,
         data: Optional[dict] = None,
-        verifiy_ssl: Optional[bool] = False,
         **kwargs,
     ) -> dict:
         if "market" not in kwargs:
@@ -143,7 +145,7 @@ class AmpqAPI(BaseAPI):
 
         if err:
             return err
-        
+
         self.set_consumer(
             callback=self.callback_on_response,
             callback_queue=self.callback_queue_id,
@@ -173,9 +175,8 @@ class AmpqAPI(BaseAPI):
                 body=message,
             )
         except pika.exceptions.ChannelWrongStateError as error:
-            if 'Channel is closed' in str(error):
-                raise FlexError('Channel is closed. Connection to broker is not possible.')
-
+            if "Channel is closed" in str(error):
+                raise FlexError("Channel is closed. Connection to broker is not possible.")
 
     def checkreplies(self):
         self.connection.process_data_events(time_limit=1)
@@ -216,16 +217,24 @@ class AmpqAPI(BaseAPI):
             raise FlexError(str(excep))
 
         self.channel = self.connection.channel()
-        self.callback_queue_id = declare_reply_queue(
-            self.channel, applicationKey, tickeroutexname
-        )
+        self.callback_queue_id = declare_reply_queue(self.channel, applicationKey, tickeroutexname)
         if self.callback_queue_id is None:
-            return FlexError("No callback queue declared, That usually happens if more than one connection to the broker is opened", )
+            return FlexError(
+                (
+                    "No callback queue declared, That usually happens if more than one connection"
+                    " to the broker is opened"
+                ),
+            )
         return None
-    
+
     def set_consumer(self, callback, callback_queue, channel):
         if callback_queue is None:
-            raise FlexError("No callback queue declared, That usually happens if more than one connection to the broker is opened", )
+            raise FlexError(
+                (
+                    "No callback queue declared, That usually happens if more than one connection"
+                    " to the broker is opened"
+                ),
+            )
         channel.basic_consume(queue=callback_queue, on_message_callback=callback, auto_ack=True)
 
     def checkreplies(self):
@@ -240,8 +249,14 @@ class AmpqAPI(BaseAPI):
         try:
             msg_body = json.loads(body.decode("utf-8"))
             self.callback_responses.append(msg_body)
-            msg_type = msg_body.get('msg_type', "unknown")
-            log(INFO, f"Received message from {self.broker} type: {msg_type}\n {json.dumps(msg_body, indent=4)}")
+            msg_type = msg_body.get("msg_type", "unknown")
+            log(
+                INFO,
+                (
+                    f"Received message from {self.broker} type: {msg_type}\n"
+                    f" {json.dumps(msg_body, indent=4)}"
+                ),
+            )
             # if 'msgtype' in msgBody.keys():
             #     if msgBody['msgtype'] == 'cancel':
             #             log(INFO,"--- Bohoo! My message got cancelled for ", msgBody['reason'])
@@ -285,7 +300,6 @@ def declare_reply_queue(
             log(ERROR, error)
             raise error
 
-    
     callback_queue_id: str = dec_res.method.queue
     channel.queue_bind(callback_queue_id, tickeroutexname)
     log(INFO, f"Created queue with ID {callback_queue_id}")

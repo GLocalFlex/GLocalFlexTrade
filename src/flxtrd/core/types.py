@@ -103,8 +103,8 @@ class FlexDevice:
 class FlexUser:
     """User dataclass for storing user data for authencation and registered devices."""
 
-    name: str
-    password: str
+    name: str = None
+    password: str = None
     access_token: Optional[str] = None
     app_key: Optional[str] = None
     user_id: Optional[str] = None

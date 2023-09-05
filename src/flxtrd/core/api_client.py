@@ -33,7 +33,7 @@ class FlexAPIClient:
 
     def __init__(
         self,
-        market: FlexMarket,
+        market: FlexMarket = None,
         base_url: str = None,
         market_url: str = None,
         access_token: str = None,
@@ -41,6 +41,7 @@ class FlexAPIClient:
         request_protocol: BaseAPI = RestAPI,
         trade_protocol: AmpqAPI = AmpqAPI,
         plugins: List[BasePlugin] = [],
+        verify_ssl: bool = True
     ) -> None:
         if base_url is not None:
             warn(
@@ -48,6 +49,7 @@ class FlexAPIClient:
                 DeprecationWarning,
                 stacklevel=2,
             )
+            market_url = base_url
 
         if user is None:
             if access_token is None:
@@ -56,7 +58,7 @@ class FlexAPIClient:
                 user = FlexUser(access_token=access_token)
 
         if market is None:
-            if base_url is None:
+            if market_url is None:
                 raise ValueError("A FlexMarket instance must be provided")
             else:
                 market = FlexMarket(market_url=market_url)
@@ -66,13 +68,14 @@ class FlexAPIClient:
         self.request_protocol = request_protocol(base_url=market.market_url)
 
         # By default the Auth Plugin is added
-        self.plugins = plugins or [AuthPlugin(user=user, market=market)]
+        self.plugins = plugins or [AuthPlugin(user=user, market=market, verify_ssl=verify_ssl)]
 
         self.trade_protocol: AmpqAPI = trade_protocol(
             base_url=market.market_url, user=user, broker=market.broker
         )
 
         self.context = None
+        self.verify_ssl = verify_ssl
 
     def send_order(
         self,
@@ -82,7 +85,6 @@ class FlexAPIClient:
         params: Optional[dict] = None,
         data: Optional[dict] = None,
         ssl: Optional[bool] = True,
-        verify_ssl: Optional[bool] = True,
         **kwargs,
     ) -> Tuple[FlexResponse, FlexError | None]:
         """Sends trading order to the market"""
@@ -97,7 +99,7 @@ class FlexAPIClient:
 
         # Check if connection exists
         if not self.trade_protocol.is_connected():
-            err = self.trade_protocol.connect(verify_ssl=verify_ssl)
+            err = self.trade_protocol.connect(verify_ssl=self.verify_ssl)
 
             if err:
                 return (None, err)
@@ -129,7 +131,6 @@ class FlexAPIClient:
         params: Optional[dict] = None,
         data: Optional[dict] = None,
         ssl: Optional[bool] = True,
-        verify_ssl: Optional[bool] = True,
         **kwargs,
     ) -> FlexResponse:
         """Executes all plugins and forwards the request to the protocol API class"""
@@ -150,7 +151,7 @@ class FlexAPIClient:
             user=self.user,
             market=self.market,
             ssl=ssl,
-            verify_ssl=verify_ssl,
+            verify_ssl=self.verify_ssl,
             **kwargs,
         )
 
@@ -201,7 +202,7 @@ class FlexAPIClient:
         if self.user.app_key is None:
             # TODO just a temporary solution
             self.plugins[0].before_request()
-        err = self.trade_protocol.connect()
+        err = self.trade_protocol.connect(verify_ssl=self.verify_ssl)
         if err:
             raise err
     

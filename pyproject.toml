@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "flxtrd"
-version = "0.2.6"
+version = "0.2.8"
 description = "Public client API for the flexible energy trading market GLocalFlex."
 authors = ["glocalflex"]
 repository = "https://github.com/glocalflex/GLocalFlexTrade"

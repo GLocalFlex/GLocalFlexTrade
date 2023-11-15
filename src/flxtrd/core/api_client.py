@@ -197,6 +197,11 @@ class FlexAPIClient:
             return None
         return self.trade_protocol.callback_responses
     
+    
+    def empty_market_responses(self):
+        """Empty the responses from the market"""
+        self.trade_protocol.callback_responses = []
+        
     def connect(self) -> None:
         """Connect to the market"""
         if self.user.app_key is None:

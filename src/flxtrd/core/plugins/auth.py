@@ -50,7 +50,7 @@ class AuthPlugin(BasePlugin):
         if self.user.access_token is None:
             raise ValueError("User access_token is required")
 
-        return self.validateApplicationToken(
+        self.validateApplicationToken(
             authServer=self.auth_server,
             accessToken=self.user.access_token,
             verify_ssl=self.verify_ssl,
@@ -117,10 +117,10 @@ class AuthPlugin(BasePlugin):
 
         try:
             response = requests.get(url, verify=verify_ssl)
-        except requests.exceptions.ConnectionError:
-            err = f"Connection to authentication endpoint {url} failed"
+        except requests.exceptions.ConnectionError as err:
             log(ERROR, err)
-            return {}, err
+            err = f"Connection error to authentication endpoint: {url}"
+            return 
         
         if response.status_code != 200:
             if response.status_code == 404:
@@ -131,9 +131,9 @@ class AuthPlugin(BasePlugin):
                     f"message: {response.content.decode()}, "
                 )
 
-                return AuthResponse(is_authenticated=False)
+                return
 
-
+        # TODO check if respones is json and contains key
         self.user.user_id = response.json()["userId"]
         if "locations" in response.json():
             if len(response.json()["locations"]) > 0:

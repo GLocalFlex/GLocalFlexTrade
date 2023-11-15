@@ -243,15 +243,15 @@ class AmpqAPI(BaseAPI):
         self.connection.process_data_events()
 
     def callback_on_response(self, ch, method, props, body):
-        global tickprice
-        currTimeMs = int(time.time() * 1000)
+        # global tickprice
+        # currTimeMs = int(time.time() * 1000)
         # Tick message ex. {'msgtype': 'tick', 'last_price_time': 1559732378418422410, 'last_price': 7.529581909307273}
         try:
             msg_body = json.loads(body.decode("utf-8"))
             self.callback_responses.append(msg_body)
             msg_type = msg_body.get("msg_type", "unknown")
             log(
-                INFO,
+                DEBUG,
                 (
                     f"Received message from {self.broker} type: {msg_type}\n"
                     f" {json.dumps(msg_body, indent=4)}"

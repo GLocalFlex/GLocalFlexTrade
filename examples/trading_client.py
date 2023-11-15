@@ -1,33 +1,38 @@
 """Example usage of the trading client using AMPQ protocol"""
+
 import logging
 import os
 import sys
 import time
 from typing import List
-from urllib import request
+import json
 
 from flxtrd import (
     ASK,
     BID,
     FlexAPIClient,
-    FlexMarket,
     FlexResource,
-    FlexUser,
+
     MarketOrder,
     utils,
 )
 
 # create a basic logger
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("flxtrd")
 logger.setLevel(logging.INFO)
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
 
 
-def market_response(responses: List, expected: int) -> None:
+def handle_market_responses(responses: List, expected: int) -> None:
+    """
+    Custom handler for market responses
+    
+    Extend with your own logic.
+    """
     if responses is not None:
-        logger.info(f"Received {len(responses)} responses from market broker")
+        logger.info(f"Handle new responses from market broker")
+        for response in responses:
+            logger.info(f"Received message type: {response.get('msg_type')}")
+            logger.info(f" {json.dumps(response, indent=4)}")
         if len(responses) == expected:
             return True
         return False
@@ -69,17 +74,23 @@ def main() -> None:
         logger.error(err)
         sys.exit(1)
 
-    # Check the market responses for closed_deals, price tick messages
-    # from the message broker for 60 seconds and exit
+    # Wait for the market broker to respond
     wait_sec = 0
     expected_responses = 3
     logger.info(f"Waiting for messages from market broker")
-
+    market_responses = []
     try:
         while wait_sec < 10:
-            if market_response(
-                responses=trading_client.check_market_responses(), expected=expected_responses
-            ):
+            if trading_client.check_market_responses() is not None:
+                market_responses.extend(trading_client.check_market_responses())
+                # Empty the market responses after retrieving to avoid keeping all the messages in memory
+                # of the trading client
+                trading_client.empty_market_responses()
+            
+            # Plug in your custom logic to handle the market responses
+            # see details in function handle_market_responses()
+            if handle_market_responses(responses=market_responses, expected=expected_responses):
+                logger.info(f"Received total of {len(market_responses)} responses from market broker")
                 break
 
             time.sleep(1)

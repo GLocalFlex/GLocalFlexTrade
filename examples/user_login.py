@@ -9,8 +9,6 @@ from flxtrd import FlexAPIClient, FlexMarket, FlexUser
 # create a basic logger
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-logging.basicConfig(level=logging.INFO)
-
 
 def main() -> None:
     GLOCALFLEX_MARKET_URL = "localhost"

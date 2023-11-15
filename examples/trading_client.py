@@ -27,6 +27,64 @@ def handle_market_responses(responses: List, expected: int) -> None:
     Custom handler for market responses
     
     Extend with your own logic.
+    
+    There are 3 types of responses:
+    
+    ask_closed_order
+    bid_closed_order
+    tick
+    
+    Examples:
+    
+
+    INFO flxtrd 2023-11-15 12:56:14,486 | trading_client.py:40 |  {
+    "trade_time": "2023-11-15T10:56:14.226Z",
+    "price": 100.0,
+    "start_time": "2023-11-15T11:01:13.000Z",
+    "energy": 100.0,
+    "msg_type": "tick"
+    }
+    INFO flxtrd 2023-11-15 12:56:14,486 | trading_client.py:39 | Received message type: ask_closed_order
+    INFO flxtrd 2023-11-15 12:56:14,486 | trading_client.py:40 |  {
+        "msg_type": "ask_closed_order",
+        "application_key": "***",
+        "closed_order": {
+            "bid_time": 1700045773535373405,
+            "ask_time": 1700045773533945086,
+            "ask_user": "6490252462817c189578807a",
+            "bid_user": "6490252462817c189578807a",
+            "price": 100.0,
+            "totalenergy": 100.0,
+            "energy": 100.0,
+            "starttime": 1700046073000,
+            "endtime": 1700049673000.0,
+            "runtime": 3600000,
+            "wattage": 100.0,
+            "power": 100.0,
+            "match_time": 1700045774226012928
+        }
+    }
+    INFO flxtrd 2023-11-15 12:56:14,486 | trading_client.py:39 | Received message type: bid_closed_order
+    INFO flxtrd 2023-11-15 12:56:14,486 | trading_client.py:40 |  {
+        "msg_type": "bid_closed_order",
+        "application_key": "***",
+        "closed_order": {
+            "bid_time": 1700045773535373405,
+            "ask_time": 1700045773533945086,
+            "ask_user": "6490252462817c189578807a",
+            "bid_user": "6490252462817c189578807a",
+            "price": 100.0,
+            "totalenergy": 100.0,
+            "energy": 100.0,
+            "starttime": 1700046073000,
+            "endtime": 1700049673000.0,
+            "runtime": 3600000,
+            "wattage": 100.0,
+            "power": 100.0,
+            "match_time": 1700045774226012928
+        }
+    }
+    
     """
     if responses is not None:
         logger.info(f"Handle new responses from market broker")
